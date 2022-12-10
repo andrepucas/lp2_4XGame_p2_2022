@@ -94,8 +94,8 @@ public class MapFileWidget : MonoBehaviour
 
         // Sets up default input field values, based on map data.
         _nameInput.text = MapData.Name;
-        _sizeXDisplay.text = MapData.Dimensions_X.ToString();
-        _sizeYDisplay.text = MapData.Dimensions_Y.ToString();
+        _sizeXDisplay.text = MapData.XCols.ToString();
+        _sizeYDisplay.text = MapData.YRows.ToString();
     }
 
     /// <summary>

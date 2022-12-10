@@ -97,16 +97,16 @@ public class MapDisplay : MonoBehaviour
         _gridLayout.enabled = true;
 
         // Defines pivot limits based on map dimensions.
-        _xPivotLimit = 1 / (float)(p_map.Dimensions_X * 2);
-        _yPivotLimit = 1 / (float)(p_map.Dimensions_Y * 2);
+        _xPivotLimit = 1 / (float)(p_map.XCols * 2);
+        _yPivotLimit = 1 / (float)(p_map.YRows * 2);
 
         // Centers pivot.
         _rectTransform.pivot = new Vector2(0.5f, 0.5f);
 
         // Calculates cell size based on the map dimensions, 
         // using the max X and Y cell sizes as references.
-        m_newCellSize.y = MAX_Y_SIZE / p_map.Dimensions_Y;
-        m_newCellSize.x = MAX_X_SIZE / p_map.Dimensions_X;
+        m_newCellSize.y = MAX_Y_SIZE / p_map.YRows;
+        m_newCellSize.x = MAX_X_SIZE / p_map.XCols;
 
         // Sets both the X and Y to the lowest value out of the 2, making a square.
         if (m_newCellSize.y < m_newCellSize.x) m_newCellSize.x = m_newCellSize.y;
@@ -118,7 +118,7 @@ public class MapDisplay : MonoBehaviour
         _gridLayout.cellSize = m_newCellSize;
 
         // Constraints the grid layout group to a max of X columns.
-        _gridLayout.constraintCount = p_map.Dimensions_X;
+        _gridLayout.constraintCount = p_map.XCols;
 
         // Iterates every game tile in Map Data.
         foreach (GameTile tile in p_map.GameTiles)

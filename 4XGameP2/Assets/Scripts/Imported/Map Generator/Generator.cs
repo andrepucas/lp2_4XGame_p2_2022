@@ -101,13 +101,11 @@ namespace ImportedGenerator
 
             int totalTiles = rows * cols;
 
-            //int numCenterPoints = (int)(totalTiles * centerPointsDensity);
-            
+            if (totalTiles < 10) return CreateRandomMap(rows, cols);
+
             int numCenterPoints = (totalTiles > 50)
                 ? (int)(totalTiles * centerPointsDensity) 
                 : (int)(totalTiles * centerPointsDensity * (100/totalTiles));
-
-            //if (numCenterPoints < 1) return CreateRandomMap(rows, cols);
 
             IList<(int, int)> centerPoints;
 

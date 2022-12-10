@@ -182,20 +182,19 @@ public class UIPanelAnalytics : UIPanel
 
                 // Calculates relative game tile based on it's list index.
                 float m_relativePos = p_mapData.GameTiles.IndexOf(m_tile) *
-                    p_mapData.Dimensions_Y / 
-                    (float)(p_mapData.Dimensions_Y * p_mapData.Dimensions_X);
+                    p_mapData.YRows / (float)(p_mapData.YRows * p_mapData.XCols);
 
                 // Y equals the relative position's integer value.
                 long m_yCoords = (long)m_relativePos;
 
                 // X equals the relative position's decimal value * Y.
                 int m_xCoords = (int)((m_relativePos - m_yCoords) 
-                    * p_mapData.Dimensions_X);
+                    * p_mapData.XCols);
 
                 // Appends the coordinates to the string builder.
                 m_stringBuilder.Append(
-                    "\n" + $"COL: {(m_xCoords + 1).ToString()} | "
-                    + $"ROW: {(m_yCoords + 1).ToString()}");
+                    "\n" + $"ROW: {(m_yCoords + 1).ToString()} | "
+                    + $"COL: {(m_xCoords + 1).ToString()}");
 
                 // Displays the string builder text.
                 _answerTxt.text = m_stringBuilder.ToString();

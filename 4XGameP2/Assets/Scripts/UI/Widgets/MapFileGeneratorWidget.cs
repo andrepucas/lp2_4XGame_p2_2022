@@ -40,10 +40,10 @@ public class MapFileGeneratorWidget : MonoBehaviour
     private string _name;
 
     // Integer that holds the X dimensions for the generated map.
-    private int _sizeX;
+    private int _xCols;
 
     // Integer that holds the Y dimensions for the generated map.
-    private int _sizeY;
+    private int _yRows;
 
     /// <summary>
     /// Unity method, called on game start. Sets up default values.
@@ -52,8 +52,8 @@ public class MapFileGeneratorWidget : MonoBehaviour
     {
         // Saves the placeholders' text as default generation values.
         _name = _placeholderName.text;
-        _sizeX = Int32.Parse(_placeholderSizeX.text);
-        _sizeY = Int32.Parse(_placeholderSizeY.text);
+        _xCols = Int32.Parse(_placeholderSizeX.text);
+        _yRows = Int32.Parse(_placeholderSizeY.text);
     }
 
     /// <summary>
@@ -81,13 +81,13 @@ public class MapFileGeneratorWidget : MonoBehaviour
         else _name = MapFileNameValidator.Validate(_name);
 
         // If player specified a value for the map X dimensions. Saves it.
-        if (_sizeXInput.text != "") _sizeX = Int32.Parse(_sizeXInput.text);
+        if (_sizeXInput.text != "") _xCols = Int32.Parse(_sizeXInput.text);
 
         // If player specified a value for the map Y dimensions. Saves it.
-        if (_sizeYInput.text != "") _sizeY = Int32.Parse(_sizeYInput.text);
+        if (_sizeYInput.text != "") _yRows = Int32.Parse(_sizeYInput.text);
 
         // Generates the new map file.
-        MapFilesBrowser.GenerateNewMapFile(_name, _sizeX, _sizeY, _generateData);
+        MapFilesBrowser.GenerateNewMapFile(_name, _yRows, _xCols, _generateData);
 
         // Raises event that a new map has been generated, with its name.
         OnNewMapFile?.Invoke(_name);

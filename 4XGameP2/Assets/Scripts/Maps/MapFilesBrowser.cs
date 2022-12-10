@@ -11,7 +11,7 @@ public static class MapFilesBrowser
     /// <summary>
     /// Constant string value for the maps folder name.
     /// </summary>
-    private const string FOLDER = "maps4xfiles";
+    private const string FOLDER = "map4xfiles";
 
     // Path string. Combination of desktop system path with the folder's name.
     private static string _path = Path.Combine(Environment.GetFolderPath(
@@ -23,11 +23,11 @@ public static class MapFilesBrowser
     /// <returns>List of maps found in map files folder.</returns>
     public static List<MapData> GetMapsList()
     {
-        // If folder doesn´t exist, stops here.
-        if (!Directory.Exists(_path)) return null;
-
         // Creates a list of map datas.
         List<MapData> _mapsList = new List<MapData>();
+
+        // If folder doesn´t exist, stops here.
+        if (!Directory.Exists(_path)) return _mapsList;
 
         // Creates a directory info based on the folder path.
         DirectoryInfo m_info = new DirectoryInfo(_path);
@@ -81,12 +81,12 @@ public static class MapFilesBrowser
     /// Generates a new map file, using an imported map generator.
     /// </summary>
     /// <param name="p_name">Name of the map file.</param>
-    /// <param name="p_sizeX">X dimensions of map.</param>
-    /// <param name="p_sizeY">Y dimensions of map.</param>
+    /// <param name="p_yRows">Y dimensions of map.</param>
+    /// <param name="p_xCols">X dimensions of map.</param>
     /// <param name="p_data">Generator parameters.</param>
     /// <returns>Name of generated map.</returns>
-    public static string GenerateNewMapFile(string p_name, int p_sizeX, 
-        int p_sizeY, MapFileGeneratorDataSO p_data)
+    public static string GenerateNewMapFile(string p_name, int p_yRows, 
+        int p_xCols, MapFileGeneratorDataSO p_data)
     {
         Generator m_generator;
         Map m_map;
@@ -101,7 +101,7 @@ public static class MapFilesBrowser
         m_generator = new Generator(p_data.Terrains, p_data.Resources);
 
         // Generates the new map.
-        m_map = m_generator.CreatePCGMap(p_sizeX, p_sizeY);
+        m_map = m_generator.CreatePCGMap(p_yRows, p_xCols);
 
         // Creates map file.
         m_generator.SaveMap(m_map, Path.Combine(_path, m_fileName));

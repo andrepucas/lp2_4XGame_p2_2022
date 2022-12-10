@@ -16,13 +16,13 @@ public class MapData : IComparable<MapData>
     /// Read only self implemented property that holds the map X dimensions.
     /// </summary>
     /// <value>Map size in the X axis.</value>
-    public int Dimensions_X {get;}
+    public int XCols {get;}
 
     /// <summary>
     /// Read only self implemented property that holds the map Y dimensions.
     /// </summary>
     /// <value>Map size in the Y axis.</value>
-    public int Dimensions_Y {get;}
+    public int YRows {get;}
 
     /// <summary>
     /// Read only self implemented property that holds all map file lines.
@@ -48,18 +48,18 @@ public class MapData : IComparable<MapData>
         // Gets dimensions from the first line, separated by a space.
         string[] m_dimensions = p_data[0].Split();
 
-        // X equals to the first string of the first line.
-        Dimensions_X = Convert.ToInt32(m_dimensions[0]);
+        // Y equals to the first string of the first line.
+        YRows = Convert.ToInt32(m_dimensions[0]);
 
-        // Y equals to the second string of the first line.
-        Dimensions_Y = Convert.ToInt32(m_dimensions[1]);
+        // X equals to the second string of the first line.
+        XCols = Convert.ToInt32(m_dimensions[1]);
 
         // Saves name and data according to parameters.
         Name = p_name;
         Data = p_data;
 
         // Creates an empty list of game tiles.
-        GameTiles = new List<GameTile>(Dimensions_X * Dimensions_Y);
+        GameTiles = new List<GameTile>(XCols * YRows);
     }
 
     /// <summary>

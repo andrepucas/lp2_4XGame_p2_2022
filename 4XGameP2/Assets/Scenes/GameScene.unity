@@ -672,7 +672,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchorMin.x
@@ -680,15 +680,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 900
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -720,11 +720,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 450
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -180
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -4757,7 +4757,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 828619964}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -5320,7 +5320,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: map files are inside the 'maps4xfiles' folder, in your desktop
+  m_text: map files are inside the 'map4xfiles' folder, in your desktop
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a47471544fdd7a64daf754bfcc243c2a, type: 2}
   m_sharedMaterial: {fileID: 5362037870215421203, guid: a47471544fdd7a64daf754bfcc243c2a, type: 2}
@@ -6400,7 +6400,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1022402488}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -12696,7 +12696,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchorMin.x
@@ -12704,15 +12704,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 900
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_LocalPosition.x
@@ -12744,11 +12744,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 450
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -50
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
