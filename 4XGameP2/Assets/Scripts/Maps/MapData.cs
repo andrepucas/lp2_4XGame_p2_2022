@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// Holds all relevant info about a map.
@@ -36,6 +37,10 @@ public class MapData : IComparable<MapData>
     /// <value>List of all game tiles.</value>
     public List<GameTile> GameTiles {get; private set;}
 
+    // Saves how many lines in the file should be ignored by indexers.
+    // Useful to exclude full comment lines.
+    private int _linesToIgnore;
+
     /// <summary>
     /// Constructor method. Initializes the map's properties.
     /// Doesn't convert and save all file info right away. Only it's dimensions
@@ -47,17 +52,37 @@ public class MapData : IComparable<MapData>
     {
         int _cols = 0;
         int _rows = 0;
+        string[] m_firstLine;
 
-        // Gets dimensions from the first line, separated by a space.
-        string[] m_dimensions = p_data[0].Split();
+        _linesToIgnore = 0;
+
+        // Continuos loop to check initial lines.
+        while (true)
+        {
+            // If it's empty or starts with a comment, increment lines to ignore
+            // and loop again.
+            if (p_data[_linesToIgnore].Length == 0 || p_data[_linesToIgnore][0] == '#')
+                _linesToIgnore++;
+
+            // If it has content, save it and break the loop.
+            else
+            {
+                m_firstLine = p_data[_linesToIgnore].Split();
+                break;
+            }
+        }
 
         // If the conversion of both rows and cols value is successful.
-        if (m_dimensions.Length > 1 && Int32.TryParse(m_dimensions[0], out _rows) 
-            && Int32.TryParse(m_dimensions[1], out _cols))
+        if (m_firstLine.Length == 2 && Int32.TryParse(m_firstLine[0], out _rows) 
+            && Int32.TryParse(m_firstLine[1], out _cols))
         {
             // Set the Rows and Cols properties.
             YRows = _rows;
             XCols = _cols;
+
+            // Increment lines to ignore, so that future indexers start
+            // after this dimensions line.
+            _linesToIgnore++;
         }
 
         // If the conversion isn't possible, this is an invalid map.
@@ -86,7 +111,7 @@ public class MapData : IComparable<MapData>
 
         // Iterates all file data info. 
         // Skips first line, which was already handled in constructor.
-        for (int i = 1; i < Data.Length; i++)
+        for (int i = _linesToIgnore; i < Data.Length; i++)
         {
             // Saves the current line.
             m_line = Data[i].ToLower();
@@ -97,6 +122,13 @@ public class MapData : IComparable<MapData>
             // If there is one, ignores everything that comes after it.
             if (m_commentIndex >= 0) m_line = m_line.Substring(0, m_commentIndex);
 
+            // If a comment occupies the full line or it's simply empty, ignore it.
+            if (m_line.Length == 0)
+            {
+                _linesToIgnore++;
+                continue;
+            }
+
             // Splits line into individual strings, separated by spaces.
             m_lineStrings = Data[i].Split();
 
@@ -106,31 +138,31 @@ public class MapData : IComparable<MapData>
                 case "desert":
 
                     // Adds a new desert tile to the game tiles list.
-                    GameTiles.Insert(i - 1, new DesertTile());
+                    GameTiles.Insert(i - _linesToIgnore, new DesertTile());
                     break;
 
                 case "hills":
 
                     // Adds a new hills tile to the game tiles list.
-                    GameTiles.Insert(i - 1, new HillsTile());
+                    GameTiles.Insert(i - _linesToIgnore, new HillsTile());
                     break;
 
                 case "mountain":
 
                     // Adds a new mountain tile to the game tiles list.
-                    GameTiles.Insert(i - 1, new MountainTile());
+                    GameTiles.Insert(i - _linesToIgnore, new MountainTile());
                     break;
 
                 case "plains":
 
                     // Adds a new plains tile to the game tiles list.
-                    GameTiles.Insert(i - 1, new PlainsTile());
+                    GameTiles.Insert(i - _linesToIgnore, new PlainsTile());
                     break;
 
                 case "water":
 
                     // Adds a new water tile to the game tiles list.
-                    GameTiles.Insert(i - 1, new WaterTile());
+                    GameTiles.Insert(i - _linesToIgnore, new WaterTile());
                     break;
             }
 
@@ -146,37 +178,37 @@ public class MapData : IComparable<MapData>
                         case "plants":
 
                             // Adds a new plants resource to the game tile.
-                            GameTiles[i - 1].AddResource(new PlantsResource());
+                            GameTiles[i - _linesToIgnore].AddResource(new PlantsResource());
                             break;
 
                         case "animals":
 
                             // Adds a new animals resource to the game tile.
-                            GameTiles[i - 1].AddResource(new AnimalsResource());
+                            GameTiles[i - _linesToIgnore].AddResource(new AnimalsResource());
                             break;
 
                         case "metals":
 
                             // Adds a new metals resource to the game tile.
-                            GameTiles[i - 1].AddResource(new MetalsResource());
+                            GameTiles[i - _linesToIgnore].AddResource(new MetalsResource());
                             break;
 
                         case "fossilfuel":
 
                             // Adds a new fossil fuel resource to the game tile.
-                            GameTiles[i - 1].AddResource(new FossilFuelResource());
+                            GameTiles[i - _linesToIgnore].AddResource(new FossilFuelResource());
                             break;
 
                         case "luxury":
 
                             // Adds a new luxury resource to the game tile.
-                            GameTiles[i - 1].AddResource(new LuxuryResource());
+                            GameTiles[i - _linesToIgnore].AddResource(new LuxuryResource());
                             break;
 
                         case "pollution":
 
                             // Adds a new pollution resource to the game tile.
-                            GameTiles[i - 1].AddResource(new PollutionResource());
+                            GameTiles[i - _linesToIgnore].AddResource(new PollutionResource());
                             break;
                     }
                 }

@@ -137,9 +137,14 @@ public class UIPanelMapBrowser : UIPanel
                 _widgetsList.Add(m_fileWidget);
             }
 
-            // Pre select widget based on the widget name parameter.
-            if (p_newWidgetName == "") PreSelectWidget();
-            else PreSelectWidget(p_newWidgetName);
+            if (_widgetsList.Count != 0)
+            {
+                // Pre select widget based on the widget name parameter.
+                if (p_newWidgetName == "") PreSelectWidget();
+                else PreSelectWidget(p_newWidgetName);
+            }
+
+            else Debug.Log("No valid map files.");
         }
 
         // Else there are no map files.
