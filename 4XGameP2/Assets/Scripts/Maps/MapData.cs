@@ -45,14 +45,22 @@ public class MapData : IComparable<MapData>
     /// <param name="p_data">File lines.</param>
     public MapData (string p_name, string[] p_data)
     {
+        int _cols = 0;
+        int _rows = 0;
+
         // Gets dimensions from the first line, separated by a space.
         string[] m_dimensions = p_data[0].Split();
 
-        // Y equals to the first string of the first line.
-        YRows = Convert.ToInt32(m_dimensions[0]);
+        // If the conversion of both rows and cols value is successful.
+        if (m_dimensions.Length > 1 && Int32.TryParse(m_dimensions[0], out _rows) 
+            && Int32.TryParse(m_dimensions[1], out _cols))
+        {
+            // Set the Rows and Cols properties.
+            YRows = _rows;
+            XCols = _cols;
+        }
 
-        // X equals to the second string of the first line.
-        XCols = Convert.ToInt32(m_dimensions[1]);
+        // If the conversion isn't possible, this is an invalid map.
 
         // Saves name and data according to parameters.
         Name = p_name;

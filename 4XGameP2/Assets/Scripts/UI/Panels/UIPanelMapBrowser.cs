@@ -30,6 +30,9 @@ public class UIPanelMapBrowser : UIPanel
     [SerializeField] private RectTransform _loadButtonRect;
     [Tooltip("Load button text component.")]
     [SerializeField] private TMP_Text _loadButtonText;
+    [Header("AUXILIAR TEXT")]
+    [Tooltip("Text displayed when there are 1+ invalid files not being displayed")]
+    [SerializeField] private GameObject _invalidFilesMsg;
 
     // List of instantiated map file widgets.
     private List<MapFileWidget> _widgetsList;
@@ -104,8 +107,9 @@ public class UIPanelMapBrowser : UIPanel
         foreach (Transform f_widget in _widgetsFolder)
             GameObject.Destroy(f_widget.gameObject);
 
-        // Clears widgets list.
+        // Clears widgets list and invalid files message.
         _widgetsList.Clear();
+        _invalidFilesMsg.SetActive(false);
 
         // If map files exist.
         if (MapFilesBrowser.GetMapsList().Count > 0)
@@ -113,6 +117,17 @@ public class UIPanelMapBrowser : UIPanel
             // Iterates all Map Data gotten from existing files.
             foreach (MapData f_map in MapFilesBrowser.GetMapsList())
             {
+                // If the map couldn't convert it's file dimensions, it's invalid
+                // and should not be displayed.
+                if (f_map.YRows == 0)
+                {
+                    // Display msg saying invalid files are being hidden.
+                    _invalidFilesMsg.SetActive(true);
+
+                    // Ignore this map.
+                    continue;
+                }
+                
                 // Instantiates a new map file widget.
                 m_fileWidget = Instantiate(_mapFileWidget, Vector3.zero, 
                     Quaternion.identity, _widgetsFolder).GetComponent<MapFileWidget>();
