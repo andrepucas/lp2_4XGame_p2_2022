@@ -16,6 +16,8 @@ public class Controller : MonoBehaviour
     // Serialized variables.
     [Tooltip("Reference to map display component.")]
     [SerializeField] private MapDisplay _mapDisplay;
+    [Tooltip("UI Warnings reference")]
+    [SerializeField] private UIWarnings _warnings;
 
     // Reference to the generic User Interface.
     private IUserInterface _userInterface;
@@ -41,6 +43,9 @@ public class Controller : MonoBehaviour
         // Initializes user interface and map display.
         _userInterface.Initialize();
         _mapDisplay.Initialize();
+
+        // Clear all warnings.
+        _warnings.ClearAll();
     }
 
     /// <summary>
@@ -49,7 +54,8 @@ public class Controller : MonoBehaviour
     private void OnEnable()
     {
         UIPanelPreStart.OnPromptRevealed += () => StartCoroutine(WaitForPreStartKey());
-        UIPanelMapBrowser.OnLoad += SaveMap;
+        UIPanelMapBrowser.OnLoad += TryToLoadMap;
+        MapData.OnValidLoadedData += HandleLoadedDataStatus;
         UIPanelGameplay.OnRestart += () => ChangeGameState(GameStates.PRE_START);
         _mapDisplay.OnMapGenerated += () => ChangeGameState(GameStates.GAMEPLAY);
         MapCell.OnInspectView += () => ChangeGameState(GameStates.PAUSE);
@@ -61,7 +67,8 @@ public class Controller : MonoBehaviour
     private void OnDisable()
     {
         UIPanelPreStart.OnPromptRevealed -= () => StopCoroutine(WaitForPreStartKey());
-        UIPanelMapBrowser.OnLoad -= SaveMap;
+        UIPanelMapBrowser.OnLoad -= TryToLoadMap;
+        MapData.OnValidLoadedData -= HandleLoadedDataStatus;
         UIPanelGameplay.OnRestart -= () => ChangeGameState(GameStates.PRE_START);
         _mapDisplay.OnMapGenerated -= () => ChangeGameState(GameStates.GAMEPLAY);
         MapCell.OnInspectView -= () => ChangeGameState(GameStates.PAUSE);
@@ -162,10 +169,7 @@ public class Controller : MonoBehaviour
                 _mapDisplay.transform.localPosition = Vector3.zero;
                 _mapDisplay.transform.localScale = Vector3.one;
 
-                // Loads tiles' data inside the selected map.
-                _selectedMap.LoadGameTilesData();
-
-                // Generates it with the loaded data.
+                // Generates map with loaded data.
                 _mapDisplay.GenerateMap(_selectedMap);
 
                 break;
@@ -223,16 +227,32 @@ public class Controller : MonoBehaviour
     }
 
     /// <summary>
-    /// Updates selected map variable and sets the game state to Load Map.
+    /// Updates selected map variable and to load game tiles data.
     /// </summary>
     /// <param name="p_map">Map Data to be saved.</param>
-    private void SaveMap(MapData p_map)
+    private void TryToLoadMap(MapData p_map)
     {
+        // Clear warnings.
+        _warnings.ClearInvalidFilesWarning();
+
         // Saves parameter map data as selected map.
         _selectedMap = p_map;
 
-        // Sets game state to Load Map.
-        ChangeGameState(GameStates.LOAD_MAP);
+        // Loads tiles' data inside the selected map.
+        _selectedMap.LoadGameTilesData();
+    }
+
+    /// <summary>
+    /// Handles what to do next based if the selected map's data is valid or not.
+    /// </summary>
+    /// <param name="p_isValid">True is map's data is valid.</param>
+    private void HandleLoadedDataStatus(bool p_isValid)
+    {
+        // If it's valid, generate map.
+        if (p_isValid) ChangeGameState(GameStates.LOAD_MAP);
+
+        // If not, display warning.
+        else _warnings.DisplayInvalidFilesWarning();
     }
 
     /// <summary>

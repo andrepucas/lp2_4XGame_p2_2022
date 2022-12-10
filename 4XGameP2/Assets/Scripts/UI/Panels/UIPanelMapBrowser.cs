@@ -30,9 +30,9 @@ public class UIPanelMapBrowser : UIPanel
     [SerializeField] private RectTransform _loadButtonRect;
     [Tooltip("Load button text component.")]
     [SerializeField] private TMP_Text _loadButtonText;
-    [Header("AUXILIAR TEXT")]
-    [Tooltip("Text displayed when there are 1+ invalid files not being displayed")]
-    [SerializeField] private GameObject _invalidFilesMsg;
+    [Header("WARNINGS")]
+    [Tooltip("UI Warnings reference")]
+    [SerializeField] private UIWarnings _warnings;
 
     // List of instantiated map file widgets.
     private List<MapFileWidget> _widgetsList;
@@ -109,7 +109,9 @@ public class UIPanelMapBrowser : UIPanel
 
         // Clears widgets list and invalid files message.
         _widgetsList.Clear();
-        _invalidFilesMsg.SetActive(false);
+
+        // Clear hidden files warning.
+        _warnings.ClearHiddenFilesWarning();
 
         // If map files exist.
         if (MapFilesBrowser.GetMapsList().Count > 0)
@@ -121,8 +123,8 @@ public class UIPanelMapBrowser : UIPanel
                 // and should not be displayed.
                 if (f_map.YRows == 0)
                 {
-                    // Display msg saying invalid files are being hidden.
-                    _invalidFilesMsg.SetActive(true);
+                    // Display hidden files warning.
+                    _warnings.DisplayHiddenFilesWarning();
 
                     // Ignore this map.
                     continue;
@@ -266,7 +268,7 @@ public class UIPanelMapBrowser : UIPanel
         // Instantiates the map widgets.
         InstantiateMapFileWidgets();
 
-        // De-select anything that might be selected.
+        // De-select button.
         EventSystem.current.SetSelectedGameObject(null);
     }
 
@@ -276,5 +278,11 @@ public class UIPanelMapBrowser : UIPanel
     /// <remarks>
     /// Called by the 'LOAD MAP' Unity button, in this panel.
     /// </remarks>
-    public void OnLoadButton() => OnLoad?.Invoke(_lastWidgetSelected.MapData);
+    public void OnLoadButton()
+    {
+        OnLoad?.Invoke(_lastWidgetSelected.MapData);
+
+        // De-select button.
+        EventSystem.current.SetSelectedGameObject(null);
+    }
 }

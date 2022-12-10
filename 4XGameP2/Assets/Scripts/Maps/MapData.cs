@@ -7,6 +7,8 @@ using UnityEngine;
 /// </summary>
 public class MapData : IComparable<MapData>
 {
+    public static event Action<bool> OnValidLoadedData;
+    
     /// <summary>
     /// Public set self implemented property that holds the map name.
     /// </summary>
@@ -40,6 +42,8 @@ public class MapData : IComparable<MapData>
     // Saves how many lines in the file should be ignored by indexers.
     // Useful to exclude full comment lines.
     private int _linesToIgnore;
+
+    private bool _failedResource;
 
     /// <summary>
     /// Constructor method. Initializes the map's properties.
@@ -130,7 +134,7 @@ public class MapData : IComparable<MapData>
             }
 
             // Splits line into individual strings, separated by spaces.
-            m_lineStrings = Data[i].Split();
+            m_lineStrings = m_line.Trim().Split();
 
             // Handles and instantiates the game tile (first string).
             switch (m_lineStrings[0])
@@ -164,6 +168,12 @@ public class MapData : IComparable<MapData>
                     // Adds a new water tile to the game tiles list.
                     GameTiles.Insert(i - _linesToIgnore, new WaterTile());
                     break;
+
+                // In case none of the keywords are found.
+                default: 
+                
+                    _linesToIgnore++;
+                    continue;
             }
 
             // If there are more strings in that line.
@@ -210,10 +220,26 @@ public class MapData : IComparable<MapData>
                             // Adds a new pollution resource to the game tile.
                             GameTiles[i - _linesToIgnore].AddResource(new PollutionResource());
                             break;
+
+                        default: 
+
+                            _failedResource = true;
+                            continue;
                     }
                 }
             }
         }
+
+        // If the map's dimensions don't match with the saved game tiles or
+        // if atleast one resource couldn't be read.
+        if ((XCols * YRows) != GameTiles.Count || _failedResource)
+        {
+            Debug.Log("Invalid map, aborting.");
+            OnValidLoadedData?.Invoke(false);
+        }
+
+        // If they do, the map is valid to load.
+        else OnValidLoadedData?.Invoke(true);
     }
 
     /// <summary>
