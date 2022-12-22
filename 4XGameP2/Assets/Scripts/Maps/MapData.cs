@@ -31,19 +31,22 @@ public class MapData : IComparable<MapData>
     /// Read only self implemented property that holds all map file lines.
     /// </summary>
     /// <value>String array of each map file line.</value>
-    public string[] Data {get;}
+    public IReadOnlyList<string> Data {get;}
 
     /// <summary>
-    /// Private set self implemented property that holds a list of all game tiles.
+    /// Read only self implemented property that holds a list of all game tiles.
     /// </summary>
     /// <value>List of all game tiles.</value>
-    public List<GameTile> GameTiles {get; private set;}
+    public IReadOnlyList<GameTile> GameTiles => _gameTilesList;
+
+    /// <summary>
+    /// Private list of Game Tiles.
+    /// </summary>
+    private List<GameTile> _gameTilesList;
 
     // Saves how many lines in the file should be ignored by indexers.
     // Useful to exclude full comment lines.
     private int _linesToIgnore;
-
-    private bool _failedResource;
 
     /// <summary>
     /// Constructor method. Initializes the map's properties.
@@ -96,7 +99,7 @@ public class MapData : IComparable<MapData>
         Data = p_data;
 
         // Creates an empty list of game tiles.
-        GameTiles = new List<GameTile>(XCols * YRows);
+        _gameTilesList = new List<GameTile>(XCols * YRows);
     }
 
     /// <summary>
@@ -119,9 +122,12 @@ public class MapData : IComparable<MapData>
         // Holds reference to a specific terrain/resource preset values.
         TileValues m_tileValues;
 
+        // Controls whether all resources were read or not.
+        bool _failedResource = false;
+
         // Iterates all file data info. 
         // Skips first line, which was already handled in constructor.
-        for (int i = _linesToIgnore; i < Data.Length; i++)
+        for (int i = _linesToIgnore; i < Data.Count; i++)
         {
             // Saves the current line.
             m_line = Data[i].ToLower();
@@ -156,7 +162,7 @@ public class MapData : IComparable<MapData>
 
                     // Initializes and adds a Game Tile with its preset values
                     // to the list.
-                    GameTiles.Insert(i - _linesToIgnore, new GameTile(
+                    _gameTilesList.Insert(i - _linesToIgnore, new GameTile(
                         m_tileValues.Name,
                         m_tileValues.Coin,
                         m_tileValues.Food));

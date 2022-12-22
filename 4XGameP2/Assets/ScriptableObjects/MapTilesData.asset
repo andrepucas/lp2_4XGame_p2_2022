@@ -12,3 +12,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fdc466d5f12cef49a09527201b4fcf6, type: 3}
   m_Name: MapTilesData
   m_EditorClassIdentifier: 
+  _terrains:
+  - _name: Desert
+    _coin: 0
+    _food: 0
+  - _name: Hills
+    _coin: 1
+    _food: 1
+  - _name: Mountain
+    _coin: 1
+    _food: 0
+  - _name: Plains
+    _coin: 0
+    _food: 2
+  - _name: Water
+    _coin: 0
+    _food: 1
+  _resources:
+  - _name: Animals
+    _coin: 1
+    _food: 3
+  - _name: Fossil Fuel
+    _coin: 5
+    _food: -3
+  - _name: Luxury
+    _coin: 4
+    _food: -1
+  - _name: Metals
+    _coin: 3
+    _food: -1
+  - _name: Plants
+    _coin: 1
+    _food: 2
+  - _name: Pollution
+    _coin: -3
+    _food: -3

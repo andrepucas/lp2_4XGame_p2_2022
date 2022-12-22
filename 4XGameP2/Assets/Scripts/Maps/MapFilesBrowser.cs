@@ -86,7 +86,7 @@ public static class MapFilesBrowser
     /// <param name="p_data">Generator parameters.</param>
     /// <returns>Name of generated map.</returns>
     public static string GenerateNewMapFile(string p_name, int p_yRows, 
-        int p_xCols, MapFileGeneratorDataSO p_data)
+        int p_xCols, MapTilesDataSO p_data)
     {
         Generator m_generator;
         Map m_map;
@@ -98,7 +98,7 @@ public static class MapFilesBrowser
         if (!Directory.Exists(_path)) Directory.CreateDirectory(_path);
 
         // Creates new generator with generator data.
-        m_generator = new Generator(p_data.Terrains, p_data.Resources);
+        m_generator = new Generator(p_data.TerrainNames, p_data.ResourceNames);
 
         // Generates the new map.
         m_map = m_generator.CreatePCGMap(p_yRows, p_xCols);

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -37,4 +38,22 @@ public class MapTilesDataSO : ScriptableObject
     /// Tile Info array of all possible resources.
     /// </summary>
     public TileValues[] Resources => _resources;
+
+    public IEnumerable<string> TerrainNames
+    {
+        get
+        {
+            foreach (TileValues t in _terrains)
+                yield return t.RawName;
+        }
+    }
+
+    public IEnumerable<string> ResourceNames
+    {
+        get
+        {
+            foreach (TileValues r in _resources)
+                yield return r.RawName;
+        }
+    }
 }

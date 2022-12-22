@@ -67,14 +67,12 @@ public class GameTile
     /// of this game tile.
     /// </summary>
     /// <value>Current resources of the game tile.</value>
-    public IReadOnlyCollection<Resource> Resources => resourceList;
+    public IReadOnlyCollection<Resource> Resources => _resourceList;
 
     /// <summary>
-    /// Creates a list of the Resource type.
+    /// Private list of Resources.
     /// </summary>
-    /// <typeparam name="Resource">Resources present in game tiles.</typeparam>
-    /// <returns>Stores resources in current tile.</returns>
-    private List<Resource> resourceList = new List<Resource>();
+    private List<Resource> _resourceList;
 
     //
     public GameTile(string p_name, int p_coin, int p_food)
@@ -82,13 +80,15 @@ public class GameTile
         Name = p_name;
         BaseCoin = p_coin;
         BaseFood = p_food;
+
+        _resourceList = new List<Resource>();
     }
 
     /// <summary>
     /// Adds a resource to tile resource ICollection.
     /// </summary>
     /// <param name="resource">Resource to add to tile.</param>
-    public void AddResource(Resource resource) => resourceList.Add(resource);
+    public void AddResource(Resource resource) => _resourceList.Add(resource);
 
     /// <summary>
     /// Shows all of the tile's important information.

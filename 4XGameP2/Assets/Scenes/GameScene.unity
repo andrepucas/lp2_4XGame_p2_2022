@@ -1720,6 +1720,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mapDisplay: {fileID: 605174932}
   _warnings: {fileID: 1611585785}
+  _data: {fileID: 11400000, guid: d80cc0443de6e254c9a9a90c9370d8e8, type: 2}
 --- !u!1 &407781997
 GameObject:
   m_ObjectHideFlags: 0
