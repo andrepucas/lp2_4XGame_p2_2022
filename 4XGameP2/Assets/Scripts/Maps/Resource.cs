@@ -1,26 +1,33 @@
 /// <summary>
-/// Contains all the generic info about this individual resource.
+/// Contains all info about an individual resource.
 /// </summary>
-public abstract class Resource
+public class Resource
 {
     /// <summary>
     /// Read only self implemented property that stores the name of this
     /// resource.
     /// </summary>
     /// <value>Name of the resource.</value>
-    public abstract string Name { get; }
+    public string Name { get; }
 
     /// <summary>
     /// Read only self implemented property that stores the coin value of this
     /// resource.
     /// </summary>
     /// <value>Coin value of the resource.</value>
-    public abstract int Coin { get; }
+    public int Coin { get; }
 
     /// <summary>
     /// Read only self implemented property that stores the food value of this 
     /// resource.
     /// </summary>
     /// <value>Food of the resource.</value>
-    public abstract int Food { get; }
+    public int Food { get; }
+
+    public Resource(string p_name, int p_coin, int p_food)
+    {
+        Name = p_name;
+        Coin = p_coin;
+        Food = p_food;
+    }
 }

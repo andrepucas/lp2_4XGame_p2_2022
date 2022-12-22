@@ -101,9 +101,9 @@ public class MapCell : MonoBehaviour
         foreach (Resource resource in _tile.Resources)
         {
             // Checks it's type.
-            switch (resource)
+            switch (resource.Name)
             {
-                case AnimalsResource:
+                case "Animals":
 
                     // Enables game object that corresponds to the animals image.
                     _resourceObjs[0].SetActive(true);
@@ -113,7 +113,7 @@ public class MapCell : MonoBehaviour
 
                     break;
 
-                case FossilFuelResource:
+                case "Fossil Fuel":
 
                     // Enables game object that corresponds to the fossil fuel image.
                     _resourceObjs[1].SetActive(true);
@@ -123,7 +123,7 @@ public class MapCell : MonoBehaviour
 
                     break;
 
-                case LuxuryResource:
+                case "Luxury":
 
                     // Enables game object that corresponds to the luxury image.
                     _resourceObjs[2].SetActive(true);
@@ -133,7 +133,7 @@ public class MapCell : MonoBehaviour
 
                     break;
 
-                case MetalsResource:
+                case "Metals":
 
                     // Enable game object that corresponds to the metals image.
                     _resourceObjs[3].SetActive(true);
@@ -143,7 +143,7 @@ public class MapCell : MonoBehaviour
 
                     break;
 
-                case PlantsResource:
+                case "Plants":
 
                     // Enable game object that corresponds to the plants image.
                     _resourceObjs[4].SetActive(true);
@@ -153,7 +153,7 @@ public class MapCell : MonoBehaviour
 
                     break;
 
-                case PollutionResource:
+                case "Pollution":
 
                     // Enable game object that corresponds to the pollution image.
                     _resourceObjs[5].SetActive(true);

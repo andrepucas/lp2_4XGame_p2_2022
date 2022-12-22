@@ -106,12 +106,18 @@ public class MapData : IComparable<MapData>
     {
         // Holds one line of the file.
         string m_line;
-        
-        // Line index where a comment (#) is found.
-        int m_commentIndex;
 
         // Array of all string found in a line.
         string[] m_lineStrings;
+
+        // Line index where a comment (#) is found.
+        int m_commentIndex;
+
+        // Counts how many terrains/resources are checked.
+        int m_checkCount;
+
+        // Holds reference to a specific terrain/resource preset values.
+        TileValues m_tileValues;
 
         // Iterates all file data info. 
         // Skips first line, which was already handled in constructor.
@@ -136,8 +142,8 @@ public class MapData : IComparable<MapData>
             // Splits line into individual strings, separated by spaces.
             m_lineStrings = m_line.ToLower().Trim().Split();
 
-            // Counts how many terrains are checked.
-            int m_terrainCheckCount = 0;
+            // Reset check count.
+            m_checkCount = 0;
 
             // Compares first string (terrain) with all possible terrains.
             for (int t = 0; t < p_tilesData.Terrains.Length; t++)
@@ -145,109 +151,59 @@ public class MapData : IComparable<MapData>
                 // If it's found.
                 if (m_lineStrings[0] == p_tilesData.Terrains[t].RawName)
                 {
-                    // Initializes a Game Tile with the preset values, 
-                    // and adds it to the list.
-                    GameTiles.Insert(i - _linesToIgnore, new GameTile());
+                    // Temporarily holds that terrain's preset values.
+                    m_tileValues = p_tilesData.Terrains[t];
+
+                    // Initializes and adds a Game Tile with its preset values
+                    // to the list.
+                    GameTiles.Insert(i - _linesToIgnore, new GameTile(
+                        m_tileValues.Name,
+                        m_tileValues.Coin,
+                        m_tileValues.Food));
+
                     break;
                 }
 
-                m_terrainCheckCount++;
+                m_checkCount++;
             }
 
             // If the terrain wasn't found, increment lines to ignore.
-            if (m_terrainCheckCount == p_tilesData.Terrains.Length)
+            if (m_checkCount == p_tilesData.Terrains.Length)
                 _linesToIgnore++;
-            
-            // // Handles and instantiates the game tile (first string).
-            // switch (m_lineStrings[0])
-            // {
-            //     case "desert":
 
-            //         // Adds a new desert tile to the game tiles list.
-            //         GameTiles.Insert(i - _linesToIgnore, new DesertTile());
-            //         break;
-
-            //     case "hills":
-
-            //         // Adds a new hills tile to the game tiles list.
-            //         GameTiles.Insert(i - _linesToIgnore, new HillsTile());
-            //         break;
-
-            //     case "mountain":
-
-            //         // Adds a new mountain tile to the game tiles list.
-            //         GameTiles.Insert(i - _linesToIgnore, new MountainTile());
-            //         break;
-
-            //     case "plains":
-
-            //         // Adds a new plains tile to the game tiles list.
-            //         GameTiles.Insert(i - _linesToIgnore, new PlainsTile());
-            //         break;
-
-            //     case "water":
-
-            //         // Adds a new water tile to the game tiles list.
-            //         GameTiles.Insert(i - _linesToIgnore, new WaterTile());
-            //         break;
-
-            //     // In case none of the keywords are found.
-            //     default: 
-                
-            //         _linesToIgnore++;
-            //         continue;
-            // }
-
-            // If there are more strings in that line.
+            // If there are more strings in that line, check for resources.
             if (m_lineStrings.Length > 0)
             {
-                // Iterates each one, starting on the second one, the first resource.
+                // Iterates each string, starting by the 2nd, the first resource.
                 for (int s = 1; s < m_lineStrings.Length; s++)
                 {
-                    // Handles and instantiates the resource.
-                    switch (m_lineStrings[s])
+                    m_checkCount = 0;
+
+                    // Compares it with all possible resources.
+                    for (int r = 0; r < p_tilesData.Resources.Length; r++)
                     {
-                        case "plants":
+                        // If it's found.
+                        if (m_lineStrings[s] == p_tilesData.Resources[r].RawName)
+                        {
+                            // Temporarily holds that resource's preset values.
+                            m_tileValues = p_tilesData.Resources[r];
 
-                            // Adds a new plants resource to the game tile.
-                            GameTiles[i - _linesToIgnore].AddResource(new PlantsResource());
+                            // Initializes and adds a Resource with its preset
+                            // values to the resources list, in this game tile.
+                            GameTiles[i - _linesToIgnore].AddResource(new Resource(
+                                m_tileValues.Name,
+                                m_tileValues.Coin,
+                                m_tileValues.Food));
+
                             break;
+                        }
 
-                        case "animals":
-
-                            // Adds a new animals resource to the game tile.
-                            GameTiles[i - _linesToIgnore].AddResource(new AnimalsResource());
-                            break;
-
-                        case "metals":
-
-                            // Adds a new metals resource to the game tile.
-                            GameTiles[i - _linesToIgnore].AddResource(new MetalsResource());
-                            break;
-
-                        case "fossilfuel":
-
-                            // Adds a new fossil fuel resource to the game tile.
-                            GameTiles[i - _linesToIgnore].AddResource(new FossilFuelResource());
-                            break;
-
-                        case "luxury":
-
-                            // Adds a new luxury resource to the game tile.
-                            GameTiles[i - _linesToIgnore].AddResource(new LuxuryResource());
-                            break;
-
-                        case "pollution":
-
-                            // Adds a new pollution resource to the game tile.
-                            GameTiles[i - _linesToIgnore].AddResource(new PollutionResource());
-                            break;
-
-                        default: 
-
-                            _failedResource = true;
-                            continue;
+                        m_checkCount++;
                     }
+
+                    // If the resource wasn't found, set as a failed resource.
+                    if (m_checkCount == p_tilesData.Resources.Length)
+                        _failedResource = true;
                 }
             }
         }

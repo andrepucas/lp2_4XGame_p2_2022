@@ -2,56 +2,93 @@ using System.Collections.Generic;
 
 /// <summary>
 /// <c>Game Tile</c> Class.
-/// Contains all the generic info about each individual game tile.
+/// Contains all info about each individual game tile.
 /// </summary>
-public abstract class GameTile
+public class GameTile
 {
     /// <summary>
     /// Read only self implemented property that stores the name of the tile.
     /// </summary>
     /// <value>Name of the tile.</value>
-    public abstract string Name { get; }
+    public string Name { get; }
 
     /// <summary>
     /// Read only self implemented property that stores the base coin value of 
     /// this game tile.
     /// </summary>
     /// <value>Base Coin of the game tile.</value>
-    public abstract int BaseCoin { get; }
+    public int BaseCoin { get; }
 
     /// <summary>
     /// Read only self implemented property that stores the base food value of 
     /// this game tile.
     /// </summary>
     /// <value>Base Food of the game tile.</value>
-    public abstract int BaseFood { get; }
+    public int BaseFood { get; }
 
     /// <summary>
-    /// Self implemented property that stores the total coin value of this game
-    /// tile.
+    /// Read only property that stores the total coin value of this game tile,
+    /// based on it's resources and base value.
     /// </summary>
     /// <value>Total Coin value of the game tile.</value>
-    public abstract int Coin { get; protected set; }
+    public int Coin 
+    {
+        get
+        {
+            int resourcesCoinSum = 0;
+
+            foreach (Resource r in Resources)
+                resourcesCoinSum += r.Coin;
+
+            return BaseCoin + resourcesCoinSum;
+        }
+    }
 
     /// <summary>
-    /// Self implemented property that stores the total food value of this game 
-    /// tile.
+    /// Read only property that stores the total food value of this game tile,
+    /// based on it's resources and base value.
     /// </summary>
     /// <value>Total Food of the game tile.</value>
-    public abstract int Food { get; protected set; }
+    public int Food
+    {
+        get
+        {
+            int resourcesFoodSum = 0;
+
+            foreach (Resource r in Resources)
+                resourcesFoodSum += r.Food;
+
+            return BaseFood + resourcesFoodSum;
+        }
+    }
 
     /// <summary>
     /// Read only self implemented property that stores all the current resources
     /// of this game tile.
     /// </summary>
     /// <value>Current resources of the game tile.</value>
-    public abstract ICollection<Resource> Resources { get; }
+    public IReadOnlyCollection<Resource> Resources => resourceList;
+
+    /// <summary>
+    /// Creates a list of the Resource type.
+    /// </summary>
+    /// <typeparam name="Resource">Resources present in game tiles.</typeparam>
+    /// <returns>Stores resources in current tile.</returns>
+    private List<Resource> resourceList = new List<Resource>();
+
+    //
+    public GameTile(string p_name, int p_coin, int p_food)
+    {
+        Name = p_name;
+        BaseCoin = p_coin;
+        BaseFood = p_food;
+    }
 
     /// <summary>
     /// Adds a resource to tile resource ICollection.
     /// </summary>
     /// <param name="resource">Resource to add to tile.</param>
-    public abstract void AddResource(Resource resource);
+    public void AddResource(Resource resource) => resourceList.Add(resource);
 
     /// <summary>
     /// Shows all of the tile's important information.

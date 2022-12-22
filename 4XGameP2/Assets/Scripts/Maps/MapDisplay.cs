@@ -124,9 +124,9 @@ public class MapDisplay : MonoBehaviour
         foreach (GameTile tile in p_map.GameTiles)
         {
             // Checks the Type of each game tile.
-            switch (tile)
+            switch (tile.Name)
             {
-                case DesertTile:
+                case "Desert":
 
                     // Instantiates a Desert Cell as a child of this game object.
                     m_mapCell = 
@@ -134,7 +134,7 @@ public class MapDisplay : MonoBehaviour
 
                     break;
 
-                case HillsTile:
+                case "Hills":
 
                     // Instantiates a Hills Cell as a child of this game object.
                     m_mapCell = 
@@ -142,7 +142,7 @@ public class MapDisplay : MonoBehaviour
 
                     break;
 
-                case MountainTile:
+                case "Mountain":
 
                     // Instantiates a Mountain Cell as a child of this game object.
                     m_mapCell = 
@@ -150,7 +150,7 @@ public class MapDisplay : MonoBehaviour
 
                     break;
 
-                case PlainsTile:
+                case "Plains":
 
                     // Instantiates a Plains Cell as a child of this game object.
                     m_mapCell = 
@@ -158,7 +158,7 @@ public class MapDisplay : MonoBehaviour
 
                     break;
 
-                case WaterTile:
+                case "Water":
 
                     // Instantiates a Water Cell as a child of this game object.
                     m_mapCell = 
