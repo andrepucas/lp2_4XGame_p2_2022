@@ -7,12 +7,6 @@ using UnityEngine;
 /// </summary>
 public class Controller : MonoBehaviour
 {
-    /// <summary>
-    /// Event raised when a analytics button is pressed. 
-    /// Included its index and map data.
-    /// </summary>
-    public static event Action<int, MapData> OnAnalytics;
-
     // Serialized variables.
     [Tooltip("Reference to map display component.")]
     [SerializeField] private MapDisplay _mapDisplay;
@@ -30,7 +24,6 @@ public class Controller : MonoBehaviour
 
     // Control variables for managing game states.
     private bool _isMapDisplayed;
-    private bool _inAnalytics;
 
     /// <summary>
     /// Unity method, program starts here.
@@ -186,16 +179,6 @@ public class Controller : MonoBehaviour
                     _userInterface.ChangeUIState(UIStates.DISPLAY_MAP);
                 }
 
-                // If currently viewing Analytics data.
-                else if (_inAnalytics)
-                {
-                    // Updates analytics control variable.
-                    _inAnalytics = false;
-
-                    // Sets UI state to resume from analytics.
-                    _userInterface.ChangeUIState(UIStates.RESUME_FROM_ANALYTICS);
-                }
-
                 // Otherwise, Sets UI state to resume from inspector.
                 else _userInterface.ChangeUIState(UIStates.RESUME_FROM_INSPECTOR);
 
@@ -203,11 +186,8 @@ public class Controller : MonoBehaviour
 
             case GameStates.PAUSE:
 
-                // If in analytics, sets UI state to analytics.
-                if (_inAnalytics) _userInterface.ChangeUIState(UIStates.ANALYTICS);
-
-                // Else, sets UI state to inspector.
-                else _userInterface.ChangeUIState(UIStates.INSPECTOR);
+                // Sets UI state to inspector.
+                _userInterface.ChangeUIState(UIStates.INSPECTOR);
 
                 break;
         }
@@ -253,25 +233,5 @@ public class Controller : MonoBehaviour
 
         // If not, display warning.
         else _warnings.DisplayInvalidFilesWarning();
-    }
-
-    /// <summary>
-    /// Sets game state to Pause and sends out Analytics data.
-    /// </summary>
-    /// <param name="p_index">Button number clicked.</param>
-    /// <remarks>
-    /// Called by the '1', '2', '3', '4' and '5' Unity buttons, 
-    /// in the gameplay panel.
-    /// </remarks>
-    public void OnAnalyticsButton(int p_index)
-    {
-        // Updates analytics control variable.
-        _inAnalytics = true;
-
-        // Sets game state to Pause.
-        ChangeGameState(GameStates.PAUSE);
-
-        // Raises event that controller has enabled analytics.
-        OnAnalytics(p_index, _selectedMap);
     }
 }

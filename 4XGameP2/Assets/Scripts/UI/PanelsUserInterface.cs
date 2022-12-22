@@ -26,8 +26,6 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
     [SerializeField] private UIPanelMapDisplay _mapDisplay;
     [Tooltip("Inspector panel.")]
     [SerializeField] private UIPanelInspector _inspector;
-    [Tooltip("Analytics panel.")]
-    [SerializeField] private UIPanelAnalytics _analytics;
 
     // Color that holds the background image color.
     private Color _bgColor;
@@ -97,14 +95,6 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
 
                 break;
 
-            case UIStates.ANALYTICS:
-
-                // Closes Gameplay panel and opens Analytics panel.
-                _gameplay.ClosePanel();
-                _analytics.OpenPanel();
-
-                break;
-
             case UIStates.RESUME_FROM_INSPECTOR:
 
                 // Closes Inspector panel and opens Gameplay panel.
@@ -113,13 +103,6 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
 
                 break;
 
-            case UIStates.RESUME_FROM_ANALYTICS:
-
-                // Closes Analytics panel and opens Gameplay panel.
-                _analytics.ClosePanel(_panelTransitionTime);
-                _gameplay.OpenPanel(_panelTransitionTime);
-
-                break;
         }
     }
 
@@ -133,7 +116,6 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
         _gameplay.SetupPanel();
         _mapDisplay.SetupPanel();
         _inspector.SetupPanel();
-        _analytics.SetupPanel();
     }
 
     /// <summary>
