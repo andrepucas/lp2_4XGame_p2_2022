@@ -12,6 +12,9 @@ public class Controller : MonoBehaviour
     [SerializeField] private MapDisplay _mapDisplay;
     [Tooltip("UI Warnings reference")]
     [SerializeField] private UIWarnings _warnings;
+    [Header("MAP TILES DATA")]
+    [Tooltip("Scriptable Object with all Map Tiles Data")]
+    [SerializeField] private MapTilesDataSO _data;
 
     // Reference to the generic User Interface.
     private IUserInterface _userInterface;
@@ -219,7 +222,7 @@ public class Controller : MonoBehaviour
         _selectedMap = p_map;
 
         // Loads tiles' data inside the selected map.
-        _selectedMap.LoadGameTilesData();
+        _selectedMap.LoadGameTilesData(_data);
     }
 
     /// <summary>

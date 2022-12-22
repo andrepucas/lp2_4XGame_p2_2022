@@ -102,7 +102,7 @@ public class MapData : IComparable<MapData>
     /// <summary>
     /// Converts the data from the file into game tile objects and saves it.
     /// </summary>
-    public void LoadGameTilesData()
+    public void LoadGameTilesData(MapTilesDataSO p_tilesData)
     {
         // Holds one line of the file.
         string m_line;
@@ -134,47 +134,69 @@ public class MapData : IComparable<MapData>
             }
 
             // Splits line into individual strings, separated by spaces.
-            m_lineStrings = m_line.Trim().Split();
+            m_lineStrings = m_line.ToLower().Trim().Split();
 
-            // Handles and instantiates the game tile (first string).
-            switch (m_lineStrings[0])
+            // Counts how many terrains are checked.
+            int m_terrainCheckCount = 0;
+
+            // Compares first string (terrain) with all possible terrains.
+            for (int t = 0; t < p_tilesData.Terrains.Length; t++)
             {
-                case "desert":
-
-                    // Adds a new desert tile to the game tiles list.
-                    GameTiles.Insert(i - _linesToIgnore, new DesertTile());
+                // If it's found.
+                if (m_lineStrings[0] == p_tilesData.Terrains[t].RawName)
+                {
+                    // Initializes a Game Tile with the preset values, 
+                    // and adds it to the list.
+                    GameTiles.Insert(i - _linesToIgnore, new GameTile());
                     break;
+                }
 
-                case "hills":
-
-                    // Adds a new hills tile to the game tiles list.
-                    GameTiles.Insert(i - _linesToIgnore, new HillsTile());
-                    break;
-
-                case "mountain":
-
-                    // Adds a new mountain tile to the game tiles list.
-                    GameTiles.Insert(i - _linesToIgnore, new MountainTile());
-                    break;
-
-                case "plains":
-
-                    // Adds a new plains tile to the game tiles list.
-                    GameTiles.Insert(i - _linesToIgnore, new PlainsTile());
-                    break;
-
-                case "water":
-
-                    // Adds a new water tile to the game tiles list.
-                    GameTiles.Insert(i - _linesToIgnore, new WaterTile());
-                    break;
-
-                // In case none of the keywords are found.
-                default: 
-                
-                    _linesToIgnore++;
-                    continue;
+                m_terrainCheckCount++;
             }
+
+            // If the terrain wasn't found, increment lines to ignore.
+            if (m_terrainCheckCount == p_tilesData.Terrains.Length)
+                _linesToIgnore++;
+            
+            // // Handles and instantiates the game tile (first string).
+            // switch (m_lineStrings[0])
+            // {
+            //     case "desert":
+
+            //         // Adds a new desert tile to the game tiles list.
+            //         GameTiles.Insert(i - _linesToIgnore, new DesertTile());
+            //         break;
+
+            //     case "hills":
+
+            //         // Adds a new hills tile to the game tiles list.
+            //         GameTiles.Insert(i - _linesToIgnore, new HillsTile());
+            //         break;
+
+            //     case "mountain":
+
+            //         // Adds a new mountain tile to the game tiles list.
+            //         GameTiles.Insert(i - _linesToIgnore, new MountainTile());
+            //         break;
+
+            //     case "plains":
+
+            //         // Adds a new plains tile to the game tiles list.
+            //         GameTiles.Insert(i - _linesToIgnore, new PlainsTile());
+            //         break;
+
+            //     case "water":
+
+            //         // Adds a new water tile to the game tiles list.
+            //         GameTiles.Insert(i - _linesToIgnore, new WaterTile());
+            //         break;
+
+            //     // In case none of the keywords are found.
+            //     default: 
+                
+            //         _linesToIgnore++;
+            //         continue;
+            // }
 
             // If there are more strings in that line.
             if (m_lineStrings.Length > 0)
