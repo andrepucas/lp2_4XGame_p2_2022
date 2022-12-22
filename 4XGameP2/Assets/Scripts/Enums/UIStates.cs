@@ -8,7 +8,5 @@ public enum UIStates
     LOAD_MAP,
     DISPLAY_MAP,
     INSPECTOR,
-    ANALYTICS,
     RESUME_FROM_INSPECTOR,
-    RESUME_FROM_ANALYTICS
 }
