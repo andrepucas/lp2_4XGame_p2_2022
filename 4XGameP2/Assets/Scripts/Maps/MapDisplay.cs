@@ -90,7 +90,6 @@ public class MapDisplay : MonoBehaviour
     public void GenerateMap(MapData p_map)
     {
         Vector2 m_newCellSize;
-        MapCell m_mapCell;
 
         // Enables grid generation components.
         _contentSizeFitter.enabled = true;
@@ -120,62 +119,19 @@ public class MapDisplay : MonoBehaviour
         // Constraints the grid layout group to a max of X columns.
         _gridLayout.constraintCount = p_map.XCols;
 
+        // DEBUG: Time when map starts being generated.
+        DateTime m_startTime = DateTime.Now;
+
         // Iterates every game tile in Map Data.
         foreach (GameTile tile in p_map.GameTiles)
         {
-            // Checks the Type of each game tile.
-            switch (tile.Name)
-            {
-                case "Desert":
-
-                    // Instantiates a Desert Cell as a child of this game object.
-                    m_mapCell = 
-                        Instantiate(_desertCell, transform).GetComponent<MapCell>();
-
-                    break;
-
-                case "Hills":
-
-                    // Instantiates a Hills Cell as a child of this game object.
-                    m_mapCell = 
-                        Instantiate(_hillsCell, transform).GetComponent<MapCell>();
-
-                    break;
-
-                case "Mountain":
-
-                    // Instantiates a Mountain Cell as a child of this game object.
-                    m_mapCell = 
-                        Instantiate(_mountainCell, transform).GetComponent<MapCell>();
-
-                    break;
-
-                case "Plains":
-
-                    // Instantiates a Plains Cell as a child of this game object.
-                    m_mapCell = 
-                        Instantiate(_plainsCell, transform).GetComponent<MapCell>();
-
-                    break;
-
-                case "Water":
-
-                    // Instantiates a Water Cell as a child of this game object.
-                    m_mapCell = 
-                        Instantiate(_waterCell, transform).GetComponent<MapCell>();
-
-                    break;
-
-                default: 
-
-                    Debug.LogWarning("Something went wrong generating the map.");
-                    m_mapCell = null;
-                    break;
-            }
-
-            // Initialize the map cell.
-            m_mapCell.Initialize(tile);
+            // Instantiates a Cell as a child of this game object.
+            Instantiate(_desertCell, transform).GetComponent<MapCell>().
+                Initialize(tile);
         }
+
+        // DEBUG: Displays time map took to generate.
+        Debug.Log("Map generated in: " + (DateTime.Now - m_startTime));
 
         // Raise event that map was generated.
         OnMapGenerated?.Invoke();

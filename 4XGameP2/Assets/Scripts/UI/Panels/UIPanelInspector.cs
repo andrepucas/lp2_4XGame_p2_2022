@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -21,35 +22,36 @@ public class UIPanelInspector : UIPanel
     [Header("ANIMATOR")]
     [Tooltip("Animator component of info sub-panel.")]
     [SerializeField] private Animator _subPanelAnim;
-    [Header("IMAGES DISPLAY")]
+    [Header("IMAGES")]
     [Tooltip("Image component of tile terrain.")]
     [SerializeField] private Image _tileImage;
-    [Tooltip("Image components of tile resources.")]
-    [SerializeField] private Image[] _resourcesImages;
-    [Header("GENERAL DISPLAY")]
+    [Tooltip("Parent game object of resource images.")]
+    [SerializeField] private Transform _resourceImagesFolder;
+    [Tooltip("Prefab of resource image.")]
+    [SerializeField] private GameObject _resourceImagePrefab;
+    [Header("DATA")]
+    [Tooltip("Parent game object of data.")]
+    [SerializeField] private Transform _dataFolder;
     [Tooltip("Text component of tile name.")]
     [SerializeField] private TMP_Text _tileNameTxt;
     [Tooltip("Text component of tile resources count.")]
     [SerializeField] private TMP_Text _tileResourcesCountTxt;
-    [Tooltip("Game objects of toggeable resources names.")]
-    [SerializeField] private GameObject[] _resourcesNamesObjs;
-    [Header("COIN DISPLAY")]
+    [Tooltip("Prefab of resource inspect data.")]
+    [SerializeField] private GameObject _rInspectPrefab;
+    [Tooltip("Toggeable empty space.")]
+    [SerializeField] private GameObject _emptySpace;
+    [Header("COIN")]
     [Tooltip("Text component of tile base coin.")]
     [SerializeField] private TMP_Text _tileBaseCoinTxt;
     [Tooltip("Text component of tile total coin.")]
     [SerializeField] private TMP_Text _tileTotalCoinTxt;
-    [Tooltip("Game objects of toggeable resources coin values.")]
-    [SerializeField] private GameObject[] _resourcesCoinObjs;
-    [Header("FOOD DISPLAY")]
+    [Header("FOOD")]
     [Tooltip("Text component of tile base food.")]
     [SerializeField] private TMP_Text _tileBaseFoodTxt;
     [Tooltip("Text component of tile total food.")]
     [SerializeField] private TMP_Text _tileTotalFoodTxt;
-    [Tooltip("Game objects of toggeable resources food values.")]
-    [SerializeField] private GameObject[] _resourcesFoodObjs;
-    [Header("EMPTY GRID SPACES")]
-    [Tooltip("Game objects of toggeable empty spaces.")]
-    [SerializeField] private GameObject[] _emptySpaces;
+
+    private List<GameObject> _displayedRData;
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
@@ -64,7 +66,11 @@ public class UIPanelInspector : UIPanel
     /// <summary>
     /// Sets up panel.
     /// </summary>
-    public void SetupPanel() => ClosePanel();
+    public void SetupPanel()
+    {
+        _displayedRData = new List<GameObject>();
+        ClosePanel();
+    }
 
     /// <summary>
     /// Reveals panel.
@@ -91,19 +97,18 @@ public class UIPanelInspector : UIPanel
         // Hides the panel.
         base.Close(p_transitionTime);
 
-        // Disables empty grid spaces.
-        for (int i = 0; i < _emptySpaces.Length; i++)
-            _emptySpaces[i].SetActive(true);
+        // Disables empty grid space.
+        _emptySpace.SetActive(false);
 
-        // Loops length of possible existing resources (6, for now).
-        for (int i = 0; i < _resourcesImages.Length; i++)
-        {
-            // Disables sprite, name, coin and food data.
-            _resourcesImages[i].gameObject.SetActive(false);
-            _resourcesNamesObjs[i].SetActive(false);
-            _resourcesCoinObjs[i].SetActive(false);
-            _resourcesFoodObjs[i].SetActive(false);
-        }
+        // Destroy all resource data that might be instantiated.
+        foreach (GameObject resourceData in _displayedRData)
+            Destroy(resourceData);
+
+        // Destroy all resource images that might be instantiated.
+        foreach (Transform resourceImage in _resourceImagesFolder)
+            Destroy(resourceImage.gameObject);
+
+        _displayedRData.Clear();
     }
 
     /// <summary>
@@ -112,14 +117,14 @@ public class UIPanelInspector : UIPanel
     /// <param name="p_tile">Game tile clicked.</param>
     /// <param name="p_baseSprite">Tile's terrain sprite.</param>
     /// <param name="p_resourceSprites">Tile's resources sprites.</param>
-    private void DisplayData(GameTile p_tile, Sprite p_baseSprite, 
-        Sprite[] p_resourceSprites)
+    private void DisplayData(GameTile p_tile, 
+        List<Sprite> p_resourceSprites)
     {
         // Displays tile name.
         _tileNameTxt.text = p_tile.Name;
 
         // Displays tile view sprite to match the base clicked cell.
-        _tileImage.sprite = p_baseSprite;
+        _tileImage.sprite = p_tile.Sprites[0];
 
         // Displays base coin and food values of the tile.
         _tileBaseCoinTxt.text = p_tile.BaseCoin.ToString();
@@ -136,25 +141,34 @@ public class UIPanelInspector : UIPanel
         // If there are resources.
         if (p_tile.Resources.Count > 0)
         {
-            // Enables empty grid spaces.
-            for (int i = 0; i < _emptySpaces.Length; i++)
-                _emptySpaces[i].SetActive(true);
+            GameObject m_resourceDataObj;
+            TMP_Text[] m_textData;
+            Resource m_resource;
+            
+            // Enables empty grid space.
+            _emptySpace.SetActive(true);
 
-            // Loops length of possible existing resources (6, for now).
-            for (int i = 0; i < _resourcesImages.Length; i++)
+            // Iterates existing resources.
+            for (int i = 0; i < p_tile.Resources.Count; i++)
             {
-                // If this resource exists in the clicked cell.
-                if (p_resourceSprites[i] != null)
-                {
-                    // Syncs sprites.
-                    _resourcesImages[i].sprite = p_resourceSprites[i];
+                // Instantiates and adds a Resource Data Object to grid.
+                m_resourceDataObj = Instantiate(_rInspectPrefab, _dataFolder);
+                _displayedRData.Add(m_resourceDataObj);
 
-                    // Enables sprite, name, coin and food data.
-                    _resourcesImages[i].gameObject.SetActive(true);
-                    _resourcesNamesObjs[i].SetActive(true);
-                    _resourcesCoinObjs[i].SetActive(true);
-                    _resourcesFoodObjs[i].SetActive(true);
-                }
+                // Accesses text components of data object (name, coin and food).
+                m_textData = m_resourceDataObj.GetComponentsInChildren<TMP_Text>();
+
+                // Temporarily holds resource reference.
+                m_resource = p_tile.Resources[i];
+
+                // Displays resource's name, coin and food values.
+                m_textData[0].text = "- " + m_resource.Name.ToUpper();
+                m_textData[1].text = m_resource.Coin.ToString("+ 0;- 0;0");
+                m_textData[2].text = m_resource.Food.ToString("+ 0;- 0;0");
+
+                // Instantiates and updates resource sprite.
+                Instantiate(_resourceImagePrefab, _resourceImagesFolder).
+                    GetComponent<Image>().sprite = p_resourceSprites[i];
             }
         }
     }

@@ -7,10 +7,13 @@ using UnityEngine;
 /// </summary>
 public class MapData : IComparable<MapData>
 {
-    public static event Action<bool> OnValidLoadedData;
-    
     /// <summary>
-    /// Public set self implemented property that holds the map name.
+    /// Event raised when data finishes loading. True if data is valid.
+    /// </summary>
+    public static event Action<bool> OnValidLoadedData;
+
+    /// <summary>
+    /// Public self implemented property that holds the map name.
     /// </summary>
     /// <value>Name of the map.</value>
     public string Name {get; set;}
@@ -63,7 +66,7 @@ public class MapData : IComparable<MapData>
 
         _linesToIgnore = 0;
 
-        // Continuos loop to check initial lines.
+        // Continuous loop to check initial lines.
         while (true)
         {
             // If it's empty or starts with a comment, increment lines to ignore
@@ -92,7 +95,8 @@ public class MapData : IComparable<MapData>
             _linesToIgnore++;
         }
 
-        // If the conversion isn't possible, this is an invalid map.
+        // If the conversion isn't possible, do nothing.
+        // It will be recognized as an invalid map later.
 
         // Saves name and data according to parameters.
         Name = p_name;
@@ -107,10 +111,10 @@ public class MapData : IComparable<MapData>
     /// </summary>
     public void LoadGameTilesData(MapTilesDataSO p_tilesData)
     {
-        // Holds one line of the file.
+        // Holds a file line at a time.
         string m_line;
 
-        // Array of all string found in a line.
+        // Array of all strings in a line.
         string[] m_lineStrings;
 
         // Line index where a comment (#) is found.
@@ -120,13 +124,13 @@ public class MapData : IComparable<MapData>
         int m_checkCount;
 
         // Holds reference to a specific terrain/resource preset values.
-        TileValues m_tileValues;
+        PresetValues m_tileValues;
 
-        // Controls whether all resources were read or not.
+        // Controls whether all resources were successfully read or not.
         bool _failedResource = false;
 
         // Iterates all file data info. 
-        // Skips first line, which was already handled in constructor.
+        // Skips ignored lines, already handled in constructor.
         for (int i = _linesToIgnore; i < Data.Count; i++)
         {
             // Saves the current line.
@@ -145,27 +149,28 @@ public class MapData : IComparable<MapData>
                 continue;
             }
 
-            // Splits line into individual strings, separated by spaces.
+            // Splits line into individual strings, by its spaces.
             m_lineStrings = m_line.ToLower().Trim().Split();
 
-            // Reset check count.
+            // Resets check count.
             m_checkCount = 0;
 
-            // Compares first string (terrain) with all possible terrains.
-            for (int t = 0; t < p_tilesData.Terrains.Length; t++)
+            // Iterates collection of all valid game terrains.
+            for (int t = 0; t < p_tilesData.Terrains.Count; t++)
             {
-                // If it's found.
+                // If the first word matches a valid terrain name.
                 if (m_lineStrings[0] == p_tilesData.Terrains[t].RawName)
                 {
                     // Temporarily holds that terrain's preset values.
                     m_tileValues = p_tilesData.Terrains[t];
 
-                    // Initializes and adds a Game Tile with its preset values
-                    // to the list.
+                    // Initializes and adds a Game Tile with its respective preset 
+                    // values to game tiles list.
                     _gameTilesList.Insert(i - _linesToIgnore, new GameTile(
                         m_tileValues.Name,
                         m_tileValues.Coin,
-                        m_tileValues.Food));
+                        m_tileValues.Food,
+                        m_tileValues.Sprites));
 
                     break;
                 }
@@ -174,32 +179,34 @@ public class MapData : IComparable<MapData>
             }
 
             // If the terrain wasn't found, increment lines to ignore.
-            if (m_checkCount == p_tilesData.Terrains.Length)
+            if (m_checkCount == p_tilesData.Terrains.Count)
                 _linesToIgnore++;
 
-            // If there are more strings in that line, check for resources.
+            // If there are more strings in this line, look for resources.
             if (m_lineStrings.Length > 0)
             {
-                // Iterates each string, starting by the 2nd, the first resource.
+                // Iterates each word, starting by the 2nd, the first resource.
                 for (int s = 1; s < m_lineStrings.Length; s++)
                 {
+                    // Resets check count.
                     m_checkCount = 0;
 
-                    // Compares it with all possible resources.
-                    for (int r = 0; r < p_tilesData.Resources.Length; r++)
+                    // Iterates all valid game resources.
+                    for (int r = 0; r < p_tilesData.Resources.Count; r++)
                     {
-                        // If it's found.
+                        // If this word matches a valid resource name.
                         if (m_lineStrings[s] == p_tilesData.Resources[r].RawName)
                         {
                             // Temporarily holds that resource's preset values.
                             m_tileValues = p_tilesData.Resources[r];
 
-                            // Initializes and adds a Resource with its preset
-                            // values to the resources list, in this game tile.
+                            // Initializes and adds a Resource with its respective 
+                            // preset values to the resources list, in this tile.
                             GameTiles[i - _linesToIgnore].AddResource(new Resource(
                                 m_tileValues.Name,
                                 m_tileValues.Coin,
-                                m_tileValues.Food));
+                                m_tileValues.Food,
+                                p_tilesData.GetSpriteDictOf(m_tileValues.Name)));
 
                             break;
                         }
@@ -208,26 +215,23 @@ public class MapData : IComparable<MapData>
                     }
 
                     // If the resource wasn't found, set as a failed resource.
-                    if (m_checkCount == p_tilesData.Resources.Length)
+                    if (m_checkCount == p_tilesData.Resources.Count)
                         _failedResource = true;
                 }
             }
         }
 
-        // If the map's dimensions don't match with the saved game tiles or
-        // if atleast one resource couldn't be read.
+        // If the map's dimensions don't match with the number of game tiles saved
+        // or if atleast one resource couldn't be read, raise invalid data event.
         if ((XCols * YRows) != GameTiles.Count || _failedResource)
-        {
-            Debug.Log("Invalid map, aborting.");
             OnValidLoadedData?.Invoke(false);
-        }
 
-        // If they do, the map is valid to load.
+        // Otherwise, this map is valid to be load.
         else OnValidLoadedData?.Invoke(true);
     }
 
     /// <summary>
-    /// Compares map data using the name string.
+    /// Compares map datas using the name string..
     /// </summary>
     /// <param name="other">Map data to compare.</param>
     /// <returns></returns>
