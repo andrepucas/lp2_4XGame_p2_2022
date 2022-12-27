@@ -44,7 +44,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: ca0005a508a0601419b494d56dcf714d, type: 3}
     - {fileID: 21300000, guid: 79d94f50b4515c346b3da103cde9fe54, type: 3}
   _resources:
-  - _name: Animals
+  - _name: animals
     _coin: 1
     _food: 3
     _sprites:
@@ -53,7 +53,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 976e73101290e7a4cbf70a1fc4ce0a94, type: 3}
     - {fileID: 21300000, guid: c3a3c512edd6eb846992de35d8944e3d, type: 3}
     - {fileID: 21300000, guid: 5285ea7c2ed94534dbac353eb037b0ff, type: 3}
-  - _name: Fossil Fuel
+  - _name: fossilfuel
     _coin: 5
     _food: -3
     _sprites:
@@ -62,7 +62,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: c109385220810fd4eac2284b0271a0b0, type: 3}
     - {fileID: 21300000, guid: c109385220810fd4eac2284b0271a0b0, type: 3}
     - {fileID: 21300000, guid: a6619f98dd97d044f9ba1f917a682682, type: 3}
-  - _name: Luxury
+  - _name: luxury
     _coin: 4
     _food: -1
     _sprites:
@@ -71,12 +71,12 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 64914c67a49de214e8ff8ddf8d1012fd, type: 3}
     - {fileID: 21300000, guid: 69d6ee6105172e84ab5c16adfe66ef3c, type: 3}
     - {fileID: 21300000, guid: a9ecb5906b2f7ad42b888138cbf0f930, type: 3}
-  - _name: Metals
+  - _name: metals
     _coin: 3
     _food: -1
     _sprites:
     - {fileID: 21300000, guid: dc53146f6eeae5947a855d59ed755a86, type: 3}
-  - _name: Plants
+  - _name: plants
     _coin: 1
     _food: 2
     _sprites:
@@ -85,17 +85,17 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 3df632d916b0ca54ca4f224279214550, type: 3}
     - {fileID: 21300000, guid: b377570be30aaee46ac8576bf12a9254, type: 3}
     - {fileID: 21300000, guid: f3de8ef16679da845bd7cf071a1de084, type: 3}
-  - _name: Bananas
+  - _name: bananas
     _coin: -3
     _food: -3
     _sprites:
     - {fileID: 21300000, guid: 509f137c48ec9234994092f6daade623, type: 3}
-  - _name: Apples
+  - _name: apples
     _coin: -3
     _food: -3
     _sprites:
     - {fileID: 21300000, guid: 509f137c48ec9234994092f6daade623, type: 3}
-  - _name: Pears
+  - _name: pears
     _coin: -3
     _food: -3
     _sprites:
