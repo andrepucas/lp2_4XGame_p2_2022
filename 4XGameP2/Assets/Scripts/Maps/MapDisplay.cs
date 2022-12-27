@@ -43,17 +43,9 @@ public class MapDisplay : MonoBehaviour
     private const float MAX_ZOOM_PER_CELL = 5;
 
     // Serialized.
-    [Header("CELL PREFABS")]
-    [Tooltip("Prefab of the base desert tile cell.")]
-    [SerializeField] private GameObject _desertCell;
-    [Tooltip("Prefab of the base hills tile cell.")]
-    [SerializeField] private GameObject _hillsCell;
-    [Tooltip("Prefab of the base mountain tile cell.")]
-    [SerializeField] private GameObject _mountainCell;
-    [Tooltip("Prefab of the base plains tile cell.")]
-    [SerializeField] private GameObject _plainsCell;
-    [Tooltip("Prefab of the base water tile cell.")]
-    [SerializeField] private GameObject _waterCell;
+    [Header("CELL PREFAB")]
+    [Tooltip("Prefab of a tile cell.")]
+    [SerializeField] private GameObject _cell;
 
     // Reference to the grid layout component.
     private GridLayoutGroup _gridLayout;
@@ -126,7 +118,7 @@ public class MapDisplay : MonoBehaviour
         foreach (GameTile tile in p_map.GameTiles)
         {
             // Instantiates a Cell as a child of this game object.
-            Instantiate(_desertCell, transform).GetComponent<MapCell>().
+            Instantiate(_cell, transform).GetComponent<MapCell>().
                 Initialize(tile);
         }
 
