@@ -85,7 +85,17 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 3df632d916b0ca54ca4f224279214550, type: 3}
     - {fileID: 21300000, guid: b377570be30aaee46ac8576bf12a9254, type: 3}
     - {fileID: 21300000, guid: f3de8ef16679da845bd7cf071a1de084, type: 3}
-  - _name: Pollution
+  - _name: Bananas
+    _coin: -3
+    _food: -3
+    _sprites:
+    - {fileID: 21300000, guid: 509f137c48ec9234994092f6daade623, type: 3}
+  - _name: Apples
+    _coin: -3
+    _food: -3
+    _sprites:
+    - {fileID: 21300000, guid: 509f137c48ec9234994092f6daade623, type: 3}
+  - _name: Pears
     _coin: -3
     _food: -3
     _sprites:
