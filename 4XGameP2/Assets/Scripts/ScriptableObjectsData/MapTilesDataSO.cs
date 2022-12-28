@@ -7,15 +7,28 @@ using UnityEngine;
 [System.Serializable]
 public struct PresetValues
 {
+    [Header("UNIVERSAL")]
+    [Tooltip("Name, as should be displayed.")]
     [SerializeField] private string _name;
+    [Tooltip("Coin base value.")]
     [SerializeField] private int _coin;
+    [Tooltip("Food base value.")]
     [SerializeField] private int _food;
+    [Tooltip("Sprites for this terrain/resource. Can never be null.\n" + 
+    "For terrains: 0 = default; 1 = hover variation\n" +
+    "For resources: terrain variations. (If it doesn't vary, only insert one. " +
+    "If at least one varies, specify variations for each terrain type.")]
     [SerializeField] private Sprite[] _sprites;
+    [Header("FOR RESOURCES ONLY")]
+    [Tooltip("Sprite that is to be displayed outside the cell's context. " + 
+    "Must be full-res.")]
+    [SerializeField] private Sprite _defaultSprite;
 
     public string Name => _name;
     public int Coin => _coin;
     public int Food => _food;
     public IReadOnlyList<Sprite> Sprites => _sprites;
+    public Sprite DefaultResourceSprite => _defaultSprite;
 
     // Get name in lowercase and without spaces.
     // https://stackoverflow.com/questions/6219454/efficient-way-to-remove-all-whitespace-from-string/30732794#30732794

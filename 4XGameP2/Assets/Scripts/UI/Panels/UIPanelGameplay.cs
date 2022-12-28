@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 
@@ -8,38 +9,43 @@ using System.Linq;
 /// </summary>
 public class UIPanelGameplay : UIPanel
 {
-
-    [SerializeField] private MapTilesDataSO _mapTilesData;
-    [SerializeField] private GameObject _mapResourceStat;
-    [SerializeField] private GameObject _resourcesStatLayout;
-    private MapData _mapData;
-
     /// <summary>
     /// Event raised when the the back to menu button is pressed.
     /// </summary>
     public static event Action OnRestart;
-
-    private void OnDisable()
-    {
-        
-    }
+    
+    // Serialized variables.
+    [Header("RESOURCES COUNT")]
+    [Tooltip("Parent game object of map resource's count.")]
+    [SerializeField] private Transform _resourceCountFolder;
+    [Tooltip("Prefab of individual map resource's count.")]
+    [SerializeField] private GameObject _mapResourceCount;
+    [Header("MAP DATA")]
+    [Tooltip("Scriptable Object with all Map Tiles Data")]
+    [SerializeField] private MapTilesDataSO _mapTilesData;
 
     /// <summary>
     /// Sets up panel.
     /// </summary>
     public void SetupPanel()
     {
-        foreach (String s in _mapTilesData.ResourceNames)
+        ClosePanel();
+
+        // Destroys any existing visual resource count objects, inside it's folder.
+        foreach (Transform f_child in _resourceCountFolder)
+            Destroy(f_child.gameObject);
+
+        // Iterates all possible resources' preset values.
+        foreach (PresetValues f_rValue in _mapTilesData.Resources)
         {
-            Instantiate(_mapResourceStat, _resourcesStatLayout.transform);
+            // Instantiates a visual resource count object and updates its sprite
+            // to match the resource's default sprite.
+            Instantiate(_mapResourceCount, _resourceCountFolder).
+                GetComponentInChildren<Image>().sprite = f_rValue.DefaultResourceSprite;
 
             // Mudar o text para o count de todos os recursos desse tipo
-            
         }
-
-        ClosePanel();
-    } 
-
+    }
 
     /// <summary>
     /// Reveals panel.
