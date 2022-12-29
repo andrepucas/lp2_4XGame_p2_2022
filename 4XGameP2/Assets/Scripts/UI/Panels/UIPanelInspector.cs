@@ -162,7 +162,7 @@ public class UIPanelInspector : UIPanel
                 m_resource = p_tile.Resources[i];
 
                 // Displays resource's name, coin and food values.
-                m_textData[0].text = "- " + m_resource.Name.ToUpper();
+                m_textData[0].text = "+ " + m_resource.Name.ToUpper();
                 m_textData[1].text = m_resource.Coin.ToString("+ 0;- 0;0");
                 m_textData[2].text = m_resource.Food.ToString("+ 0;- 0;0");
 
