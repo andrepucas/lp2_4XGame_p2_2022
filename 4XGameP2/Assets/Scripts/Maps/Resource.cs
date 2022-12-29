@@ -34,6 +34,8 @@ public class Resource : IComparable<Resource>
     /// </summary>
     public IReadOnlyDictionary<string, Sprite> SpritesDict {get;}
 
+    public Sprite DefaultSprite {get;}
+
     /// <summary>
     /// Constructor method. Sets properties' values.
     /// </summary>
@@ -41,13 +43,15 @@ public class Resource : IComparable<Resource>
     /// <param name="p_coin">Coin value.</param>
     /// <param name="p_food">Food value.</param>
     /// <param name="p_sprites">Sprite variations.</param>
+    /// <param name="p_defaultSprite">Default sprite for resource type.</param>
     public Resource(string p_name, int p_coin, int p_food, 
-        Dictionary<string, Sprite> p_sprites)
+        Dictionary<string, Sprite> p_sprites, Sprite p_defaultSprite)
     {
         Name = p_name;
         Coin = p_coin;
         Food = p_food;
         SpritesDict = p_sprites;
+        DefaultSprite = p_defaultSprite;
     }
 
     /// <summary>

@@ -206,7 +206,8 @@ public class MapData : IComparable<MapData>
                                 m_tileValues.Name,
                                 m_tileValues.Coin,
                                 m_tileValues.Food,
-                                p_tilesData.GetSpriteDictOf(m_tileValues.Name)));
+                                p_tilesData.GetSpriteDictOf(m_tileValues.Name),
+                                m_tileValues.DefaultResourceSprite));
 
                             break;
                         }

@@ -32,13 +32,11 @@ public class UIPanelGameplay : UIPanel
     /// </summary>
     private void OnEnable()
     {
-        Debug.Log(1);
         MapDisplay.OnMapGenerated += SetUpCounters;
     }
 
     private void OnDisable()
     {
-        Debug.Log(2);
         MapDisplay.OnMapGenerated -= SetUpCounters;
     }
 

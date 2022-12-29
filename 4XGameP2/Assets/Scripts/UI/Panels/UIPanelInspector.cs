@@ -155,6 +155,10 @@ public class UIPanelInspector : UIPanel
                 m_resourceDataObj = Instantiate(_rInspectPrefab, _dataFolder);
                 _displayedRData.Add(m_resourceDataObj);
 
+                // Update sprite to match the resource's default sprite.
+                m_resourceDataObj.GetComponentInChildren<Image>().sprite = 
+                    p_tile.Resources[i].DefaultSprite;
+
                 // Accesses text components of data object (name, coin and food).
                 m_textData = m_resourceDataObj.GetComponentsInChildren<TMP_Text>();
 
@@ -162,7 +166,7 @@ public class UIPanelInspector : UIPanel
                 m_resource = p_tile.Resources[i];
 
                 // Displays resource's name, coin and food values.
-                m_textData[0].text = "+ " + m_resource.Name.ToUpper();
+                m_textData[0].text = m_resource.Name.ToUpper();
                 m_textData[1].text = m_resource.Coin.ToString("+ 0;- 0;0");
                 m_textData[2].text = m_resource.Food.ToString("+ 0;- 0;0");
 
