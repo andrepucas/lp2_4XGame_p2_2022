@@ -10,7 +10,7 @@ public class MapDisplay : MonoBehaviour
     /// <summary>
     /// Event raised when the map finishes generating.
     /// </summary>
-    public event Action OnMapGenerated;
+    public static event Action<MapData> OnMapGenerated;
 
     /// <summary>
     /// Constant value of the max cell size in the Y axis.
@@ -126,7 +126,7 @@ public class MapDisplay : MonoBehaviour
         Debug.Log("Map generated in: " + (DateTime.Now - m_startTime));
 
         // Raise event that map was generated.
-        OnMapGenerated?.Invoke();
+        OnMapGenerated?.Invoke(p_map);
 
         // Disable grid components after 0.5 seconds.
         Invoke("DisableGridLayout", 0.5f);

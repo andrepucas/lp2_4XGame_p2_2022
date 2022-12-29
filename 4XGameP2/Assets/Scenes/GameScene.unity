@@ -3704,33 +3704,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _canvasGroup: {fileID: 828619966}
-  OnLoad:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 549203362}
-        m_TargetAssemblyTypeName: UIPanelGameplay, Assembly-CSharp
-        m_MethodName: UpdateLocalData
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 340072058}
-        m_TargetAssemblyTypeName: Controller, Assembly-CSharp
-        m_MethodName: TryToLoadMap
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
   _widgetsFolder: {fileID: 856551642}
   _mapFileWidget: {fileID: 4629194048996933020, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
   _mapFileGeneratorWidget: {fileID: 7824544393726433326, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
@@ -4375,7 +4348,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 951418924}
   m_HandleRect: {fileID: 951418923}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -7975,7 +7948,6 @@ GameObject:
   - component: {fileID: 1715806606}
   - component: {fileID: 1715806609}
   - component: {fileID: 1715806608}
-  - component: {fileID: 1715806607}
   m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
@@ -8003,26 +7975,6 @@ RectTransform:
   m_AnchoredPosition: {x: -0.000061035156, y: 0}
   m_SizeDelta: {x: 2000, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!95 &1715806607
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1715806605}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: e67743e0b9b2e7740b4a4f6a68f4487d, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &1715806608
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -17,7 +17,7 @@ public abstract class UIPanel : MonoBehaviour
     protected void Open(float p_transition)
     {
         // Enables panel game object.
-        gameObject.SetActive(true);
+        //gameObject.SetActive(true);
 
         // If transition time is 0.
         if (p_transition == 0)
@@ -48,7 +48,7 @@ public abstract class UIPanel : MonoBehaviour
             // including the game object.
             _canvasGroup.alpha = 0;
             _canvasGroup.interactable = false;
-            gameObject.SetActive(false);
+            //gameObject.SetActive(false);
         }
 
         // Otherwise, hides and disables over time.
@@ -112,6 +112,6 @@ public abstract class UIPanel : MonoBehaviour
         _canvasGroup.interactable = false;
 
         // Disables panel game object.
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
 }

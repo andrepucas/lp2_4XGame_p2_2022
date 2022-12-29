@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
-using UnityEngine.Events;
 
 /// <summary>
 /// Panel displayed in Gameplay UI state. Mostly contains HUD.
@@ -25,32 +24,22 @@ public class UIPanelGameplay : UIPanel
     [Tooltip("Scriptable Object with all Map Tiles Data")]
     [SerializeField] private MapTilesDataSO _mapTilesData;
 
-    /// <summary>
     /// Reference to MapData.
-    /// </summary>
     private MapData _mapData;
-
-    /// <summary>
-    /// Reference to MapDisplay.
-    /// </summary>
-    private MapDisplay _mapDisplay;
-
-    /// <summary>
-    /// Unity method, awake.
-    /// </summary>
-    private void Awake()
-    {
-        _mapDisplay = FindObjectOfType<MapDisplay>();
-    }
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
     /// </summary>
     private void OnEnable()
     {
-        // UIPanelMapBrowser.OnLoad += UpdateLocalData;
+        Debug.Log(1);
+        MapDisplay.OnMapGenerated += SetUpCounters;
+    }
 
-        _mapDisplay.OnMapGenerated += UpdateResourceCounters;
+    private void OnDisable()
+    {
+        Debug.Log(2);
+        MapDisplay.OnMapGenerated -= SetUpCounters;
     }
 
     /// <summary>
@@ -71,40 +60,6 @@ public class UIPanelGameplay : UIPanel
             // to match the resource's default sprite.
             Instantiate(_mapResourceCount, _resourceCountFolder).
                 GetComponentInChildren<Image>().sprite = f_rValue.DefaultResourceSprite;
-
-        }
-    }
-
-    /// <summary>
-    /// Updates local map data to match the loaded map data.
-    /// </summary>
-    /// <param name="p_mapData">Local map data</param>
-    public void UpdateLocalData(MapData p_mapData) => _mapData = p_mapData;
-
-    /// <summary>
-    /// Updates resource counters.
-    /// </summary>
-    private void UpdateResourceCounters()
-    {
-        // Variable that dictates which name to access.
-        int m_nameCounter = 0;
-
-        // Goes through each counter.
-        foreach (Transform f_child in _resourceCountFolder)
-        {
-            // Stores the TMP component.
-            TMP_Text f_textComponent = f_child.GetComponentInChildren<TMP_Text>();
-
-            // Changes the previous component's text to the number of resources
-            // on the map.
-            f_textComponent.text = _mapData.GameTiles
-            .SelectMany(t => t.Resources)
-            .Where(r => r.Name.ToLower().Replace(" ", "")
-            == _mapTilesData.ResourceNames.ToList()[m_nameCounter])
-            .Count().ToString();
-
-            // Increases the variable so the next name is accessed.
-            m_nameCounter++;
         }
     }
 
@@ -119,6 +74,42 @@ public class UIPanelGameplay : UIPanel
     /// </summary>
     /// <param name="p_transitionTime">Hiding time (s).</param>
     public void ClosePanel(float p_transitionTime = 0) => base.Close(p_transitionTime);
+
+    /// <summary>
+    /// Updates local map data and counters.
+    /// </summary>
+    /// <param name="p_mapData">Local map data</param>
+    public void SetUpCounters(MapData p_mapData)
+    {
+        _mapData = p_mapData;
+        UpdateResourceCounters();
+    }
+
+    /// <summary>
+    /// Updates resource counters.
+    /// </summary>
+    private void UpdateResourceCounters()
+    {
+        // Variable that dictates which name to access.
+        int m_nameIndex = 0;
+
+        // Goes through each counter.
+        foreach (Transform f_counter in _resourceCountFolder)
+        {
+            // Stores the TMP component.
+            TMP_Text f_textComponent = f_counter.GetComponentInChildren<TMP_Text>();
+
+            // Updates text to display number of said resources on the map.
+            f_textComponent.text = _mapData.GameTiles
+            .SelectMany(t => t.Resources)
+            .Where(r => (r.Name.ToLower().Replace(" ", ""))
+            .Equals(_mapTilesData.ResourceNames.ToList()[m_nameIndex]))
+            .Count().ToString();
+
+            // Increases the variable so the next name is accessed.
+            m_nameIndex++;
+        }
+    }
 
     /// <summary>
     /// Raises OnRestart event.

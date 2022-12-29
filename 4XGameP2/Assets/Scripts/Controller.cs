@@ -50,10 +50,10 @@ public class Controller : MonoBehaviour
     private void OnEnable()
     {
         UIPanelPreStart.OnPromptRevealed += () => StartCoroutine(WaitForPreStartKey());
-        // UIPanelMapBrowser.OnLoad += TryToLoadMap;
+        UIPanelMapBrowser.OnLoad += TryToLoadMap;
         MapData.OnValidLoadedData += HandleLoadedDataStatus;
         UIPanelGameplay.OnRestart += () => ChangeGameState(GameStates.PRE_START);
-        _mapDisplay.OnMapGenerated += () => ChangeGameState(GameStates.GAMEPLAY);
+        MapDisplay.OnMapGenerated += (_) => ChangeGameState(GameStates.GAMEPLAY);
         MapCell.OnInspectView += () => ChangeGameState(GameStates.PAUSE);
     }
 
@@ -63,10 +63,10 @@ public class Controller : MonoBehaviour
     private void OnDisable()
     {
         UIPanelPreStart.OnPromptRevealed -= () => StopCoroutine(WaitForPreStartKey());
-        // UIPanelMapBrowser.OnLoad -= TryToLoadMap;
+        UIPanelMapBrowser.OnLoad -= TryToLoadMap;
         MapData.OnValidLoadedData -= HandleLoadedDataStatus;
         UIPanelGameplay.OnRestart -= () => ChangeGameState(GameStates.PRE_START);
-        _mapDisplay.OnMapGenerated -= () => ChangeGameState(GameStates.GAMEPLAY);
+        MapDisplay.OnMapGenerated -= (_) => ChangeGameState(GameStates.GAMEPLAY);
         MapCell.OnInspectView -= () => ChangeGameState(GameStates.PAUSE);
     }
 

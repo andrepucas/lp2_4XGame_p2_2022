@@ -82,7 +82,7 @@ public class UIPanelInspector : UIPanel
         base.Open(p_transitionTime);
 
         // Activate opening trigger of sub-panel animator.
-        _subPanelAnim.SetTrigger(OPEN_TRIGGER);
+        _subPanelAnim.SetBool("visible", true);
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public class UIPanelInspector : UIPanel
     public void ClosePanel(float p_transitionTime = 0)
     {
         // Activate closing trigger of sub-panel animator.
-        _subPanelAnim.SetTrigger(CLOSE_TRIGGER);
+        _subPanelAnim.SetBool("visible", false);
 
         // Hides the panel.
         base.Close(p_transitionTime);
