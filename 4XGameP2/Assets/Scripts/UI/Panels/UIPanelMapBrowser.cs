@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
+using UnityEngine.Events;
 
 /// <summary>
 /// Panel displayed in Map Browser UI state.
@@ -13,7 +14,7 @@ public class UIPanelMapBrowser : UIPanel
     /// <summary>
     /// Event raised when the load button is pressed. Includes map data.
     /// </summary>
-    public static event Action<MapData> OnLoad;
+    public UnityEvent<MapData> OnLoad;
 
     // Serialized variables.
     [Header("SCROLL WIDGETS")]

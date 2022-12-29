@@ -50,7 +50,7 @@ public class Controller : MonoBehaviour
     private void OnEnable()
     {
         UIPanelPreStart.OnPromptRevealed += () => StartCoroutine(WaitForPreStartKey());
-        UIPanelMapBrowser.OnLoad += TryToLoadMap;
+        // UIPanelMapBrowser.OnLoad += TryToLoadMap;
         MapData.OnValidLoadedData += HandleLoadedDataStatus;
         UIPanelGameplay.OnRestart += () => ChangeGameState(GameStates.PRE_START);
         _mapDisplay.OnMapGenerated += () => ChangeGameState(GameStates.GAMEPLAY);
@@ -63,7 +63,7 @@ public class Controller : MonoBehaviour
     private void OnDisable()
     {
         UIPanelPreStart.OnPromptRevealed -= () => StopCoroutine(WaitForPreStartKey());
-        UIPanelMapBrowser.OnLoad -= TryToLoadMap;
+        // UIPanelMapBrowser.OnLoad -= TryToLoadMap;
         MapData.OnValidLoadedData -= HandleLoadedDataStatus;
         UIPanelGameplay.OnRestart -= () => ChangeGameState(GameStates.PRE_START);
         _mapDisplay.OnMapGenerated -= () => ChangeGameState(GameStates.GAMEPLAY);
@@ -213,7 +213,7 @@ public class Controller : MonoBehaviour
     /// Updates selected map variable and to load game tiles data.
     /// </summary>
     /// <param name="p_map">Map Data to be saved.</param>
-    private void TryToLoadMap(MapData p_map)
+    public void TryToLoadMap(MapData p_map)
     {
         // Clear warnings.
         _warnings.ClearInvalidFilesWarning();
