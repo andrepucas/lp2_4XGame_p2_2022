@@ -33,14 +33,9 @@ public class MapDisplay : MonoBehaviour
     private const float ZOOM_SPEED = 0.01f;
 
     /// <summary>
-    /// Constant value of the map min zoom.
-    /// </summary>
-    private const float MIN_ZOOM = 1;
-
-    /// <summary>
     /// Constant value of the map max zoom per cell.
     /// </summary>
-    private const float MAX_ZOOM_PER_CELL = 5;
+    private const float CELL_ZOOM_RATIO = 2;
 
     // Serialized.
     [Header("CELL PREFAB")]
@@ -65,6 +60,12 @@ public class MapDisplay : MonoBehaviour
     // Calculated cell size, depending on the map size.
     private float _cellSize;
 
+    // Reference to the main and only camera
+    private Camera _cam;
+
+    // Stores values of max and min orthographic cam sizes, for zoom limits.
+    private float _camMaxSize, _camMinSize;
+
     /// <summary>
     /// Called by controller on Awake, gets components references.
     /// </summary>
@@ -73,6 +74,8 @@ public class MapDisplay : MonoBehaviour
         _gridLayout = GetComponent<GridLayoutGroup>();
         _contentSizeFitter = GetComponent<ContentSizeFitter>();
         _rectTransform = GetComponent<RectTransform>();
+        _cam = Camera.main;
+        _camMaxSize = _cam.orthographicSize;
     }
 
     /// <summary>
@@ -104,6 +107,10 @@ public class MapDisplay : MonoBehaviour
         else m_newCellSize.y = m_newCellSize.x;
 
         _cellSize = m_newCellSize.x;
+
+        // Calculates and stores the cam min size, for zooming purposes, based
+        // on the cell size and it's predefined ratio.
+        _camMinSize = _cellSize * CELL_ZOOM_RATIO;
 
         // Resizes grid layout group default cell size.
         _gridLayout.cellSize = m_newCellSize;
@@ -236,18 +243,41 @@ public class MapDisplay : MonoBehaviour
     }
 
     /// <summary>
-    /// Tries to zoom in or out of the map using the rect transform's local scale.
-    /// Scaling locally makes it follow it's pivot, which will always be centered.
+    /// Tries to zoom in or out of the map using the camera's orthographic size.
     /// </summary>
     /// <param name="p_direction">Positive: zoom in, negative: zoom out.</param>
     public void TryZoom(int p_direction)
     {
-        // Zooms in while the local scale is less than the defined max zoom per cell.
-        if (p_direction > 0 && _rectTransform.localScale.x < MAX_ZOOM_PER_CELL / _cellSize)
-            _rectTransform.localScale += _rectTransform.localScale * ZOOM_SPEED;
+        // Zooms in.
+        if (p_direction > 0 && _cam.orthographicSize > _camMinSize)
+        {
+            _cam.orthographicSize -= _cam.orthographicSize * ZOOM_SPEED;
+
+            // Prevents cam size from going under its limit.
+            if (_cam.orthographicSize < _camMinSize)
+                _cam.orthographicSize = _camMinSize;
+        }
+
 
         // Zooms out.
-        else if (p_direction < 0 && _rectTransform.localScale.x > MIN_ZOOM)
-            _rectTransform.localScale += _rectTransform.localScale * -ZOOM_SPEED;
+        else if (p_direction < 0 && _cam.orthographicSize < _camMaxSize)
+        {
+            _cam.orthographicSize += _cam.orthographicSize * ZOOM_SPEED;
+
+            // Prevents cam size from going over its limit.
+            if (_cam.orthographicSize > _camMaxSize) 
+                _cam.orthographicSize = _camMaxSize;
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        ////// OLD SYSTEM - USES LOCAL SCALE TO ZOOM (PERFORMANT HEAVY). ///////
+
+        // // Zooms in while the local scale is less than the defined max zoom per cell.
+        // if (p_direction > 0 && _rectTransform.localScale.x < MAX_ZOOM_PER_CELL / _cellSize)
+        //     _rectTransform.localScale += _rectTransform.localScale * ZOOM_SPEED;
+
+        // // Zooms out.
+        // else if (p_direction < 0 && _rectTransform.localScale.x > 1)
+        //     _rectTransform.localScale += _rectTransform.localScale * -ZOOM_SPEED;
     }
 }
