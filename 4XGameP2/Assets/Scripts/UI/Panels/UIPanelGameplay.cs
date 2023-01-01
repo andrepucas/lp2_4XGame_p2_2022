@@ -15,29 +15,35 @@ public class UIPanelGameplay : UIPanel
     public static event Action OnRestart;
 
     // Serialized variables.
+    [Header("TURNS")]
+    [Tooltip("Text component holding the current turn number.")]
+    [SerializeField] private TMP_Text _turnDisplay;
     [Header("RESOURCES COUNT")]
     [Tooltip("Parent game object of map resource's count.")]
     [SerializeField] private Transform _resourceCountFolder;
     [Tooltip("Prefab of individual map resource's count.")]
     [SerializeField] private GameObject _mapResourceCount;
-    [Header("MAP DATA")]
-    [Tooltip("Scriptable Object with all Map Tiles Data")]
-    [SerializeField] private MapTilesDataSO _mapTilesData;
+    [Header("GAME DATA")]
+    [Tooltip("Scriptable Object with Game Data")]
+    [SerializeField] private GameDataSO _gameData;
 
-    /// Reference to MapData.
+    // Reference to MapData.
     private MapData _mapData;
+
+    // Current turn count.
+    private uint _turnCount;
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
     /// </summary>
     private void OnEnable()
     {
-        MapDisplay.OnMapGenerated += SetUpCounters;
+        MapDisplay.OnMapGenerated += SetUpResourceCounters;
     }
 
     private void OnDisable()
     {
-        MapDisplay.OnMapGenerated -= SetUpCounters;
+        MapDisplay.OnMapGenerated -= SetUpResourceCounters;
     }
 
     /// <summary>
@@ -47,12 +53,15 @@ public class UIPanelGameplay : UIPanel
     {
         ClosePanel();
 
+        _turnCount = 0;
+        UpdateTurnCounter();
+
         // Destroys any existing visual resource count objects, inside it's folder.
         foreach (Transform f_child in _resourceCountFolder)
             Destroy(f_child.gameObject);
 
         // Iterates all possible resources' preset values.
-        foreach (PresetValues f_rValue in _mapTilesData.Resources)
+        foreach (PresetValues f_rValue in _gameData.Resources)
         {
             // Instantiates a visual resource count object and updates its sprite
             // to match the resource's default sprite.
@@ -77,7 +86,7 @@ public class UIPanelGameplay : UIPanel
     /// Updates local map data and counters.
     /// </summary>
     /// <param name="p_mapData">Local map data</param>
-    public void SetUpCounters(MapData p_mapData)
+    public void SetUpResourceCounters(MapData p_mapData)
     {
         _mapData = p_mapData;
         UpdateResourceCounters();
@@ -101,12 +110,22 @@ public class UIPanelGameplay : UIPanel
             f_textComponent.text = _mapData.GameTiles
             .SelectMany(t => t.Resources)
             .Where(r => (r.Name.ToLower().Replace(" ", ""))
-            .Equals(_mapTilesData.ResourceNames.ToList()[m_nameIndex]))
+            .Equals(_gameData.ResourceNames.ToList()[m_nameIndex]))
             .Count().ToString();
 
             // Increases the variable so the next name is accessed.
             m_nameIndex++;
         }
+    }
+
+    /// <summary>
+    /// Updates current turn display.
+    /// </summary>
+    /// <param name="p_turnsToAdd">Number of turns to add.</param>
+    private void UpdateTurnCounter(uint p_turnsToAdd = 0)
+    {
+        _turnCount += p_turnsToAdd;
+        _turnDisplay.text = _turnCount.ToString("00");
     }
 
     /// <summary>

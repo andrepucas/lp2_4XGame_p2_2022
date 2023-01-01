@@ -109,7 +109,7 @@ public class MapData : IComparable<MapData>
     /// <summary>
     /// Converts the data from the file into game tile objects and saves it.
     /// </summary>
-    public void LoadGameTilesData(MapTilesDataSO p_tilesData)
+    public void LoadGameTilesData(GameDataSO p_gameData)
     {
         // Holds a file line at a time.
         string m_line;
@@ -156,13 +156,13 @@ public class MapData : IComparable<MapData>
             m_checkCount = 0;
 
             // Iterates collection of all valid game terrains.
-            for (int t = 0; t < p_tilesData.Terrains.Count; t++)
+            for (int t = 0; t < p_gameData.Terrains.Count; t++)
             {
                 // If the first word matches a valid terrain name.
-                if (m_lineStrings[0] == p_tilesData.Terrains[t].RawName)
+                if (m_lineStrings[0] == p_gameData.Terrains[t].RawName)
                 {
                     // Temporarily holds that terrain's preset values.
-                    m_tileValues = p_tilesData.Terrains[t];
+                    m_tileValues = p_gameData.Terrains[t];
 
                     // Initializes and adds a Game Tile with its respective preset 
                     // values to game tiles list.
@@ -179,7 +179,7 @@ public class MapData : IComparable<MapData>
             }
 
             // If the terrain wasn't found, increment lines to ignore.
-            if (m_checkCount == p_tilesData.Terrains.Count)
+            if (m_checkCount == p_gameData.Terrains.Count)
                 _linesToIgnore++;
 
             // If there are more strings in this line, look for resources.
@@ -192,13 +192,13 @@ public class MapData : IComparable<MapData>
                     m_checkCount = 0;
 
                     // Iterates all valid game resources.
-                    for (int r = 0; r < p_tilesData.Resources.Count; r++)
+                    for (int r = 0; r < p_gameData.Resources.Count; r++)
                     {
                         // If this word matches a valid resource name.
-                        if (m_lineStrings[s] == p_tilesData.Resources[r].RawName)
+                        if (m_lineStrings[s] == p_gameData.Resources[r].RawName)
                         {
                             // Temporarily holds that resource's preset values.
-                            m_tileValues = p_tilesData.Resources[r];
+                            m_tileValues = p_gameData.Resources[r];
 
                             // Initializes and adds a Resource with its respective 
                             // preset values to the resources list, in this tile.
@@ -206,7 +206,7 @@ public class MapData : IComparable<MapData>
                                 m_tileValues.Name,
                                 m_tileValues.Coin,
                                 m_tileValues.Food,
-                                p_tilesData.GetSpriteDictOf(m_tileValues.Name),
+                                p_gameData.GetSpriteDictOf(m_tileValues.Name),
                                 m_tileValues.DefaultResourceSprite));
 
                             break;
@@ -216,7 +216,7 @@ public class MapData : IComparable<MapData>
                     }
 
                     // If the resource wasn't found, set as a failed resource.
-                    if (m_checkCount == p_tilesData.Resources.Count)
+                    if (m_checkCount == p_gameData.Resources.Count)
                         _failedResource = true;
                 }
             }

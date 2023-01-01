@@ -15,12 +15,12 @@ public class MapDisplay : MonoBehaviour
     /// <summary>
     /// Constant value of the max cell size in the Y axis.
     /// </summary>
-    private const float MAX_Y_SIZE = 15f;
+    private const float MAX_Y_SIZE = 13f;
 
     /// <summary>
     /// Constant value of the max cell size in the X axis.
     /// </summary>
-    private const float MAX_X_SIZE = 30f;
+    private const float MAX_X_SIZE = 28f;
 
     /// <summary>
     /// Constant  value of the map panning speed.

@@ -39,8 +39,8 @@ public struct PresetValues
 /// <summary>
 /// Holds all possible terrains and resources's values.
 /// </summary>
-[CreateAssetMenu(fileName = "MapTilesData", menuName = "Data/Map Tile Data")]
-public class MapTilesDataSO : ScriptableObject
+[CreateAssetMenu(fileName = "GameData", menuName = "Data/Game Data")]
+public class GameDataSO : ScriptableObject
 {
     // Serialized
     [Header("PRESET VALUES")]

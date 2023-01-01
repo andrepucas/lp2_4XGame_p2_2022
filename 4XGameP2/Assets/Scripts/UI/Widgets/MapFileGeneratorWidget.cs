@@ -19,7 +19,7 @@ public class MapFileGeneratorWidget : MonoBehaviour
     // Serialized variables.
     [Header("MAP GENERATION DATA")]
     [Tooltip("Scriptable object with terrains and resources used for map generation.")]
-    [SerializeField] private MapTilesDataSO _generateData;
+    [SerializeField] private GameDataSO _generateData;
     [Header("NAME INPUT")]
     [Tooltip("Input field component for the map name.")]
     [SerializeField] private TMP_InputField _nameInput;
