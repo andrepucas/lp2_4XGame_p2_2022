@@ -12,8 +12,8 @@ public class Controller : MonoBehaviour
     [Tooltip("UI Warnings reference")]
     [SerializeField] private UIWarnings _warnings;
     [Header("GAME DATA")]
-    [Tooltip("Scriptable Object with Game Data")]
-    [SerializeField] private GameDataSO _data;
+    [Tooltip("Scriptable Object with Preset Game Data")]
+    [SerializeField] private PresetGameDataSO _presetData;
 
     // Reference to the generic User Interface.
     private IUserInterface _userInterface;
@@ -221,7 +221,7 @@ public class Controller : MonoBehaviour
         _selectedMap = p_map;
 
         // Loads tiles' data inside the selected map.
-        _selectedMap.LoadGameTilesData(_data);
+        _selectedMap.LoadGameTilesData(_presetData);
     }
 
     /// <summary>

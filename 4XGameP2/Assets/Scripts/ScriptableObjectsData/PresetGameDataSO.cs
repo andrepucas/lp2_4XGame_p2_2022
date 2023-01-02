@@ -2,17 +2,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Holds all possible terrains and resources's values.
+/// Holds all preset game data.
 /// </summary>
-[CreateAssetMenu(fileName = "GameData", menuName = "Data/Game Data")]
-public class GameDataSO : ScriptableObject
+[CreateAssetMenu(fileName = "PresetGameData", menuName = "Data/Preset Game Data")]
+public class PresetGameDataSO : ScriptableObject
 {
     // Serialized
-    [Header("GAME VARIABLES")]
     [Tooltip("All possible terrains.")]
     [SerializeField] private PresetTerrainsData[] _terrains;
     [Tooltip("All possible resources.")]
     [SerializeField] private PresetResourcesData[] _resources;
+    [Tooltip("All possible units.")]
+    [SerializeField] private PresetUnitsData[] _units;
+    [Tooltip("Default unit cell overlay sprite.")]
+    [SerializeField] private Sprite _unitOverlaySprite;
 
     /// <summary>
     /// Readonly self-implemented property list of all possible terrains.
@@ -23,6 +26,11 @@ public class GameDataSO : ScriptableObject
     /// Readonly self-implemented property list of all possible resources.
     /// </summary>
     public IReadOnlyList<PresetResourcesData> Resources => _resources;
+
+    /// <summary>
+    /// Readonly self-implemented property list of all possible units.
+    /// </summary>
+    public IReadOnlyList<PresetUnitsData> Units => _units;
 
     /// <summary>
     /// Property that returns all terrains' raw names.

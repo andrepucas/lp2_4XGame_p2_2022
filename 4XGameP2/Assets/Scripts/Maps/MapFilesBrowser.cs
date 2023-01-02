@@ -86,7 +86,7 @@ public static class MapFilesBrowser
     /// <param name="p_data">Generator parameters.</param>
     /// <returns>Name of generated map.</returns>
     public static string GenerateNewMapFile(string p_name, int p_yRows, 
-        int p_xCols, GameDataSO p_data)
+        int p_xCols, PresetGameDataSO p_data)
     {
         Generator m_generator;
         Map m_map;

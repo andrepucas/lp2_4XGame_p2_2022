@@ -10,43 +10,41 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1210270dd1d4be64fb6bc6ce445baf47, type: 3}
-  m_Name: GameData
+  m_Name: PresetGameData
   m_EditorClassIdentifier: 
   _terrains:
   - _name: Desert
-    _coin: 0
-    _food: 0
     _sprites:
     - {fileID: 21300000, guid: a60727df1df55c0439ad9c0044f6888f, type: 3}
     - {fileID: 21300000, guid: d5616fe2ca277a34583ba6b7e047429a, type: 3}
+    _coin: 0
+    _food: 0
   - _name: Hills
-    _coin: 1
-    _food: 1
     _sprites:
     - {fileID: 21300000, guid: 562ca9d35d9a90d48a6605df754a1934, type: 3}
     - {fileID: 21300000, guid: 8e240b880c4c1f347a577c6dfc89eb88, type: 3}
-  - _name: Mountain
     _coin: 1
-    _food: 0
+    _food: 1
+  - _name: Mountain
     _sprites:
     - {fileID: 21300000, guid: 20972b8a53d1b9e47919c956855b2205, type: 3}
     - {fileID: 21300000, guid: b21672f0637437e46a3c44f64e6a98ba, type: 3}
+    _coin: 1
+    _food: 0
   - _name: Plains
-    _coin: 0
-    _food: 2
     _sprites:
     - {fileID: 21300000, guid: 293e82030fd824a4686c548756969240, type: 3}
     - {fileID: 21300000, guid: e4552bb937267534186284345769a9cc, type: 3}
-  - _name: Water
     _coin: 0
-    _food: 1
+    _food: 2
+  - _name: Water
     _sprites:
     - {fileID: 21300000, guid: ca0005a508a0601419b494d56dcf714d, type: 3}
     - {fileID: 21300000, guid: 79d94f50b4515c346b3da103cde9fe54, type: 3}
+    _coin: 0
+    _food: 1
   _resources:
   - _name: Animals
-    _coin: 1
-    _food: 3
     _sprites:
     - {fileID: 21300000, guid: 9777e2c8bab531d48858b3da03df4728, type: 3}
     - {fileID: 21300000, guid: b0f5169367623c044a121cc4e7635a67, type: 3}
@@ -54,9 +52,9 @@ MonoBehaviour:
     - {fileID: 21300000, guid: c3a3c512edd6eb846992de35d8944e3d, type: 3}
     - {fileID: 21300000, guid: 5285ea7c2ed94534dbac353eb037b0ff, type: 3}
     _defaultSprite: {fileID: 21300000, guid: 5664a0463b17c8c4c8e2ca21294bfd4d, type: 3}
+    _coin: 1
+    _food: 3
   - _name: Fossil Fuel
-    _coin: 5
-    _food: -3
     _sprites:
     - {fileID: 21300000, guid: c109385220810fd4eac2284b0271a0b0, type: 3}
     - {fileID: 21300000, guid: c109385220810fd4eac2284b0271a0b0, type: 3}
@@ -64,9 +62,9 @@ MonoBehaviour:
     - {fileID: 21300000, guid: c109385220810fd4eac2284b0271a0b0, type: 3}
     - {fileID: 21300000, guid: a6619f98dd97d044f9ba1f917a682682, type: 3}
     _defaultSprite: {fileID: 21300000, guid: 4511412c944491847b9f9e0564a7d8fb, type: 3}
+    _coin: 5
+    _food: -3
   - _name: Luxury
-    _coin: 4
-    _food: -1
     _sprites:
     - {fileID: 21300000, guid: 3ef1ffade8712b842bb84d33355adcdd, type: 3}
     - {fileID: 21300000, guid: e09f3df826317ed499f0883100d37703, type: 3}
@@ -74,15 +72,15 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 69d6ee6105172e84ab5c16adfe66ef3c, type: 3}
     - {fileID: 21300000, guid: a9ecb5906b2f7ad42b888138cbf0f930, type: 3}
     _defaultSprite: {fileID: 21300000, guid: ec830c615f1f59d44b8151bd11fcc162, type: 3}
-  - _name: Metals
-    _coin: 3
+    _coin: 4
     _food: -1
+  - _name: Metals
     _sprites:
     - {fileID: 21300000, guid: dc53146f6eeae5947a855d59ed755a86, type: 3}
     _defaultSprite: {fileID: 21300000, guid: 5c5c4eba3c82e8d4bb750efa0c810fc8, type: 3}
+    _coin: 3
+    _food: -1
   - _name: Plants
-    _coin: 1
-    _food: 2
     _sprites:
     - {fileID: 21300000, guid: abfb7ca36e216194a984145bc248d8be, type: 3}
     - {fileID: 21300000, guid: d361d8b7ae1f78547be47bddceddf8e9, type: 3}
@@ -90,9 +88,22 @@ MonoBehaviour:
     - {fileID: 21300000, guid: b377570be30aaee46ac8576bf12a9254, type: 3}
     - {fileID: 21300000, guid: f3de8ef16679da845bd7cf071a1de084, type: 3}
     _defaultSprite: {fileID: 21300000, guid: 21d1101775f62c64da1d6ee300414e36, type: 3}
+    _coin: 1
+    _food: 2
   - _name: Pollution
-    _coin: -3
-    _food: -3
     _sprites:
     - {fileID: 21300000, guid: 509f137c48ec9234994092f6daade623, type: 3}
     _defaultSprite: {fileID: 21300000, guid: 02ef380f7793da843a3f0dacd586363d, type: 3}
+    _coin: -3
+    _food: -3
+  _units:
+  - _name: Grim Reaper
+    _icon: {fileID: 21300000, guid: 81ec117c5c075744f9036fbf6d0ee0ae, type: 3}
+    _cellSprite: {fileID: 21300000, guid: fafacbe64ab08fe40a8454e63d8a2656, type: 3}
+    _color: {r: 0.5882353, g: 0, b: 1, a: 1}
+    _movement: 0
+    _resourceNamesToCollect:
+    - Animals
+    - Plants
+    _resourceNamesToGenerate: []
+  _unitOverlaySprite: {fileID: 21300000, guid: 4ae4b9f58f547ea4ab67b2e933af03a8, type: 3}

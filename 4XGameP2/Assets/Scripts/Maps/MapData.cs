@@ -109,7 +109,7 @@ public class MapData : IComparable<MapData>
     /// <summary>
     /// Converts the data from the file into game tile objects and saves it.
     /// </summary>
-    public void LoadGameTilesData(GameDataSO p_gameData)
+    public void LoadGameTilesData(PresetGameDataSO p_gameData)
     {
         // Holds a file line at a time.
         string m_line;
