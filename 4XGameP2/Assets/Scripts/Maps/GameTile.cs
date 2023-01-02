@@ -8,27 +8,27 @@ using UnityEngine;
 public class GameTile
 {
     /// <summary>
-    /// Read only self implemented property that stores the name of the tile.
+    /// Read only self implemented property that returns the name of the tile.
     /// </summary>
     /// <value>Name of the tile (terrain).</value>
     public string Name {get;}
 
     /// <summary>
-    /// Read only self implemented property that stores the base coin value of 
+    /// Read only self implemented property that returns the base coin value of 
     /// the tile.
     /// </summary>
     /// <value>Base Coin of the game tile.</value>
     public int BaseCoin {get;}
 
     /// <summary>
-    /// Read only self implemented property that stores the base food value of 
+    /// Read only self implemented property that returns the base food value of 
     /// the tile.
     /// </summary>
     /// <value>Base Food of the game tile.</value>
     public int BaseFood {get;}
 
     /// <summary>
-    /// Read only property that stores the total coin value of this game tile,
+    /// Read only property that returns the total coin value of this game tile,
     /// based on it's resources and base value.
     /// </summary>
     /// <value>Total Coin value of the game tile.</value>
@@ -45,7 +45,7 @@ public class GameTile
     }
 
     /// <summary>
-    /// Read only property that stores the total food value of this game tile,
+    /// Read only property that returns the total food value of this game tile,
     /// based on it's resources and base value.
     /// </summary>
     /// <value>Total Food of the game tile.</value>
@@ -62,7 +62,7 @@ public class GameTile
     }
 
     /// <summary>
-    /// Read only self implemented property that stores the base and hovered
+    /// Read only self implemented property that returns the base and hovered
     /// of this tile/terrain.
     /// </summary>
     /// <value>Base and Hovered sprites.</value>

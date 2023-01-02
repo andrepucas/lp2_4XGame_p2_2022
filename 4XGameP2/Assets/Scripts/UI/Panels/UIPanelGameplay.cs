@@ -23,8 +23,11 @@ public class UIPanelGameplay : UIPanel
     [SerializeField] private Transform _resourceCountFolder;
     [Tooltip("Prefab of individual map resource's count.")]
     [SerializeField] private GameObject _mapResourceCount;
+    [Header("UNITS")]
+    [Tooltip("Unit prefab.")]
+    [SerializeField] private GameObject _unitPrefab;
     [Header("GAME DATA")]
-    [Tooltip("Scriptable Object with Game Data")]
+    [Tooltip("Scriptable Object with Game Data.")]
     [SerializeField] private GameDataSO _gameData;
 
     // Reference to MapData.
@@ -61,12 +64,12 @@ public class UIPanelGameplay : UIPanel
             Destroy(f_child.gameObject);
 
         // Iterates all possible resources' preset values.
-        foreach (PresetValues f_rValue in _gameData.Resources)
+        foreach (PresetResourcesData f_rData in _gameData.Resources)
         {
             // Instantiates a visual resource count object and updates its sprite
             // to match the resource's default sprite.
             Instantiate(_mapResourceCount, _resourceCountFolder).
-                GetComponentInChildren<Image>().sprite = f_rValue.DefaultResourceSprite;
+                GetComponentInChildren<Image>().sprite = f_rData.DefaultResourceSprite;
         }
     }
 
@@ -126,6 +129,14 @@ public class UIPanelGameplay : UIPanel
     {
         _turnCount += p_turnsToAdd;
         _turnDisplay.text = _turnCount.ToString("00");
+    }
+
+    public void OnAddUnit()
+    {
+        Debug.Log("Adding Unit");
+        // Select random map cell, without unit.
+        
+        // Instantiate unit in it.
     }
 
     /// <summary>

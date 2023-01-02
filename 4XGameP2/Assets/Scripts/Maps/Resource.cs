@@ -8,28 +8,28 @@ using UnityEngine;
 public class Resource : IComparable<Resource>
 {
     /// <summary>
-    /// Read only self implemented property that stores the name of this
+    /// Read only self implemented property that returns the name of this
     /// resource.
     /// </summary>
     /// <value>Name of the resource.</value>
     public string Name {get;}
 
     /// <summary>
-    /// Read only self implemented property that stores the coin value of this
+    /// Read only self implemented property that returns the coin value of this
     /// resource.
     /// </summary>
     /// <value>Coin value of the resource.</value>
     public int Coin {get;}
 
     /// <summary>
-    /// Read only self implemented property that stores the food value of this 
+    /// Read only self implemented property that returns the food value of this 
     /// resource.
     /// </summary>
     /// <value>Food of the resource.</value>
     public int Food {get;}
 
     /// <summary>
-    /// Read only self implemented property that stores all sprite variations 
+    /// Read only self implemented property that returns all sprite variations 
     /// for this resource.
     /// </summary>
     public IReadOnlyDictionary<string, Sprite> SpritesDict {get;}
