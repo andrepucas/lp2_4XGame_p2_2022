@@ -19,35 +19,30 @@ MonoBehaviour:
     _sprites:
     - {fileID: 21300000, guid: a60727df1df55c0439ad9c0044f6888f, type: 3}
     - {fileID: 21300000, guid: d5616fe2ca277a34583ba6b7e047429a, type: 3}
-    _defaultSprite: {fileID: 0}
   - _name: Hills
     _coin: 1
     _food: 1
     _sprites:
     - {fileID: 21300000, guid: 562ca9d35d9a90d48a6605df754a1934, type: 3}
     - {fileID: 21300000, guid: 8e240b880c4c1f347a577c6dfc89eb88, type: 3}
-    _defaultSprite: {fileID: 0}
   - _name: Mountain
     _coin: 1
     _food: 0
     _sprites:
     - {fileID: 21300000, guid: 20972b8a53d1b9e47919c956855b2205, type: 3}
     - {fileID: 21300000, guid: b21672f0637437e46a3c44f64e6a98ba, type: 3}
-    _defaultSprite: {fileID: 0}
   - _name: Plains
     _coin: 0
     _food: 2
     _sprites:
     - {fileID: 21300000, guid: 293e82030fd824a4686c548756969240, type: 3}
     - {fileID: 21300000, guid: e4552bb937267534186284345769a9cc, type: 3}
-    _defaultSprite: {fileID: 0}
   - _name: Water
     _coin: 0
     _food: 1
     _sprites:
     - {fileID: 21300000, guid: ca0005a508a0601419b494d56dcf714d, type: 3}
     - {fileID: 21300000, guid: 79d94f50b4515c346b3da103cde9fe54, type: 3}
-    _defaultSprite: {fileID: 0}
   _resources:
   - _name: Animals
     _coin: 1

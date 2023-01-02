@@ -256,7 +256,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 549203362}
         m_TargetAssemblyTypeName: UIPanelGameplay, Assembly-CSharp
-        m_MethodName: OnBackToMenuButton
+        m_MethodName: OnAddUnit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -484,7 +484,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchorMin.x
@@ -492,15 +492,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 900
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -532,11 +532,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 450
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -180
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1170,7 +1170,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 549203362}
         m_TargetAssemblyTypeName: UIPanelGameplay, Assembly-CSharp
-        m_MethodName: OnBackToMenuButton
+        m_MethodName: OnAddUnit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2206,7 +2206,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 549203359}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -2226,6 +2226,7 @@ MonoBehaviour:
   _turnDisplay: {fileID: 565795507}
   _resourceCountFolder: {fileID: 1724440011}
   _mapResourceCount: {fileID: 6959098923499027189, guid: 9eda881ecaf8f6a43ba4948c70ada597, type: 3}
+  _unitPrefab: {fileID: 0}
   _gameData: {fileID: 11400000, guid: d80cc0443de6e254c9a9a90c9370d8e8, type: 2}
 --- !u!1 &552133170
 GameObject:
@@ -3187,7 +3188,7 @@ GameObject:
   - component: {fileID: 672146472}
   - component: {fileID: 672146471}
   m_Layer: 5
-  m_Name: Units Selected Text
+  m_Name: 2+ Units Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3208,11 +3209,11 @@ RectTransform:
   m_Father: {fileID: 2142199761}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0.000015258789, y: 0}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 20, y: 0}
   m_SizeDelta: {x: 250, y: 40}
-  m_Pivot: {x: 0, y: 1}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &672146471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3479,7 +3480,7 @@ GameObject:
   - component: {fileID: 745227509}
   - component: {fileID: 745227508}
   m_Layer: 5
-  m_Name: Unit Selected Text
+  m_Name: 1 Unit Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4247,9 +4248,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 883661752}
   m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!1 &884576931
 GameObject:
@@ -6850,7 +6851,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 549203362}
         m_TargetAssemblyTypeName: UIPanelGameplay, Assembly-CSharp
-        m_MethodName: OnBackToMenuButton
+        m_MethodName: OnAddUnit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9797,7 +9798,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 549203362}
         m_TargetAssemblyTypeName: UIPanelGameplay, Assembly-CSharp
-        m_MethodName: OnBackToMenuButton
+        m_MethodName: OnAddUnit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11153,7 +11154,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchorMin.x
@@ -11161,15 +11162,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 900
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_LocalPosition.x
@@ -11201,11 +11202,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 450
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -50
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

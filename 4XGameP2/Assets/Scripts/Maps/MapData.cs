@@ -123,8 +123,9 @@ public class MapData : IComparable<MapData>
         // Counts how many terrains/resources are checked.
         int m_checkCount;
 
-        // Holds reference to a specific terrain/resource preset values.
-        PresetValues m_tileValues;
+        // Temporarily holds reference to preset values.
+        PresetTerrainsData m_terrainsData;
+        PresetResourcesData m_resourcesData;
 
         // Controls whether all resources were successfully read or not.
         bool _failedResource = false;
@@ -162,15 +163,15 @@ public class MapData : IComparable<MapData>
                 if (m_lineStrings[0] == p_gameData.Terrains[t].RawName)
                 {
                     // Temporarily holds that terrain's preset values.
-                    m_tileValues = p_gameData.Terrains[t];
+                    m_terrainsData = p_gameData.Terrains[t];
 
                     // Initializes and adds a Game Tile with its respective preset 
                     // values to game tiles list.
                     _gameTilesList.Insert(i - _linesToIgnore, new GameTile(
-                        m_tileValues.Name,
-                        m_tileValues.Coin,
-                        m_tileValues.Food,
-                        m_tileValues.Sprites));
+                        m_terrainsData.Name,
+                        m_terrainsData.Coin,
+                        m_terrainsData.Food,
+                        m_terrainsData.Sprites));
 
                     break;
                 }
@@ -198,16 +199,16 @@ public class MapData : IComparable<MapData>
                         if (m_lineStrings[s] == p_gameData.Resources[r].RawName)
                         {
                             // Temporarily holds that resource's preset values.
-                            m_tileValues = p_gameData.Resources[r];
+                            m_resourcesData = p_gameData.Resources[r];
 
                             // Initializes and adds a Resource with its respective 
                             // preset values to the resources list, in this tile.
                             GameTiles[i - _linesToIgnore].AddResource(new Resource(
-                                m_tileValues.Name,
-                                m_tileValues.Coin,
-                                m_tileValues.Food,
-                                p_gameData.GetSpriteDictOf(m_tileValues.Name),
-                                m_tileValues.DefaultResourceSprite));
+                                m_resourcesData.Name,
+                                m_resourcesData.Coin,
+                                m_resourcesData.Food,
+                                p_gameData.GetSpriteDictOf(m_resourcesData.Name),
+                                m_resourcesData.DefaultResourceSprite));
 
                             break;
                         }

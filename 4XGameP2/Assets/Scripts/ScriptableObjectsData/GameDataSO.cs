@@ -2,62 +2,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Holds a set of values.
-/// </summary>
-[System.Serializable]
-public struct PresetValues
-{
-    [Header("UNIVERSAL")]
-    [Tooltip("Name, as should be displayed.")]
-    [SerializeField] private string _name;
-    [Tooltip("Coin base value.")]
-    [SerializeField] private int _coin;
-    [Tooltip("Food base value.")]
-    [SerializeField] private int _food;
-    [Tooltip("Sprites for this terrain/resource. Can never be null.\n" + 
-    "For terrains: 0 = default; 1 = hover variation\n" +
-    "For resources: terrain variations. (If it doesn't vary, only insert one. " +
-    "If at least one varies, specify variations for each terrain type.")]
-    [SerializeField] private Sprite[] _sprites;
-    [Header("FOR RESOURCES ONLY")]
-    [Tooltip("Sprite that is to be displayed outside the cell's context. " + 
-    "Must be full-res.")]
-    [SerializeField] private Sprite _defaultSprite;
-
-    public string Name => _name;
-    public int Coin => _coin;
-    public int Food => _food;
-    public IReadOnlyList<Sprite> Sprites => _sprites;
-    public Sprite DefaultResourceSprite => _defaultSprite;
-
-    // Get name in lowercase and without spaces.
-    // https://stackoverflow.com/questions/6219454/efficient-way-to-remove-all-whitespace-from-string/30732794#30732794
-    public string RawName => string.Join("", _name.Split(default(string[]), 
-        System.StringSplitOptions.RemoveEmptyEntries)).ToLower();
-}
-
-/// <summary>
 /// Holds all possible terrains and resources's values.
 /// </summary>
 [CreateAssetMenu(fileName = "GameData", menuName = "Data/Game Data")]
 public class GameDataSO : ScriptableObject
 {
     // Serialized
-    [Header("PRESET VALUES")]
+    [Header("GAME VARIABLES")]
     [Tooltip("All possible terrains.")]
-    [SerializeField] private PresetValues[] _terrains;
+    [SerializeField] private PresetTerrainsData[] _terrains;
     [Tooltip("All possible resources.")]
-    [SerializeField] private PresetValues[] _resources;
+    [SerializeField] private PresetResourcesData[] _resources;
 
     /// <summary>
     /// Readonly self-implemented property list of all possible terrains.
     /// </summary>
-    public IReadOnlyList<PresetValues> Terrains => _terrains;
+    public IReadOnlyList<PresetTerrainsData> Terrains => _terrains;
 
     /// <summary>
     /// Readonly self-implemented property list of all possible resources.
     /// </summary>
-    public IReadOnlyList<PresetValues> Resources => _resources;
+    public IReadOnlyList<PresetResourcesData> Resources => _resources;
 
     /// <summary>
     /// Property that returns all terrains' raw names.
@@ -67,7 +32,7 @@ public class GameDataSO : ScriptableObject
     {
         get
         {
-            foreach (PresetValues t in _terrains)
+            foreach (PresetTerrainsData t in _terrains)
                 yield return t.RawName;
         }
     }
@@ -80,7 +45,7 @@ public class GameDataSO : ScriptableObject
     {
         get
         {
-            foreach (PresetValues r in _resources)
+            foreach (PresetResourcesData r in _resources)
                 yield return r.RawName;
         }
     }
@@ -97,7 +62,7 @@ public class GameDataSO : ScriptableObject
         IReadOnlyList<Sprite> m_sprites = null;
 
         // Iterates all valid resources.
-        foreach (PresetValues resource in Resources)
+        foreach (PresetResourcesData resource in Resources)
         {
             // Finds given resource, based on it's name.
             if (resource.Name == p_resource)
