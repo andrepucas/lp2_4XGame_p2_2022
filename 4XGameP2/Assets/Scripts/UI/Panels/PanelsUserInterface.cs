@@ -13,6 +13,8 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
     [SerializeField][Range(0, 3)] private float _bgRevealTime;
     [Tooltip("Background image reference.")]
     [SerializeField] private Image _background;
+    [Tooltip("Foreground mask image reference.")]
+    [SerializeField] private Image _foregroundMask;
     [Header("PANELS")]
     [Tooltip("Time (s) for panel in and out fades.")]
     [SerializeField][Range(0, 1)] private float _panelTransitionTime;
@@ -41,8 +43,9 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
         // Sets its alpha to 0.
         _bgColor.a = 0;
 
-        // Updates background color.
+        // Updates background and mask color.
         _background.color = _bgColor;
+        _foregroundMask.color = _bgColor;
     }
 
     /// <summary>
@@ -138,6 +141,9 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
             m_elapsedTime += Time.unscaledDeltaTime;
             yield return null;
         }
+
+        // "Reveals" foreground mask.
+        _foregroundMask.color = _bgColor;
 
         // Reveals Pre Start panel, with the same timing as the background reveal.
         _preStart.OpenPanel(_panelTransitionTime);

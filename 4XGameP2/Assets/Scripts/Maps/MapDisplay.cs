@@ -25,7 +25,7 @@ public class MapDisplay : MonoBehaviour
     /// <summary>
     /// Constant  value of the map panning speed.
     /// </summary>
-    private const float PAN_SPEED = 0.2f;
+    private const float PAN_SPEED = 0.02f;
 
     /// <summary>
     /// Constant value of the map zoom speed.
@@ -33,14 +33,9 @@ public class MapDisplay : MonoBehaviour
     private const float ZOOM_SPEED = 0.01f;
 
     /// <summary>
-    /// Constant value of the map min zoom.
-    /// </summary>
-    private const float MIN_ZOOM = 1;
-
-    /// <summary>
     /// Constant value of the map max zoom per cell.
     /// </summary>
-    private const float MAX_ZOOM_PER_CELL = 5;
+    private const float CELL_ZOOM_RATIO = 2;
 
     // Serialized.
     [Header("CELL PREFAB")]
@@ -53,17 +48,20 @@ public class MapDisplay : MonoBehaviour
     // Reference to the content size fitter component.
     private ContentSizeFitter _contentSizeFitter;
 
-    /// Reference to the rect transform component.
-    private RectTransform _rectTransform;
+    // X axis view limit for the map. Constrains camera position when panning.
+    private float _maxCamViewWidth;
 
-    // X axis pivot limit of the rect transform's pivot.
-    private float _xPivotLimit;
-
-    // Y axis pivot limit of the rect transform's pivot.
-    private float _yPivotLimit;
+    // Y axis view limit for the map. Constrains camera position when panning.
+    private float _maxCamViewHeight;
 
     // Calculated cell size, depending on the map size.
     private float _cellSize;
+
+    // Reference to the main and only camera
+    private Camera _cam;
+
+    // Stores values of max and min orthographic cam sizes, for zoom limits.
+    private float _camMaxSize, _camMinSize;
 
     /// <summary>
     /// Called by controller on Awake, gets components references.
@@ -72,7 +70,8 @@ public class MapDisplay : MonoBehaviour
     {
         _gridLayout = GetComponent<GridLayoutGroup>();
         _contentSizeFitter = GetComponent<ContentSizeFitter>();
-        _rectTransform = GetComponent<RectTransform>();
+        _cam = Camera.main;
+        _camMaxSize = _cam.orthographicSize;
     }
 
     /// <summary>
@@ -87,12 +86,9 @@ public class MapDisplay : MonoBehaviour
         _contentSizeFitter.enabled = true;
         _gridLayout.enabled = true;
 
-        // Defines pivot limits based on map dimensions.
-        _xPivotLimit = 1 / (float)(p_map.XCols * 2);
-        _yPivotLimit = 1 / (float)(p_map.YRows * 2);
-
-        // Centers pivot.
-        _rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        // Resets camera.
+        _cam.transform.position = Vector3.zero;
+        _cam.orthographicSize = _camMaxSize;
 
         // Calculates cell size based on the map dimensions, 
         // using the max X and Y cell sizes as references.
@@ -104,6 +100,14 @@ public class MapDisplay : MonoBehaviour
         else m_newCellSize.y = m_newCellSize.x;
 
         _cellSize = m_newCellSize.x;
+
+        // Defines camera view limits based on the map dimensions.
+        _maxCamViewWidth = (p_map.XCols * _cellSize) / 2 - (_cellSize / 2);
+        _maxCamViewHeight = (p_map.YRows * _cellSize) / 2 - (_cellSize / 2);
+
+        // Calculates and stores the cam min size, for zooming purposes, based
+        // on the cell size and it's predefined ratio.
+        _camMinSize = _cellSize * CELL_ZOOM_RATIO;
 
         // Resizes grid layout group default cell size.
         _gridLayout.cellSize = m_newCellSize;
@@ -145,31 +149,28 @@ public class MapDisplay : MonoBehaviour
     }
 
     /// <summary>
-    /// Tries to move the map, using the rect transform pivot.
+    /// Tries to move the map, using the camera's transform position.
     /// </summary>
-    /// <remarks>
-    /// Using the pivot allows for the zoom to always be centered to the screen.
-    /// </remarks>
     /// <param name="p_direction">Direction to move.</param>
     public void TryMove(Vector2 p_direction)
     {
         // If trying to move down.
         if (p_direction == Vector2.down)
         {
-            // If pivot hasn't reached it's defined limit.
-            if (_rectTransform.pivot.y > _yPivotLimit)
+            // If cam's position is above the map's min. height limit.
+            if (_cam.transform.position.y > (-_maxCamViewHeight))
             {
-                // Moves map up using it's pivot. 
-                // Move speed is relative to the map size (yPivotLimit).
-                _rectTransform.pivot += Vector2.down * PAN_SPEED * _yPivotLimit;
-                _rectTransform.localPosition = Vector3.zero;
+                // Moves camera down, with speed relative to zoom.
+                _cam.transform.position += 
+                    Vector3.down * PAN_SPEED * _cam.orthographicSize;
 
-                // Rectifies pivot if it goes over the limit.
-                if (_rectTransform.pivot.y < _yPivotLimit)
+                // Prevents cam position from going under its min. height limit.
+                if (_cam.transform.position.y < (-_maxCamViewHeight))
                 {
-                    Vector2 m_pivot = _rectTransform.pivot;
-                    m_pivot.y = _yPivotLimit;
-                    _rectTransform.pivot = m_pivot;
+                    Vector3 m_positionFix = _cam.transform.position;
+                    m_positionFix.y = (-_maxCamViewHeight);
+
+                    _cam.transform.position = m_positionFix;
                 }
             }
         }
@@ -177,19 +178,20 @@ public class MapDisplay : MonoBehaviour
         // If trying to move up.
         else if (p_direction == Vector2.up)
         {
-            // If pivot hasn't reached it's defined limit.
-            if (_rectTransform.pivot.y < (float)(1f - _yPivotLimit))
+            // If cam's position is below the map's max. height limit.
+            if (_cam.transform.position.y < _maxCamViewHeight)
             {
-                // Moves map down using it's pivot. 
-                _rectTransform.pivot += Vector2.up * PAN_SPEED * _yPivotLimit;
-                _rectTransform.localPosition = Vector3.zero;
+                // Moves camera up, with speed relative to zoom.
+                _cam.transform.position += 
+                    Vector3.up * PAN_SPEED * _cam.orthographicSize;
 
-                // Rectifies pivot if it goes over the limit.
-                if (_rectTransform.pivot.y > (1 - _yPivotLimit))
+                // Prevents cam position from going over its max. height limit.
+                if (_cam.transform.position.y > _maxCamViewHeight)
                 {
-                    Vector2 m_pivot = _rectTransform.pivot;
-                    m_pivot.y = (1 - _yPivotLimit);
-                    _rectTransform.pivot = m_pivot;
+                    Vector3 m_positionFix = _cam.transform.position;
+                    m_positionFix.y = _maxCamViewHeight;
+
+                    _cam.transform.position = m_positionFix;
                 }
             }
         }
@@ -197,19 +199,20 @@ public class MapDisplay : MonoBehaviour
         // If trying to move left.
         else if (p_direction == Vector2.left)
         {
-            // If pivot hasn't reached it's defined limit.
-            if (_rectTransform.pivot.x > _xPivotLimit)
+            // If cam's position is above the map's min. width limit.
+            if (_cam.transform.position.x > (-_maxCamViewWidth))
             {
-                // Moves map right using it's pivot. 
-                _rectTransform.pivot += Vector2.left * PAN_SPEED * _xPivotLimit;
-                _rectTransform.localPosition = Vector3.zero;
+                // Moves camera left, with speed relative to zoom.
+                _cam.transform.position += 
+                    Vector3.left * PAN_SPEED * _cam.orthographicSize;
 
-                // Rectifies pivot if it goes over the limit.
-                if (_rectTransform.pivot.x < _xPivotLimit)
+                // Prevents cam position from going under its min. width limit.
+                if (_cam.transform.position.y < (-_maxCamViewHeight))
                 {
-                    Vector2 m_pivot = _rectTransform.pivot;
-                    m_pivot.x = _xPivotLimit;
-                    _rectTransform.pivot = m_pivot;
+                    Vector3 m_positionFix = _cam.transform.position;
+                    m_positionFix.x = (-_maxCamViewWidth);
+
+                    _cam.transform.position = m_positionFix;
                 }
             }
         }
@@ -217,37 +220,50 @@ public class MapDisplay : MonoBehaviour
         // If trying to move right.
         else if (p_direction == Vector2.right)
         {
-            // If pivot hasn't reached it's defined limit.
-            if (_rectTransform.pivot.x < (float)(1 - _xPivotLimit))
+            // If cam's position is under the map's max. width limit.
+            if (_cam.transform.position.x < _maxCamViewWidth)
             {
-                // Moves map left using it's pivot. 
-                _rectTransform.pivot += Vector2.right * PAN_SPEED * _xPivotLimit;
-                _rectTransform.localPosition = Vector3.zero;
+                // Moves camera right, with speed relative to zoom.
+                _cam.transform.position += 
+                    Vector3.right * PAN_SPEED * _cam.orthographicSize;
 
-                // Rectifies pivot if it goes over the limit.
-                if (_rectTransform.pivot.x > (1 - _xPivotLimit))
+                // Prevents cam position from going over its max. width limit.
+                if (_cam.transform.position.y > _maxCamViewHeight)
                 {
-                    Vector2 m_pivot = _rectTransform.pivot;
-                    m_pivot.x = (1 - _xPivotLimit);
-                    _rectTransform.pivot = m_pivot;
+                    Vector3 m_positionFix = _cam.transform.position;
+                    m_positionFix.x = _maxCamViewWidth;
+
+                    _cam.transform.position = m_positionFix;
                 }
             }
         }
     }
 
     /// <summary>
-    /// Tries to zoom in or out of the map using the rect transform's local scale.
-    /// Scaling locally makes it follow it's pivot, which will always be centered.
+    /// Tries to zoom in or out of the map using the camera's orthographic size.
     /// </summary>
     /// <param name="p_direction">Positive: zoom in, negative: zoom out.</param>
     public void TryZoom(int p_direction)
     {
-        // Zooms in while the local scale is less than the defined max zoom per cell.
-        if (p_direction > 0 && _rectTransform.localScale.x < MAX_ZOOM_PER_CELL / _cellSize)
-            _rectTransform.localScale += _rectTransform.localScale * ZOOM_SPEED;
+        // Zooms in.
+        if (p_direction > 0 && _cam.orthographicSize > _camMinSize)
+        {
+            _cam.orthographicSize -= _cam.orthographicSize * ZOOM_SPEED;
+
+            // Prevents cam size from going under its limit.
+            if (_cam.orthographicSize < _camMinSize)
+                _cam.orthographicSize = _camMinSize;
+        }
+
 
         // Zooms out.
-        else if (p_direction < 0 && _rectTransform.localScale.x > MIN_ZOOM)
-            _rectTransform.localScale += _rectTransform.localScale * -ZOOM_SPEED;
+        else if (p_direction < 0 && _cam.orthographicSize < _camMaxSize)
+        {
+            _cam.orthographicSize += _cam.orthographicSize * ZOOM_SPEED;
+
+            // Prevents cam size from going over its limit.
+            if (_cam.orthographicSize > _camMaxSize) 
+                _cam.orthographicSize = _camMaxSize;
+        }
     }
 }
