@@ -12,6 +12,7 @@ public class UIPanelUnits : MonoBehaviour
     [SerializeField] private GameObject _singleUnitObject;
     [SerializeField] private GameObject _multipleUnitsObject;
     [SerializeField] private Transform _unitIcon;
+    [SerializeField] private Transform _resourceCount;
 
     private ICollection<Unit> _selectedUnits;
 
@@ -40,6 +41,22 @@ public class UIPanelUnits : MonoBehaviour
             _unitTypeOrCountFolder.GetComponent<TMP_Text>().text =
             _selectedUnits.Count.ToString();
         }
+
+        foreach (string s in _selectedUnits.SelectMany(r => r.Resources).Select(r => r.Name).Distinct())
+        {
+            Transform f_currentCounter = Instantiate(_resourceCount, _resourceCountFolder.transform);
+
+            foreach (Resource resource in _selectedUnits.SelectMany(r => r.Resources))
+            {
+
+                f_currentCounter.GetComponentInChildren<TMP_Text>().text
+                = _selectedUnits.SelectMany(r => r.Resources)
+                .Where(r => s == resource.Name)
+                .Count()
+                .ToString();
+            }
+        }
+
     }
 
 
