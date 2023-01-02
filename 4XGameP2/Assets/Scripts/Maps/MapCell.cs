@@ -20,10 +20,14 @@ public class MapCell : MonoBehaviour
     public static event Action<GameTile, List<Sprite>> OnInspectData;
 
     // Serialized
+    [Header("TERRAIN")]
     [Tooltip("Image component of the tile's terrain.")]
     [SerializeField] private Image _terrainImg;
+    [Header("RESOURCES")]
+    [Tooltip("Parent game object of resource images.")]
+    [SerializeField] private Transform _resourceImgFolder;
     [Tooltip("Prefab of resource image.")]
-    [SerializeField] private GameObject _resourceImagePrefab;
+    [SerializeField] private GameObject _resourceImgPrefab;
 
     // Reference to the game tile this cell represents.
     private GameTile _tile;
@@ -44,7 +48,7 @@ public class MapCell : MonoBehaviour
         _activeRSpritesList = new List<Sprite>();
 
         // Destroy any resource images that might be instantiated.
-        foreach (Transform resourceImage in transform)
+        foreach (Transform resourceImage in _resourceImgFolder)
             Destroy(resourceImage.gameObject);
 
         // Displays the resource sprites present in the game tile reference.
@@ -95,7 +99,7 @@ public class MapCell : MonoBehaviour
         for (int i = 0; i < _tile.Resources.Count; i++)
         {
             // Instantiates image for this resource and saves its image component.
-            m_resourceImage = Instantiate(_resourceImagePrefab, transform).
+            m_resourceImage = Instantiate(_resourceImgPrefab, _resourceImgFolder).
                 GetComponent<Image>();
 
             // Updates it's sprite.
