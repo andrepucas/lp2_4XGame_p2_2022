@@ -31,6 +31,7 @@ public class UIPanelGameplay : UIPanel
     [Header("GAME DATA")]
     [Tooltip("Scriptable Object with Preset Game Data.")]
     [SerializeField] private PresetGameDataSO _presetData;
+    [Tooltip("Scriptable Object with Ongoing Game Data.")]
     [SerializeField] private OngoingGameDataSO _ongoingData;
 
     // Reference to MapData.
@@ -47,6 +48,9 @@ public class UIPanelGameplay : UIPanel
         MapDisplay.OnMapGenerated += SetUpResourceCounters;
     }
 
+    /// <summary>
+    /// Unity method, on disable, unsubscribes from events.
+    /// </summary>
     private void OnDisable()
     {
         MapDisplay.OnMapGenerated -= SetUpResourceCounters;
@@ -59,6 +63,7 @@ public class UIPanelGameplay : UIPanel
     {
         ClosePanel();
 
+        // Resets turns.
         _turnCount = 0;
         UpdateTurnCounter();
 
@@ -94,6 +99,7 @@ public class UIPanelGameplay : UIPanel
     /// <param name="p_mapData">Local map data</param>
     public void SetUpResourceCounters(MapData p_mapData)
     {
+        // Saves map data reference and updates counters.
         _mapData = p_mapData;
         UpdateResourceCounters();
     }
@@ -134,35 +140,37 @@ public class UIPanelGameplay : UIPanel
         _turnDisplay.text = _turnCount.ToString("00");
     }
 
+    /// <summary>
+    /// Instantiates unit in the map.
+    /// </summary>
+    /// <remarks>
+    /// Called by the 'ADD UNIT' Unity buttons, at the top of this panel.
+    /// </remarks>
     public void OnAddUnit()
     {
         Debug.Log("Adding Unit");
 
-        Vector2 m_randomPos;
-        MapCell m_mapCell;
+        Vector2 m_randomMapPos;
+        Vector3 m_worldPos;
         Unit m_unit;
 
         // Finds a random map position that doesn't have a unit in it.
-        do{m_randomPos = GetRandomMapPos();}
-        while (_ongoingData.MapUnits[m_randomPos] != null);
+        do
+        {   m_randomMapPos = new Vector2(
+                UnityEngine.Random.Range(0, _mapData.XCols),
+                UnityEngine.Random.Range(0, _mapData.YRows));
+        }
+        while (_ongoingData.MapUnits[m_randomMapPos] != null);
 
-        // Gets Map Cell on that position.
-        m_mapCell = _ongoingData.MapCells[m_randomPos];
+        // Gets Map Cell's world position.
+        m_worldPos = _ongoingData.MapCells[m_randomMapPos].transform.position;
 
         // Instantiates unit in it's positions, but on an overlaying layer.
-        m_unit = Instantiate(_unitPrefab, m_mapCell.transform.position, 
-            Quaternion.identity, _unitsFolder).GetComponent<Unit>();
+        m_unit = Instantiate(_unitPrefab, _unitsFolder).GetComponent<Unit>();
 
         // Adds unit to ongoing saved data and initializes it.
-        _ongoingData.AddUnitTo(m_unit, m_randomPos);
-        m_unit.Initialize(m_randomPos);
-    }
-
-    private Vector2 GetRandomMapPos()
-    {
-        return new Vector2(
-            UnityEngine.Random.Range(0, _mapData.XCols),
-            UnityEngine.Random.Range(0, _mapData.YRows));
+        _ongoingData.AddUnitTo(m_unit, m_randomMapPos);
+        m_unit.Initialize(m_randomMapPos, m_worldPos, _ongoingData.MapCellSize);
     }
 
     /// <summary>

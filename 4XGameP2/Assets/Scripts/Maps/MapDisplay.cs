@@ -12,6 +12,8 @@ public class MapDisplay : MonoBehaviour
     /// </summary>
     public static event Action<MapData> OnMapGenerated;
 
+    public static event Action<float> OnCamZoom;
+
     /// <summary>
     /// Constant value of the max cell size in the Y axis.
     /// </summary>
@@ -126,7 +128,7 @@ public class MapDisplay : MonoBehaviour
         float m_rows = 0;
         float m_cols = 0;
 
-        _ongoingData.NewMap();
+        _ongoingData.NewMap(_cellSize);
 
         // Iterates every game tile in Map Data.
         for (int i = 0; i < p_map.GameTiles.Count; i++)
@@ -280,6 +282,8 @@ public class MapDisplay : MonoBehaviour
             // Prevents cam size from going under its limit.
             if (_cam.orthographicSize < _camMinSize)
                 _cam.orthographicSize = _camMinSize;
+
+            OnCamZoom(_cam.orthographicSize);
         }
 
 
@@ -291,6 +295,8 @@ public class MapDisplay : MonoBehaviour
             // Prevents cam size from going over its limit.
             if (_cam.orthographicSize > _camMaxSize) 
                 _cam.orthographicSize = _camMaxSize;
+
+            OnCamZoom(_cam.orthographicSize);
         }
     }
 }
