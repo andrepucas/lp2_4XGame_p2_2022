@@ -90,34 +90,36 @@ public class UIPanelUnits : UIPanel
             // Activates the appropriate game object for multiple units.
             _multipleUnitsObject.SetActive(true);
 
+            // Goes through each selected unit
             foreach (Unit unit in _selectedUnits)
             {
                 // Instantiates a unit icon for each unit selected.
                 Instantiate(_unitIcon, _unitIconsFolder.transform);
             }
 
-
+            // Updates the text to the total number of selected units.
             _unitTypeOrCountFolder.GetComponent<TMP_Text>().text =
             _selectedUnits.Count.ToString();
         }
 
-        // Coleção com todos os tipos unicos.
+        // Collection with all the unique resource types.
         IEnumerable<Resource> m_resourceTypes = _selectedUnits
         .SelectMany(r => r.Resources)
         .GroupBy(t => t.Name)
         .Select(t => t.First());
 
-        // Percorre os tipos unicos
+        // Goes through said types.
         foreach (Resource r in m_resourceTypes)
         {
-            // Instância o counter
+            // Instantiates a resource counter.
             Transform f_currentCounter =
             Instantiate(_resourceCount, _resourceCountFolder.transform);
 
-            // Mete a imagem adequada no icon
+            // Updates the image of the resource counter to match the resource
+            // type.
             f_currentCounter.GetComponentInChildren<Image>().sprite = r.DefaultSprite;
 
-            // Atualiza os counts dos recursos
+            // Updates the values of the quantity of resources.
             f_currentCounter.GetComponentInChildren<TMP_Text>().text =
             _selectedUnits.SelectMany(u => u.Resources)
             .Where(u => u.Name == r.Name)
