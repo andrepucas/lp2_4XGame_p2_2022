@@ -41,6 +41,9 @@ public class MapDisplay : MonoBehaviour
     [Header("CELL PREFAB")]
     [Tooltip("Prefab of a tile cell.")]
     [SerializeField] private GameObject _cell;
+    [Header("GAME DATA")]
+    [Tooltip("Scriptable Object with Ongoing Game Data")]
+    [SerializeField] private OngoingGameDataSO _ongoingData;
 
     // Reference to the grid layout component.
     private GridLayoutGroup _gridLayout;
@@ -118,12 +121,36 @@ public class MapDisplay : MonoBehaviour
         // DEBUG: Time when map starts being generated.
         DateTime m_startTime = DateTime.Now;
 
+        MapCell m_mapCell;
+        Vector2 m_mapPosition;
+        float m_rows = 0;
+        float m_cols = 0;
+
+        _ongoingData.NewMap();
+
         // Iterates every game tile in Map Data.
-        foreach (GameTile tile in p_map.GameTiles)
+        for (int i = 0; i < p_map.GameTiles.Count; i++)
         {
-            // Instantiates a Cell as a child of this game object.
-            Instantiate(_cell, transform).GetComponent<MapCell>().
-                Initialize(tile);
+            // Instantiates a cell as a child of this game object.
+            m_mapCell = Instantiate(_cell, transform).GetComponent<MapCell>();
+
+            // Initializes it.
+            m_mapCell.Initialize(p_map.GameTiles[i]);
+
+            // Saves current map position.
+            m_mapPosition.y = m_rows;
+            m_mapPosition.x = m_cols;
+
+            // Saves cell together with it's relative map position.
+            _ongoingData.SaveMapInfo(m_mapCell, m_mapPosition);
+
+            // Increment map position.
+            m_cols++;
+            if (m_cols == p_map.XCols)
+            {
+                m_cols = 0;
+                m_rows++;
+            }
         }
 
         // DEBUG: Displays time map took to generate.

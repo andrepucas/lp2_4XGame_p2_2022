@@ -1835,7 +1835,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mapDisplay: {fileID: 605174932}
   _warnings: {fileID: 1611585785}
-  _data: {fileID: 11400000, guid: d80cc0443de6e254c9a9a90c9370d8e8, type: 2}
+  _presetData: {fileID: 11400000, guid: d80cc0443de6e254c9a9a90c9370d8e8, type: 2}
 --- !u!1 &407781997
 GameObject:
   m_ObjectHideFlags: 0
@@ -2226,8 +2226,9 @@ MonoBehaviour:
   _turnDisplay: {fileID: 565795507}
   _resourceCountFolder: {fileID: 1724440011}
   _mapResourceCount: {fileID: 6959098923499027189, guid: 9eda881ecaf8f6a43ba4948c70ada597, type: 3}
-  _unitPrefab: {fileID: 0}
-  _gameData: {fileID: 11400000, guid: d80cc0443de6e254c9a9a90c9370d8e8, type: 2}
+  _unitPrefab: {fileID: 3754135468953636891, guid: 80292b2295243dd4f973aba753f9c32d, type: 3}
+  _presetData: {fileID: 11400000, guid: d80cc0443de6e254c9a9a90c9370d8e8, type: 2}
+  _ongoingData: {fileID: 11400000, guid: 3328a118a3ff226468ce3cb2c936dd30, type: 2}
 --- !u!1 &552133170
 GameObject:
   m_ObjectHideFlags: 0
@@ -2988,6 +2989,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cell: {fileID: 2593993689442763667, guid: a54782160d1ad4944a23c83763393cc5, type: 3}
+  _ongoingData: {fileID: 11400000, guid: 3328a118a3ff226468ce3cb2c936dd30, type: 2}
 --- !u!114 &605174933
 MonoBehaviour:
   m_ObjectHideFlags: 0

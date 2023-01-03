@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 066f35aebf00d0c4f9c40a2e08b94cd4
+=======
+guid: d18800c9693b6404b94a5d190690c2be
+>>>>>>> e15ee74 (Add unit script to prefab + button instantiation)
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

@@ -27,8 +27,9 @@ public class UIPanelGameplay : UIPanel
     [Tooltip("Unit prefab.")]
     [SerializeField] private GameObject _unitPrefab;
     [Header("GAME DATA")]
-    [Tooltip("Scriptable Object with Game Data.")]
-    [SerializeField] private GameDataSO _gameData;
+    [Tooltip("Scriptable Object with Preset Game Data.")]
+    [SerializeField] private PresetGameDataSO _presetData;
+    [SerializeField] private OngoingGameDataSO _ongoingData;
 
     // Reference to MapData.
     private MapData _mapData;
@@ -64,7 +65,7 @@ public class UIPanelGameplay : UIPanel
             Destroy(f_child.gameObject);
 
         // Iterates all possible resources' preset values.
-        foreach (PresetResourcesData f_rData in _gameData.Resources)
+        foreach (PresetResourcesData f_rData in _presetData.Resources)
         {
             // Instantiates a visual resource count object and updates its sprite
             // to match the resource's default sprite.
@@ -113,7 +114,7 @@ public class UIPanelGameplay : UIPanel
             f_textComponent.text = _mapData.GameTiles
             .SelectMany(t => t.Resources)
             .Where(r => (r.Name.ToLower().Replace(" ", ""))
-            .Equals(_gameData.ResourceNames.ToList()[m_nameIndex]))
+            .Equals(_presetData.ResourceNames.ToList()[m_nameIndex]))
             .Count().ToString();
 
             // Increases the variable so the next name is accessed.
@@ -134,9 +135,23 @@ public class UIPanelGameplay : UIPanel
     public void OnAddUnit()
     {
         Debug.Log("Adding Unit");
-        // Select random map cell, without unit.
-        
-        // Instantiate unit in it.
+
+        MapCell m_randomMapCell;
+
+        // Finds a random map cell that doesn't have a unit in it.
+        do {m_randomMapCell = _ongoingData.MapCells[GetRandomMapPos()];}
+        while (m_randomMapCell.HasUnit);
+
+        // Instantiates unit in it.
+        Instantiate(_unitPrefab, m_randomMapCell.transform)
+            .GetComponent<Unit>().Initialize(_presetData.Units[0].Color);
+    }
+
+    private Vector2 GetRandomMapPos()
+    {
+        return new Vector2(
+            UnityEngine.Random.Range(0, _mapData.XCols),
+            UnityEngine.Random.Range(0, _mapData.YRows));
     }
 
     /// <summary>
