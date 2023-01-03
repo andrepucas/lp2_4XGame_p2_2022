@@ -29,14 +29,6 @@ public class MapCell : MonoBehaviour
     [Tooltip("Prefab of resource image.")]
     [SerializeField] private GameObject _resourceImgPrefab;
 
-    /// <summary>
-    /// Self implemented property that returns true if there's a Unit in the 
-    /// game object.
-    /// </summary>
-    /// <typeparam name="Unit">Unit class.</typeparam>
-    /// <returns>True if a unit is found in this game object.</returns>
-    public bool HasUnit => GetComponentInChildren<Unit>();
-
     // Reference to the game tile this cell represents.
     private GameTile _tile;
 

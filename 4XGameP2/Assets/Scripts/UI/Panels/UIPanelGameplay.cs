@@ -24,6 +24,8 @@ public class UIPanelGameplay : UIPanel
     [Tooltip("Prefab of individual map resource's count.")]
     [SerializeField] private GameObject _mapResourceCount;
     [Header("UNITS")]
+    [Tooltip("Units display parent object.")]
+    [SerializeField] private Transform _unitsFolder;
     [Tooltip("Unit prefab.")]
     [SerializeField] private GameObject _unitPrefab;
     [Header("GAME DATA")]
@@ -136,15 +138,24 @@ public class UIPanelGameplay : UIPanel
     {
         Debug.Log("Adding Unit");
 
-        MapCell m_randomMapCell;
+        Vector2 m_randomPos;
+        MapCell m_mapCell;
+        Unit m_unit;
 
-        // Finds a random map cell that doesn't have a unit in it.
-        do {m_randomMapCell = _ongoingData.MapCells[GetRandomMapPos()];}
-        while (m_randomMapCell.HasUnit);
+        // Finds a random map position that doesn't have a unit in it.
+        do{m_randomPos = GetRandomMapPos();}
+        while (_ongoingData.MapUnits[m_randomPos] != null);
 
-        // Instantiates unit in it.
-        Instantiate(_unitPrefab, m_randomMapCell.transform)
-            .GetComponent<Unit>().Initialize(_presetData.Units[0].Color);
+        // Gets Map Cell on that position.
+        m_mapCell = _ongoingData.MapCells[m_randomPos];
+
+        // Instantiates unit in it's positions, but on an overlaying layer.
+        m_unit = Instantiate(_unitPrefab, m_mapCell.transform.position, 
+            Quaternion.identity, _unitsFolder).GetComponent<Unit>();
+
+        // Adds unit to ongoing saved data and initializes it.
+        _ongoingData.AddUnitTo(m_unit, m_randomPos);
+        m_unit.Initialize(m_randomPos);
     }
 
     private Vector2 GetRandomMapPos()

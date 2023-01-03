@@ -142,7 +142,7 @@ public class MapDisplay : MonoBehaviour
             m_mapPosition.x = m_cols;
 
             // Saves cell together with it's relative map position.
-            _ongoingData.SaveMapInfo(m_mapCell, m_mapPosition);
+            _ongoingData.SetupMapInfo(m_mapCell, m_mapPosition);
 
             // Increment map position.
             m_cols++;

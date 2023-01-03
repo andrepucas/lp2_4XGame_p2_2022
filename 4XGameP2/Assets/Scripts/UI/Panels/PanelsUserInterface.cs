@@ -24,8 +24,10 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
     [SerializeField] private UIPanelMapBrowser _mapBrowser;
     [Tooltip("Gameplay panel.")]
     [SerializeField] private UIPanelGameplay _gameplay;
-    [Tooltip("Map display panel.")]
+    [Tooltip("World Space Canvas - Map display panel.")]
     [SerializeField] private UIPanelMapDisplay _mapDisplay;
+    [Tooltip("World Space Canvas - Units display panel.")]
+    [SerializeField] private UIPanelUnitsDisplay _unitsDisplay;
     [Tooltip("Inspector panel.")]
     [SerializeField] private UIPanelInspector _inspector;
 
@@ -84,9 +86,10 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
 
             case UIStates.DISPLAY_MAP:
 
-                // Opens Gameplay and Map Display panels.
+                // Opens Gameplay, Map Display and Units Display panels.
                 _gameplay.OpenPanel(_panelTransitionTime);
                 _mapDisplay.OpenPanel(_panelTransitionTime);
+                _unitsDisplay.OpenPanel(_panelTransitionTime);
 
                 break;
 
@@ -118,6 +121,7 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
         _mapBrowser.SetupPanel();
         _gameplay.SetupPanel();
         _mapDisplay.SetupPanel();
+        _unitsDisplay.SetupPanel();
         _inspector.SetupPanel();
     }
 
