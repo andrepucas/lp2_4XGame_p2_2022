@@ -97,13 +97,33 @@ MonoBehaviour:
     _coin: -3
     _food: -3
   _units:
-  - _name: Grim Reaper
-    _icon: {fileID: 21300000, guid: 81ec117c5c075744f9036fbf6d0ee0ae, type: 3}
-    _cellSprite: {fileID: 21300000, guid: fafacbe64ab08fe40a8454e63d8a2656, type: 3}
-    _color: {r: 0.5882353, g: 0, b: 1, a: 1}
+  - _name: Harvester
+    _baseIcon: {fileID: 21300000, guid: 634ddfd1a7e324c4195e48ae7f14e01d, type: 3}
+    _frontIcon: {fileID: 21300000, guid: 4f4368609603a4a4e99a0799302e9ce3, type: 3}
     _movement: 0
+    _resourceNamesToCollect:
+    - Plants
+    _resourceNamesToGenerate: []
+  - _name: Miner
+    _baseIcon: {fileID: 21300000, guid: d9e878313323bd747ab512956817dda3, type: 3}
+    _frontIcon: {fileID: 21300000, guid: bf8fcb7f40a164441a459c986d7f4e48, type: 3}
+    _movement: 1
+    _resourceNamesToCollect:
+    - Metals
+    _resourceNamesToGenerate:
+    - Pollution
+  - _name: Grim Reaper
+    _baseIcon: {fileID: 21300000, guid: 2cc06f3598b1feb4d95958fb6abf7c81, type: 3}
+    _frontIcon: {fileID: 21300000, guid: 358bbbd9f037d534698d99ca5dd3abd8, type: 3}
+    _movement: 1
     _resourceNamesToCollect:
     - Animals
     - Plants
     _resourceNamesToGenerate: []
-  _unitOverlaySprite: {fileID: 21300000, guid: 4ae4b9f58f547ea4ab67b2e933af03a8, type: 3}
+  - _name: Butcher
+    _baseIcon: {fileID: 21300000, guid: 56dc1977923fa1c4799de2d9613b93c2, type: 3}
+    _frontIcon: {fileID: 21300000, guid: d24b1949e7eaf334589138eeb95987e5, type: 3}
+    _movement: 0
+    _resourceNamesToCollect:
+    - Animals
+    _resourceNamesToGenerate: []

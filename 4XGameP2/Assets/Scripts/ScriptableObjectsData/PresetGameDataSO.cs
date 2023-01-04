@@ -14,8 +14,6 @@ public class PresetGameDataSO : ScriptableObject
     [SerializeField] private PresetResourcesData[] _resources;
     [Tooltip("All possible units.")]
     [SerializeField] private PresetUnitsData[] _units;
-    [Tooltip("Default unit cell overlay sprite.")]
-    [SerializeField] private Sprite _unitOverlaySprite;
 
     /// <summary>
     /// Readonly self-implemented property list of all possible terrains.

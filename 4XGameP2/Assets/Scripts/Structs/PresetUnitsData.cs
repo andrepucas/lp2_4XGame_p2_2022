@@ -9,12 +9,8 @@ public struct PresetUnitsData
     // Serialized variables.
     [Tooltip("Name, as should be displayed.")]
     [SerializeField] private string _name;
-    [Tooltip("Icon Sprite, in full res.")]
-    [SerializeField] private Sprite _icon;
-    [Tooltip("Icon Sprite to be displayed in a cell.")]
-    [SerializeField] private Sprite _cellSprite;
-    [Tooltip("Icon Sprite to be displayed in a cell.")]
-    [SerializeField] private Color _color;
+    [Tooltip("Icon Sprites")]
+    [SerializeField] private Sprite _baseIcon, _frontIcon;
     [Header("ACTIONS")]
     [Tooltip("Unit's movement type.")]
     [SerializeField] private MovementType _movement;
@@ -27,9 +23,8 @@ public struct PresetUnitsData
     public string Name => _name;
     public string RawName => string.Join("", _name.Split(default(string[]), 
         System.StringSplitOptions.RemoveEmptyEntries)).ToLower();
-    public Sprite Icon => _icon;
-    public Sprite CellSprite => _cellSprite;
-    public Color Color => _color;
+    public Sprite BaseIcon => _baseIcon;
+    public Sprite FrontIcon => _frontIcon;
     public MovementType Movement => _movement;
     public string[] ResourceNamesToCollect => _resourceNamesToCollect;
     public string[] ResourceNamesToGenerate => _resourceNamesToGenerate;

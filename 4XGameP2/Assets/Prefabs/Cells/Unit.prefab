@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3430732688696666257}
   - component: {fileID: 2076974542266850214}
   m_Layer: 5
-  m_Name: Icon Img
+  m_Name: Front Img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -231,7 +231,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rectTransform: {fileID: 3754135468953636892}
   _baseImg: {fileID: 3754135468953636893}
-  _iconImg: {fileID: 2076974542266850214}
+  _frontImg: {fileID: 2076974542266850214}
   _selectedRing: {fileID: 6245003520881240668}
   _normalColor: {r: 0.9411765, g: 0.9411765, b: 0.9411765, a: 0.5882353}
   _hoveredColor: {r: 1, g: 0.19607843, b: 0.39215687, a: 0.5882353}

@@ -22,7 +22,7 @@ public class Unit : MonoBehaviour
     [Tooltip("Base Image component.")]
     [SerializeField] private Image _baseImg;
     [Tooltip("Icon Image component.")]
-    [SerializeField] private Image _iconImg;
+    [SerializeField] private Image _frontImg;
     [Tooltip("Selected Ring Game Object component.")]
     [SerializeField] private GameObject _selectedRing;
     [Header("COLORS")]
@@ -36,20 +36,22 @@ public class Unit : MonoBehaviour
     [SerializeField] private float _colorFadeTime;
 
     /// <summary>
-    /// Read only self implemented property that stores the name of the unit.
+    /// Self implemented property that stores the name of the unit.
     /// </summary>
     /// <value>Name of the unit (type).</value>
-    public string Name { get; }
+    public string Name { get; private set;}
 
     /// <summary>
-    /// Read only self implemented property that stores all the current resources
-    /// of this unit.
+    /// Read only self implemented property that stores all unit's resources.
     /// </summary>
     /// <value>Current resources of the unit.</value>
     public IReadOnlyList<Resource> Resources => _resourceList;
 
     // Private list of Resources.
     private List<Resource> _resourceList;
+
+    // Private arrays of resource's names to collect and generate.
+    private string[] _resourceNamesToCollect, _resourceNamesToGenerate;
 
     // Private reference to the relative map position. Ex: (0,1).
     private Vector2 _mapPos;
@@ -59,19 +61,6 @@ public class Unit : MonoBehaviour
 
     // Private status to control if this unit is selected or not.
     private bool _isSelected;
-
-    /// <summary>
-    /// Constructor method. 
-    /// Sets properties' values and initializes resources list.
-    /// </summary>
-    /// <param name="p_name">Name.</param>
-    public Unit(string p_name)
-    {
-        Name = p_name;
-
-        // Initializes list.
-        _resourceList = new List<Resource>();
-    }
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
@@ -89,8 +78,22 @@ public class Unit : MonoBehaviour
     /// <param name="p_mapPos">Relative position (map).</param>
     /// <param name="p_worldPos">Absolute position (world).</param>
     /// <param name="p_cellSize">Size of map cells.</param>
-    public void Initialize(Vector2 p_mapPos, Vector3 p_worldPos, float p_cellSize)
+    public void Initialize(PresetUnitsData p_unitData, Vector2 p_mapPos, 
+        Vector3 p_worldPos, float p_cellSize)
     {
+        // Sets unit name.
+        Name = p_unitData.Name;
+
+        // Sets unit sprites.
+        _baseImg.sprite = p_unitData.BaseIcon;
+        _frontImg.sprite = p_unitData.FrontIcon;
+        _frontImg.color = Color.clear;
+        OnPointerExit();
+
+        // Saves names of resources this unit should collect & generate.
+        _resourceNamesToCollect = p_unitData.ResourceNamesToCollect;
+        _resourceNamesToGenerate = p_unitData.ResourceNamesToGenerate;
+        
         // Saves relative map position.
         _mapPos = p_mapPos;
 
@@ -102,10 +105,6 @@ public class Unit : MonoBehaviour
         // Updates scale to remain consistent.
         _rectSize = _rectTransform.sizeDelta;
         UpdateScale(Camera.main.orthographicSize);
-
-        // Updates sprite.
-        _iconImg.color = Color.clear;
-        OnPointerExit();
 
         // Deselects unit.
         _isSelected = false;
@@ -181,14 +180,14 @@ public class Unit : MonoBehaviour
     private IEnumerator ColorFadeTo(Color p_targetColor)
     {
         // Saves current icon color.
-        Color m_startColor = _iconImg.color;
+        Color m_startColor = _frontImg.color;
 
         // Cycles for the duration of the color fade time.
         float m_elapsedTime = 0;
         while(m_elapsedTime < _colorFadeTime)
         {
             // Lerps icon color.
-            _iconImg.color = Color.Lerp(m_startColor, p_targetColor, 
+            _frontImg.color = Color.Lerp(m_startColor, p_targetColor, 
                 (m_elapsedTime/_colorFadeTime));
 
             m_elapsedTime += Time.unscaledDeltaTime;
@@ -197,7 +196,7 @@ public class Unit : MonoBehaviour
 
         // Explicitly sets icon color to target color after fade time.
         // (Prevents color lerp inaccuracies).
-        _iconImg.color = p_targetColor;
+        _frontImg.color = p_targetColor;
     }
 
     public void MoveTowardsTile(GameTile selectedTile)

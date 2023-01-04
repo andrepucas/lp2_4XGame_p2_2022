@@ -141,14 +141,18 @@ public class UIPanelGameplay : UIPanel
     }
 
     /// <summary>
-    /// Instantiates unit in the map.
+    /// Instantiates unit in the map. Unit depends on index parameter.
     /// </summary>
     /// <remarks>
     /// Called by the 'ADD UNIT' Unity buttons, at the top of this panel.
     /// </remarks>
-    public void OnAddUnit()
+    public void OnAddUnit(int p_index)
     {
-        Debug.Log("Adding Unit");
+        // Throws exception if indexed unit doesn't exist.
+        if (p_index > _presetData.Units.Count)
+            throw new IndexOutOfRangeException("Button index exceeds available units.");
+
+        Debug.Log($"Adding Unit: {p_index}");
 
         Vector2 m_randomMapPos;
         Vector3 m_worldPos;
@@ -170,7 +174,10 @@ public class UIPanelGameplay : UIPanel
 
         // Adds unit to ongoing saved data and initializes it.
         _ongoingData.AddUnitTo(m_unit, m_randomMapPos);
-        m_unit.Initialize(m_randomMapPos, m_worldPos, _ongoingData.MapCellSize);
+
+        // Initializes unit with the given index.
+        m_unit.Initialize(_presetData.Units[p_index], m_randomMapPos, 
+            m_worldPos, _ongoingData.MapCellSize);
     }
 
     /// <summary>
