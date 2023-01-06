@@ -12,35 +12,28 @@ public class UIPanelUnits : UIPanel
     [Header("ANIMATOR")]
     [Tooltip("Animator component of info sub-panel.")]
     [SerializeField] private Animator _subPanelAnim;
-
     [Header("FOLDERS")]
     [Tooltip("Folder game object where the unit icons are stored.")]
     [SerializeField] private Transform _unitIconsFolder;
-
     [Tooltip("Folder game object where the resource counters are stored.")]
     [SerializeField] private Transform _resourceCountFolder;
-
     [Tooltip("Folder game object where unit quantity specific game objects are stored.")]
     [SerializeField] private Transform _unitTypeOrCountFolder;
-
     [Header("GAME OBJECTS")]
     [Tooltip("Game object that needs to be enabled if there's only 1 unit.")]
     [SerializeField] private GameObject _singleUnitObject;
-
     [Tooltip("Game object that needs to be enabled if there are various units.")]
     [SerializeField] private GameObject _multipleUnitsObject;
-
     [Header("PREFABS")]
     [Tooltip("Prefab of unit icon.")]
     [SerializeField] private Transform _unitIcon;
-
     [Tooltip("Prefab of resource counter.")]
     [SerializeField] private Transform _resourceCount;
 
-    // Reference to data regarding the existing resources;
+    // Reference to PresetResourcesData.
     private PresetResourcesData _resourceData;
 
-    // Collection with all the selected units by the player-
+    // Collection with all the selected units by the player.
     private ICollection<Unit> _selectedUnits = new List<Unit>();
 
     // Event that is raised when the unit UI panel is opened.
@@ -51,8 +44,15 @@ public class UIPanelUnits : UIPanel
     /// </summary>
     private void OnEnable() => Unit.OnUnitView += DisplayUnitsData;
 
+    /// <summary>
+    /// Unity method, on disable, unsubscribes to events.
+    /// </summary>
     private void OnDisable() => Unit.OnUnitView -= DisplayUnitsData;
 
+    /// <summary>
+    /// Reveals panel.
+    /// </summary>
+    /// <param name="p_transitionTime">Reveal time (s).</param>
     public void OpenPanel(float p_transitionTime = 0)
     {
         // Reveals the panel.
@@ -63,7 +63,7 @@ public class UIPanelUnits : UIPanel
     }
 
     /// <summary>
-    /// Hides panel.
+    /// Hides panel and destroys all the visual unit info.
     /// </summary>
     /// <param name="p_transitionTime">Hiding time (s).</param>
     public void ClosePanel(float p_transitionTime = 0)
@@ -86,6 +86,7 @@ public class UIPanelUnits : UIPanel
         foreach (Transform resourceImage in _unitTypeOrCountFolder)
             Destroy(resourceImage.gameObject);
 
+        // Clears the selected units collection.
         _selectedUnits.Clear();
     }
 
@@ -96,21 +97,26 @@ public class UIPanelUnits : UIPanel
     private void DisplayUnitsData(Unit m_unit, bool m_isSelected)
     {
 
+        // Checks if the selected units are 0 and if the received unit was selected.
         if (_selectedUnits.Count == 0 && m_isSelected == true)
         {
+            // Add previous unit to selected units.
             _selectedUnits.Add(m_unit);
+
+            // Raises OnUnitsToDisplay event.
             OnUnitsToDisplay?.Invoke();
         }
 
+        // Checks if the unit was selected, if it was it's added to the list.
         if (m_isSelected == true) _selectedUnits.Add(m_unit);
 
+        // Otherwise, it removes the unit from the list.
         else _selectedUnits.Remove(m_unit);
 
 
         // Checks if only one unit is selected.
         if (_selectedUnits.Count == 1)
         {
-            Debug.Log("Yes");
             // Activates the appropriate game object for a single unit.
             _singleUnitObject.SetActive(true);
 
@@ -125,7 +131,6 @@ public class UIPanelUnits : UIPanel
         // Otherwise, the player selected multiple units.
         else
         {
-            Debug.Log("Yes Yes");
             // Activates the appropriate game object for multiple units.
             _multipleUnitsObject.SetActive(true);
 

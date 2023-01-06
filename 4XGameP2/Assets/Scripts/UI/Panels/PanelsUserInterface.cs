@@ -59,7 +59,7 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
     public void ChangeUIState(UIStates p_uiState)
     {
         // Checks current UI state.
-        switch(p_uiState)
+        switch (p_uiState)
         {
             case UIStates.PRE_START:
 
@@ -114,11 +114,13 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
 
             case UIStates.UNITS_CONTROL:
 
+                // Opens Units panel.
                 _units.OpenPanel();
                 break;
 
             // case UIStates.RESUME_FROM_UNITS:
 
+            //     // Closes Units panel.
             //     _units.ClosePanel(_panelTransitionTime);
             //     break;
 
@@ -151,7 +153,7 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
         while (_background.color.a < 1)
         {
             // Lerp the background color alpha value from 0 to 1.
-            _bgColor.a = Mathf.Lerp(0, 1, (m_elapsedTime/_bgRevealTime));
+            _bgColor.a = Mathf.Lerp(0, 1, (m_elapsedTime / _bgRevealTime));
             _background.color = _bgColor;
 
             // Updates elapsed time based on current time and start time.

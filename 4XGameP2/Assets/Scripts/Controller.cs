@@ -192,10 +192,14 @@ public class Controller : MonoBehaviour
 
                 if (_isInspecting)
                 {
+                    // Updates is inspecting control variable.
                     _isInspecting = false;
 
+                    // Sets UI state to resume from inspector.
                     _userInterface.ChangeUIState(UIStates.RESUME_FROM_INSPECTOR);
                 }
+
+                // Otherwise, sets UI state to resume from units.
                 else _userInterface.ChangeUIState(UIStates.RESUME_FROM_UNITS);
 
                 break;
@@ -211,7 +215,6 @@ public class Controller : MonoBehaviour
             case GameStates.UNITS_CONTROL:
 
                 // Sets UI state to units control.
-                
                 _userInterface.ChangeUIState(UIStates.UNITS_CONTROL);
 
                 break;
