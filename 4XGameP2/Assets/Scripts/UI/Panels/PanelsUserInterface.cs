@@ -74,6 +74,7 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
             case UIStates.MAP_BROWSER:
 
                 // Closes Pre Start panel and opens Map Browser panel.
+                StopCoroutine(StartDelayAndReveal());
                 _preStart.ClosePanel();
                 _mapBrowser.OpenPanel(_panelTransitionTime);
 
