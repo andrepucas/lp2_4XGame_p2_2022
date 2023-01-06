@@ -27,6 +27,8 @@ public class Controller : MonoBehaviour
 
     // Control variables for managing game states.
     private bool _isMapDisplayed;
+    private bool _isUnitsDisplayed;
+    private bool _isInspecting;
 
     /// <summary>
     /// Unity method, program starts here.
@@ -54,7 +56,8 @@ public class Controller : MonoBehaviour
         MapData.OnValidLoadedData += HandleLoadedDataStatus;
         UIPanelGameplay.OnRestart += () => ChangeGameState(GameStates.PRE_START);
         MapDisplay.OnMapGenerated += (_) => ChangeGameState(GameStates.GAMEPLAY);
-        MapCell.OnInspectView += () => ChangeGameState(GameStates.PAUSE);
+        MapCell.OnInspectView += () => ChangeGameState(GameStates.INSPECTOR);
+        UIPanelUnits.OnUnitsToDisplay += () => ChangeGameState(GameStates.UNITS_CONTROL);
     }
 
     /// <summary>
@@ -67,7 +70,8 @@ public class Controller : MonoBehaviour
         MapData.OnValidLoadedData -= HandleLoadedDataStatus;
         UIPanelGameplay.OnRestart -= () => ChangeGameState(GameStates.PRE_START);
         MapDisplay.OnMapGenerated -= (_) => ChangeGameState(GameStates.GAMEPLAY);
-        MapCell.OnInspectView -= () => ChangeGameState(GameStates.PAUSE);
+        MapCell.OnInspectView -= () => ChangeGameState(GameStates.INSPECTOR);
+        UIPanelUnits.OnUnitsToDisplay -= () => ChangeGameState(GameStates.UNITS_CONTROL);
     }
 
     /// <summary>
@@ -119,7 +123,7 @@ public class Controller : MonoBehaviour
     private void Update()
     {
         // Input for Pause game state (either in inspector or analytics mode).
-        if (_currentState == GameStates.PAUSE)
+        if (_currentState == GameStates.INSPECTOR)
         {
             // Backs out from pause game state.
             if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(0))
@@ -143,6 +147,7 @@ public class Controller : MonoBehaviour
 
                 // Updates map displayed control variable.
                 _isMapDisplayed = false;
+                _isInspecting = false;
 
                 // Sets UI state to pre-start.
                 _userInterface.ChangeUIState(UIStates.PRE_START);
@@ -185,14 +190,32 @@ public class Controller : MonoBehaviour
                 // Otherwise, Sets UI state to resume from inspector.
                 else _userInterface.ChangeUIState(UIStates.RESUME_FROM_INSPECTOR);
 
+                if (_isInspecting)
+                {
+                    _isInspecting = false;
+
+                    _userInterface.ChangeUIState(UIStates.RESUME_FROM_INSPECTOR);
+                }
+                else _userInterface.ChangeUIState(UIStates.RESUME_FROM_UNITS);
+
                 break;
 
-            case GameStates.PAUSE:
+            case GameStates.INSPECTOR:
 
                 // Sets UI state to inspector.
+                _isInspecting = true;
                 _userInterface.ChangeUIState(UIStates.INSPECTOR);
 
                 break;
+
+            case GameStates.UNITS_CONTROL:
+
+                // Sets UI state to units control.
+                
+                _userInterface.ChangeUIState(UIStates.UNITS_CONTROL);
+
+                break;
+
         }
     }
 

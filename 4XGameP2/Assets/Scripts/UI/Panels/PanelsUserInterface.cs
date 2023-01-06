@@ -30,6 +30,8 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
     [SerializeField] private UIPanelUnitsDisplay _unitsDisplay;
     [Tooltip("Inspector panel.")]
     [SerializeField] private UIPanelInspector _inspector;
+    [Tooltip("Units panel.")]
+    [SerializeField] private UIPanelInspector _units;
 
     // Color that holds the background image color.
     private Color _bgColor;
@@ -108,6 +110,16 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
                 _gameplay.OpenPanel(_panelTransitionTime);
 
                 break;
+
+            case UIStates.UNITS_CONTROL:
+
+                _units.OpenPanel();
+                break;
+
+            // case UIStates.RESUME_FROM_UNITS:
+
+            //     _units.ClosePanel(_panelTransitionTime);
+            //     break;
 
         }
     }

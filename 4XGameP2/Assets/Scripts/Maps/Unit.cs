@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -39,7 +40,7 @@ public class Unit : MonoBehaviour
     /// Self implemented property that stores the name of the unit.
     /// </summary>
     /// <value>Name of the unit (type).</value>
-    public string Name { get; private set;}
+    public string Name { get; private set; }
 
     /// <summary>
     /// Read only self implemented property that stores all unit's resources.
@@ -62,6 +63,10 @@ public class Unit : MonoBehaviour
     // Private status to control if this unit is selected or not.
     private bool _isSelected;
 
+    private Unit _unit;
+
+    public static event Action<Unit, bool> OnUnitView;
+
     /// <summary>
     /// Unity method, on enable, subscribes to events.
     /// </summary>
@@ -78,11 +83,13 @@ public class Unit : MonoBehaviour
     /// <param name="p_mapPos">Relative position (map).</param>
     /// <param name="p_worldPos">Absolute position (world).</param>
     /// <param name="p_cellSize">Size of map cells.</param>
-    public void Initialize(PresetUnitsData p_unitData, Vector2 p_mapPos, 
+    public void Initialize(PresetUnitsData p_unitData, Vector2 p_mapPos,
         Vector3 p_worldPos, float p_cellSize)
     {
         // Sets unit name.
         Name = p_unitData.Name;
+
+        _resourceList = new List<Resource>();
 
         // Sets unit sprites.
         _baseImg.sprite = p_unitData.BaseIcon;
@@ -93,7 +100,7 @@ public class Unit : MonoBehaviour
         // Saves names of resources this unit should collect & generate.
         _resourceNamesToCollect = p_unitData.ResourceNamesToCollect;
         _resourceNamesToGenerate = p_unitData.ResourceNamesToGenerate;
-        
+
         // Saves relative map position.
         _mapPos = p_mapPos;
 
@@ -164,8 +171,17 @@ public class Unit : MonoBehaviour
     public void OnClick()
     {
         // Enables or disable the selected animated ring around the unit.
-        if (!_isSelected) _selectedRing.SetActive(true);
-        else _selectedRing.SetActive(false);
+        if (!_isSelected)
+        {
+            _selectedRing.SetActive(false);
+            OnUnitView?.Invoke(this, false);
+        }
+
+        else
+        {
+            OnUnitView?.Invoke(this, true);
+            _selectedRing.SetActive(true);
+        }
 
         // Inverts selected status.
         _isSelected = !_isSelected;
@@ -184,11 +200,11 @@ public class Unit : MonoBehaviour
 
         // Cycles for the duration of the color fade time.
         float m_elapsedTime = 0;
-        while(m_elapsedTime < _colorFadeTime)
+        while (m_elapsedTime < _colorFadeTime)
         {
             // Lerps icon color.
-            _frontImg.color = Color.Lerp(m_startColor, p_targetColor, 
-                (m_elapsedTime/_colorFadeTime));
+            _frontImg.color = Color.Lerp(m_startColor, p_targetColor,
+                (m_elapsedTime / _colorFadeTime));
 
             m_elapsedTime += Time.unscaledDeltaTime;
             yield return null;
