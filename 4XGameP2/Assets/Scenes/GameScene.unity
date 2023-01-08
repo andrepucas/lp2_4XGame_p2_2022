@@ -1834,6 +1834,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mapDisplay: {fileID: 605174932}
+  _unitSelection: {fileID: 612545452}
   _warnings: {fileID: 1611585785}
   _presetData: {fileID: 11400000, guid: d80cc0443de6e254c9a9a90c9370d8e8, type: 2}
 --- !u!1 &407781997
@@ -3036,6 +3037,7 @@ GameObject:
   - component: {fileID: 612545450}
   - component: {fileID: 612545447}
   - component: {fileID: 612545451}
+  - component: {fileID: 612545452}
   m_Layer: 5
   m_Name: Unit Display Panel
   m_TagString: Untagged
@@ -3096,6 +3098,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _canvasGroup: {fileID: 612545450}
+--- !u!114 &612545452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612545445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 338c44abbcd71cc439b5ab9fcaf8dc13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &641357950
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,8 +7,10 @@ using UnityEngine;
 public class Controller : MonoBehaviour
 {
     // Serialized variables.
-    [Tooltip("Reference to map display component.")]
+    [Tooltip("Reference to map display.")]
     [SerializeField] private MapDisplay _mapDisplay;
+    [Tooltip("Reference to unit selection.")]
+    [SerializeField] private UnitSelection _unitSelection;
     [Tooltip("UI Warnings reference")]
     [SerializeField] private UIWarnings _warnings;
     [Header("GAME DATA")]
@@ -39,6 +41,7 @@ public class Controller : MonoBehaviour
         // Initializes user interface and map display.
         _userInterface.Initialize();
         _mapDisplay.Initialize();
+        _unitSelection.Initialize();
 
         // Clear all warnings.
         _warnings.ClearAll();
@@ -82,10 +85,18 @@ public class Controller : MonoBehaviour
     }
 
     /// <summary>
-    /// Unity method, called on a fixed interval of time.
+    /// Unity method, called every frame.
     /// </summary>
-    private void FixedUpdate()
+    private void Update()
     {
+        // Input for Inspector game state
+        if (_currentState == GameStates.INSPECTOR)
+        {
+            // Backs out from inspector state.
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(0))
+                ChangeGameState(GameStates.GAMEPLAY);
+        }
+
         // Input for Gameplay game state (when the Map is displayed and controllable).
         if (_currentState == GameStates.GAMEPLAY)
         {
@@ -112,20 +123,6 @@ public class Controller : MonoBehaviour
             // Tries to zoom out.
             if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.Minus))
                 _mapDisplay.TryZoom(-1);
-        }
-    }
-
-    /// <summary>
-    /// Unity method, called every frame.
-    /// </summary>
-    private void Update()
-    {
-        // Input for Pause game state (either in inspector or analytics mode).
-        if (_currentState == GameStates.INSPECTOR)
-        {
-            // Backs out from pause game state.
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(0))
-                ChangeGameState(GameStates.GAMEPLAY);
         }
     }
 

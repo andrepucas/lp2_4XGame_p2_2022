@@ -27,12 +27,12 @@ public class MapDisplay : MonoBehaviour
     /// <summary>
     /// Constant  value of the map panning speed.
     /// </summary>
-    private const float PAN_SPEED = 0.02f;
+    private const float PAN_SPEED = 0.5f;
 
     /// <summary>
     /// Constant value of the map zoom speed.
     /// </summary>
-    private const float ZOOM_SPEED = 0.01f;
+    private const float ZOOM_SPEED = 0.3f;
 
     /// <summary>
     /// Constant value of the map max zoom per cell.
@@ -191,7 +191,7 @@ public class MapDisplay : MonoBehaviour
             {
                 // Moves camera down, with speed relative to zoom.
                 _cam.transform.position += 
-                    Vector3.down * PAN_SPEED * _cam.orthographicSize;
+                    Vector3.down * PAN_SPEED * _cam.orthographicSize * Time.deltaTime;
 
                 // Prevents cam position from going under its min. height limit.
                 if (_cam.transform.position.y < (-_maxCamViewHeight))
@@ -212,7 +212,7 @@ public class MapDisplay : MonoBehaviour
             {
                 // Moves camera up, with speed relative to zoom.
                 _cam.transform.position += 
-                    Vector3.up * PAN_SPEED * _cam.orthographicSize;
+                    Vector3.up * PAN_SPEED * _cam.orthographicSize * Time.deltaTime;;
 
                 // Prevents cam position from going over its max. height limit.
                 if (_cam.transform.position.y > _maxCamViewHeight)
@@ -233,7 +233,7 @@ public class MapDisplay : MonoBehaviour
             {
                 // Moves camera left, with speed relative to zoom.
                 _cam.transform.position += 
-                    Vector3.left * PAN_SPEED * _cam.orthographicSize;
+                    Vector3.left * PAN_SPEED * _cam.orthographicSize * Time.deltaTime;;
 
                 // Prevents cam position from going under its min. width limit.
                 if (_cam.transform.position.y < (-_maxCamViewHeight))
@@ -254,7 +254,7 @@ public class MapDisplay : MonoBehaviour
             {
                 // Moves camera right, with speed relative to zoom.
                 _cam.transform.position += 
-                    Vector3.right * PAN_SPEED * _cam.orthographicSize;
+                    Vector3.right * PAN_SPEED * _cam.orthographicSize * Time.deltaTime;;
 
                 // Prevents cam position from going over its max. width limit.
                 if (_cam.transform.position.y > _maxCamViewHeight)
@@ -277,26 +277,26 @@ public class MapDisplay : MonoBehaviour
         // Zooms in.
         if (p_direction > 0 && _cam.orthographicSize > _camMinSize)
         {
-            _cam.orthographicSize -= _cam.orthographicSize * ZOOM_SPEED;
+            _cam.orthographicSize -= _cam.orthographicSize * ZOOM_SPEED * Time.deltaTime;;
 
             // Prevents cam size from going under its limit.
             if (_cam.orthographicSize < _camMinSize)
                 _cam.orthographicSize = _camMinSize;
 
-            OnCamZoom(_cam.orthographicSize);
+            OnCamZoom?.Invoke(_cam.orthographicSize);
         }
 
 
         // Zooms out.
         else if (p_direction < 0 && _cam.orthographicSize < _camMaxSize)
         {
-            _cam.orthographicSize += _cam.orthographicSize * ZOOM_SPEED;
+            _cam.orthographicSize += _cam.orthographicSize * ZOOM_SPEED * Time.deltaTime;;
 
             // Prevents cam size from going over its limit.
             if (_cam.orthographicSize > _camMaxSize) 
                 _cam.orthographicSize = _camMaxSize;
 
-            OnCamZoom(_cam.orthographicSize);
+            OnCamZoom?.Invoke(_cam.orthographicSize);
         }
     }
 }
