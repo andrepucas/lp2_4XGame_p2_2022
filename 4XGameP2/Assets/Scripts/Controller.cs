@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using System.Threading;
 
 /// <summary>
 /// Manages game states and input.
@@ -27,7 +26,6 @@ public class Controller : MonoBehaviour
 
     // Control variables for managing game states.
     private bool _isMapDisplayed;
-    private bool _isUnitsDisplayed;
     private bool _isInspecting;
 
     /// <summary>
@@ -57,7 +55,7 @@ public class Controller : MonoBehaviour
         UIPanelGameplay.OnRestart += () => ChangeGameState(GameStates.PRE_START);
         MapDisplay.OnMapGenerated += (_) => ChangeGameState(GameStates.GAMEPLAY);
         MapCell.OnInspectView += () => ChangeGameState(GameStates.INSPECTOR);
-        UIPanelUnits.OnUnitsToDisplay += () => ChangeGameState(GameStates.UNITS_CONTROL);
+        UIPanelGameplay.OnNoUnitsSelected += () => ChangeGameState(GameStates.GAMEPLAY);
     }
 
     /// <summary>
@@ -71,7 +69,7 @@ public class Controller : MonoBehaviour
         UIPanelGameplay.OnRestart -= () => ChangeGameState(GameStates.PRE_START);
         MapDisplay.OnMapGenerated -= (_) => ChangeGameState(GameStates.GAMEPLAY);
         MapCell.OnInspectView -= () => ChangeGameState(GameStates.INSPECTOR);
-        UIPanelUnits.OnUnitsToDisplay -= () => ChangeGameState(GameStates.UNITS_CONTROL);
+        UIPanelGameplay.OnNoUnitsSelected -= () => ChangeGameState(GameStates.GAMEPLAY);
     }
 
     /// <summary>
@@ -145,7 +143,7 @@ public class Controller : MonoBehaviour
         {
             case GameStates.PRE_START:
 
-                // Updates map displayed control variable.
+                // Resets control variables.
                 _isMapDisplayed = false;
                 _isInspecting = false;
 
@@ -180,27 +178,21 @@ public class Controller : MonoBehaviour
                 // If map isn't being displayed.
                 if (!_isMapDisplayed)
                 {
-                    // Updates map displayed control variable.
-                    _isMapDisplayed = true;
-
                     // Sets UI state to display map.
+                    _isMapDisplayed = true;
                     _userInterface.ChangeUIState(UIStates.DISPLAY_MAP);
                 }
 
-                // Otherwise, Sets UI state to resume from inspector.
-                else _userInterface.ChangeUIState(UIStates.RESUME_FROM_INSPECTOR);
-
-                if (_isInspecting)
+                // If is inspecting.
+                else if (_isInspecting)
                 {
-                    // Updates is inspecting control variable.
-                    _isInspecting = false;
-
                     // Sets UI state to resume from inspector.
+                    _isInspecting = false;
                     _userInterface.ChangeUIState(UIStates.RESUME_FROM_INSPECTOR);
                 }
 
-                // Otherwise, sets UI state to resume from units.
-                else _userInterface.ChangeUIState(UIStates.RESUME_FROM_UNITS);
+                // Otherwise, resume from units control.
+                else _userInterface.ChangeUIState(UIStates.RESUME_FROM_UNITS_CONTROL);
 
                 break;
 
@@ -211,14 +203,6 @@ public class Controller : MonoBehaviour
                 _userInterface.ChangeUIState(UIStates.INSPECTOR);
 
                 break;
-
-            case GameStates.UNITS_CONTROL:
-
-                // Sets UI state to units control.
-                _userInterface.ChangeUIState(UIStates.UNITS_CONTROL);
-
-                break;
-
         }
     }
 

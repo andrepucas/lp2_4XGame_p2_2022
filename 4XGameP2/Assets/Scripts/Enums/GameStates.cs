@@ -7,6 +7,5 @@ public enum GameStates
     MAP_BROWSER,
     LOAD_MAP,
     GAMEPLAY,
-    INSPECTOR,
-    UNITS_CONTROL,
+    INSPECTOR
 }

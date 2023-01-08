@@ -7,6 +7,11 @@ using UnityEngine.UI;
 public class Unit : MonoBehaviour
 {
     /// <summary>
+    /// Event raised when a unit is selected (true) or deselected (false).
+    /// </summary>
+    public static event Action<Unit, bool> OnSelection;
+
+    /// <summary>
     /// Constant float ratio value of display's size.
     /// </summary>
     private const float DISPLAY_SIZE_RATIO = 0.2f;
@@ -40,7 +45,13 @@ public class Unit : MonoBehaviour
     /// Self implemented property that stores the name of the unit.
     /// </summary>
     /// <value>Name of the unit (type).</value>
-    public string Name { get; private set; }
+    public string Name {get; private set;}
+
+    /// <summary>
+    /// Self implemented property that stores the unit's icon sprite.
+    /// </summary>
+    /// <value></value>
+    public Sprite Icon {get; private set;}
 
     /// <summary>
     /// Read only self implemented property that stores all unit's resources.
@@ -62,10 +73,6 @@ public class Unit : MonoBehaviour
 
     // Private status to control if this unit is selected or not.
     private bool _isSelected;
-
-    private Unit _unit;
-
-    public static event Action<Unit, bool> OnUnitView;
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
@@ -94,6 +101,8 @@ public class Unit : MonoBehaviour
         // Sets unit sprites.
         _baseImg.sprite = p_unitData.BaseIcon;
         _frontImg.sprite = p_unitData.FrontIcon;
+
+        Icon = _frontImg.sprite;
         _frontImg.color = Color.clear;
         OnPointerExit();
 
@@ -170,17 +179,20 @@ public class Unit : MonoBehaviour
     /// </remarks>
     public void OnClick()
     {
-        // Enables or disable the selected animated ring around the unit.
+        // If this unit wasn't selected.
         if (!_isSelected)
         {
-            _selectedRing.SetActive(false);
-            OnUnitView?.Invoke(this, false);
+            // Selects it.
+            _selectedRing.SetActive(true);
+            OnSelection?.Invoke(this, true);
         }
 
+        // If it was selected.
         else
         {
-            OnUnitView?.Invoke(this, true);
-            _selectedRing.SetActive(true);
+            // De-selects it.
+            _selectedRing.SetActive(false);
+            OnSelection?.Invoke(this, false);
         }
 
         // Inverts selected status.
@@ -213,15 +225,5 @@ public class Unit : MonoBehaviour
         // Explicitly sets icon color to target color after fade time.
         // (Prevents color lerp inaccuracies).
         _frontImg.color = p_targetColor;
-    }
-
-    public void MoveTowardsTile(GameTile selectedTile)
-    {
-
-    }
-
-    public void HarvestCurrentTile(GameTile currentTile)
-    {
-
     }
 }

@@ -1,11 +1,14 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Linq;
 
 /// <summary>
-/// Panel displayed in Gameplay UI state. Mostly contains HUD.
+/// Panel displayed in Gameplay UI state.
+/// Handles units selection, map resources display, and relevant navigation HUD.
 /// </summary>
 public class UIPanelGameplay : UIPanel
 {
@@ -13,6 +16,16 @@ public class UIPanelGameplay : UIPanel
     /// Event raised when the the back to menu button is pressed.
     /// </summary>
     public static event Action OnRestart;
+
+    /// <summary>
+    /// Event raised when the selected units collection is updated.
+    /// </summary>
+    public static event Action<ICollection<Unit>> OnNewSelectedUnits;
+
+    /// <summary>
+    /// Event raised when there are no selected units.
+    /// </summary>
+    public static event Action OnNoUnitsSelected;
 
     // Serialized variables.
     [Header("TURNS")]
@@ -34,6 +47,12 @@ public class UIPanelGameplay : UIPanel
     [Tooltip("Scriptable Object with Ongoing Game Data.")]
     [SerializeField] private OngoingGameDataSO _ongoingData;
 
+    // Private collections of all units spawned in.
+    private ICollection<Unit> _unitsInGame;
+
+    // Private collection of all units selected.
+    private ICollection<Unit> _unitsSelected;
+    
     // Reference to MapData.
     private MapData _mapData;
 
@@ -46,6 +65,7 @@ public class UIPanelGameplay : UIPanel
     private void OnEnable()
     {
         MapDisplay.OnMapGenerated += SetUpResourceCounters;
+        Unit.OnSelection += UpdateSelectedUnits;
     }
 
     /// <summary>
@@ -54,6 +74,7 @@ public class UIPanelGameplay : UIPanel
     private void OnDisable()
     {
         MapDisplay.OnMapGenerated -= SetUpResourceCounters;
+        Unit.OnSelection -= UpdateSelectedUnits;
     }
 
     /// <summary>
@@ -66,6 +87,10 @@ public class UIPanelGameplay : UIPanel
         // Resets turns.
         _turnCount = 0;
         UpdateTurnCounter();
+
+        // Sets up unit collections.
+        _unitsInGame = new HashSet<Unit>();
+        _unitsSelected = new HashSet<Unit>();
 
         // Destroys any existing visual resource count objects, inside it's folder.
         foreach (Transform f_child in _resourceCountFolder)
@@ -131,6 +156,24 @@ public class UIPanelGameplay : UIPanel
     }
 
     /// <summary>
+    /// Updates collection of selected units, so it can be displayed.
+    /// </summary>
+    /// <param name="p_unit">Unit.</param>
+    /// <param name="p_selected">True if unit is selected.</param>
+    private void UpdateSelectedUnits(Unit p_unit, bool p_selected)
+    {
+        // Adds / Removes unit from selected collection.
+        if (p_selected) _unitsSelected.Add(p_unit);
+        else _unitsSelected.Remove(p_unit);
+
+        // Raises event so that units control panel can handle this collection.
+        if (_unitsSelected.Count > 0) OnNewSelectedUnits?.Invoke(_unitsSelected);
+
+        // Hides unit control panel if there are no units selected.
+        else OnNoUnitsSelected?.Invoke();
+    }
+
+    /// <summary>
     /// Updates current turn display.
     /// </summary>
     /// <param name="p_turnsToAdd">Number of turns to add.</param>
@@ -172,8 +215,11 @@ public class UIPanelGameplay : UIPanel
         // Instantiates unit in it's positions, but on an overlaying layer.
         m_unit = Instantiate(_unitPrefab, _unitsFolder).GetComponent<Unit>();
 
-        // Adds unit to ongoing saved data and initializes it.
+        // Adds unit to ongoing saved data, together with it's relative position.
         _ongoingData.AddUnitTo(m_unit, m_randomMapPos);
+
+        // Adds unit to private collection of spawned units.
+        _unitsInGame.Add(m_unit);
 
         // Initializes unit with the given index.
         m_unit.Initialize(_presetData.Units[p_index], m_randomMapPos, 

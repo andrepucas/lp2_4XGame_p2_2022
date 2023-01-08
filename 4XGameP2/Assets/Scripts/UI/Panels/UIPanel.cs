@@ -16,8 +16,7 @@ public abstract class UIPanel : MonoBehaviour
     /// <param name="p_transition">Reveal time (s).</param>
     protected void Open(float p_transition)
     {
-        // Enables panel game object.
-        //gameObject.SetActive(true);
+        StopAllCoroutines();
 
         // If transition time is 0.
         if (p_transition == 0)
@@ -38,6 +37,8 @@ public abstract class UIPanel : MonoBehaviour
     /// <param name="p_transition">Hiding time (s).</param>
     protected void Close(float p_transition)
     {
+        StopAllCoroutines();
+        
         // Stops blocking raycasts right away.
         _canvasGroup.blocksRaycasts = false;
 
@@ -48,7 +49,6 @@ public abstract class UIPanel : MonoBehaviour
             // including the game object.
             _canvasGroup.alpha = 0;
             _canvasGroup.interactable = false;
-            //gameObject.SetActive(false);
         }
 
         // Otherwise, hides and disables over time.
