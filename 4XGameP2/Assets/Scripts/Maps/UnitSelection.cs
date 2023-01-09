@@ -114,13 +114,13 @@ public class UnitSelection : MonoBehaviour
                     Hover(_unitsInGame[i]);
             }
 
-            // If it's outside and is still hovered or selected.
-            else if (_unitsHovered.Contains(_unitsInGame[i]) || 
-                _unitsSelected.Contains(_unitsInGame[i])) 
-            {
-                // Deselect it.
+            // If it's outside and is selected, deselect it.
+            else if (_unitsSelected.Contains(_unitsInGame[i]))
                 Deselect(_unitsInGame[i]);
-            }
+
+            // If it's outside and is hovered, stop hovering it.
+            else if (_unitsHovered.Contains(_unitsInGame[i]))
+                StopHover(_unitsInGame[i]);
         }
     }
 

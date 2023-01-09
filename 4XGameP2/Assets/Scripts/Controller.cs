@@ -33,6 +33,7 @@ public class Controller : MonoBehaviour
     private bool _isControllingUnits;
 
     // Control variables for input.
+    private Vector3 _lastMousePos, _mouseDelta;
     private float _mouseDownTime;
     private float _dragDelay = 0.1f;
 
@@ -105,44 +106,64 @@ public class Controller : MonoBehaviour
         // Input for Gameplay game state (when the Map is displayed and controllable).
         if (_currentState == GameStates.GAMEPLAY || _currentState == GameStates.UNITS_CONTROL)
         {
-            // Map panning.
+            // MAP PANNING /////////////////////////////////////////////////////
+            // Tries to pan left.
             if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
                 _mapDisplay.TryMove(Vector2.left);
 
+            // Tries to pan right.
             if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
                 _mapDisplay.TryMove(Vector2.right);
 
+            // Tries to pan up.
             if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
                 _mapDisplay.TryMove(Vector2.up);
 
+            // Tries to pan down.
             if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
                 _mapDisplay.TryMove(Vector2.down);
 
-            // Map zooming.
+            // MAP ZOOMING /////////////////////////////////////////////////////
+            // Tries to zoom in.
             if (Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.Plus))
                 _mapDisplay.TryZoom(1);
 
+            // Tries to zoom out.
             if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.Minus))
                 _mapDisplay.TryZoom(-1);
 
-            // Units selection.
+            // UNIT SELECTION //////////////////////////////////////////////////
+            // Gets current mouse delta, to detect movement.
+            _mouseDelta = Input.mousePosition - _lastMousePos;
+
+            // On mouse down.
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
                 _unitSelection.StartSelectionBox();
                 _mouseDownTime = Time.time;
             }
 
-            else if (Input.GetKey(KeyCode.Mouse0) && _mouseDownTime + _dragDelay < Time.time)
+            // On mouse being held or moved.
+            else if (Input.GetKey(KeyCode.Mouse0) && 
+                (_mouseDelta.magnitude > .5f && Time.time > _mouseDownTime + _dragDelay))
+            {
+                Debug.Log(_mouseDelta.sqrMagnitude);
                 _unitSelection.ResizeSelectionBox();
+            }
 
+            // On mouse being released.
             else if (Input.GetKeyUp(KeyCode.Mouse0))
             {
                 _unitSelection.EndSelectionBox();
                 _mouseDownTime = 0;
             }
 
+            // On mouse right click.
             else if (Input.GetKeyDown(KeyCode.Mouse1))
                 _unitSelection.DeselectAll();
+
+            // Stores last mouse position.
+            _lastMousePos = Input.mousePosition;
         }
     }
 

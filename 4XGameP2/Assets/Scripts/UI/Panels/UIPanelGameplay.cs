@@ -161,8 +161,6 @@ public class UIPanelGameplay : UIPanel
         // Returns if maximum number of units has been spawned in.
         if (_ongoingData.MapUnitsCount == _ongoingData.MapCellsCount) return;
 
-        Debug.Log($"Adding Unit: {p_index}");
-
         Vector2 m_randomMapPos;
         Vector3 m_worldPos;
         Unit m_unit;
