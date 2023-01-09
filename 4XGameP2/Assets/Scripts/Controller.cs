@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -29,6 +30,11 @@ public class Controller : MonoBehaviour
     // Control variables for managing game states.
     private bool _isMapDisplayed;
     private bool _isInspecting;
+    private bool _isControllingUnits;
+
+    // Control variables for input.
+    private float _mouseDownTime;
+    private float _dragDelay = 0.1f;
 
     /// <summary>
     /// Unity method, program starts here.
@@ -58,7 +64,7 @@ public class Controller : MonoBehaviour
         UIPanelGameplay.OnRestart += () => ChangeGameState(GameStates.PRE_START);
         MapDisplay.OnMapGenerated += (_) => ChangeGameState(GameStates.GAMEPLAY);
         MapCell.OnInspectView += () => ChangeGameState(GameStates.INSPECTOR);
-        UIPanelGameplay.OnNoUnitsSelected += () => ChangeGameState(GameStates.GAMEPLAY);
+        UnitSelection.OnUnitsSelected += HandleUnitsSelected;
     }
 
     /// <summary>
@@ -72,7 +78,7 @@ public class Controller : MonoBehaviour
         UIPanelGameplay.OnRestart -= () => ChangeGameState(GameStates.PRE_START);
         MapDisplay.OnMapGenerated -= (_) => ChangeGameState(GameStates.GAMEPLAY);
         MapCell.OnInspectView -= () => ChangeGameState(GameStates.INSPECTOR);
-        UIPanelGameplay.OnNoUnitsSelected -= () => ChangeGameState(GameStates.GAMEPLAY);
+        UnitSelection.OnUnitsSelected -= HandleUnitsSelected;
     }
 
     /// <summary>
@@ -98,31 +104,46 @@ public class Controller : MonoBehaviour
         }
 
         // Input for Gameplay game state (when the Map is displayed and controllable).
-        if (_currentState == GameStates.GAMEPLAY)
+        if (_currentState == GameStates.GAMEPLAY || _currentState == GameStates.UNITS_CONTROL)
         {
-            // Tries to move map left.
+            // Map panning.
             if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
                 _mapDisplay.TryMove(Vector2.left);
 
-            // Tries to move map right.
             if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
                 _mapDisplay.TryMove(Vector2.right);
 
-            // Tries to move map up.
             if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
                 _mapDisplay.TryMove(Vector2.up);
 
-            // Tries to move map down.
             if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
                 _mapDisplay.TryMove(Vector2.down);
 
-            // Tries to zoom in.
+            // Map zooming.
             if (Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.Plus))
                 _mapDisplay.TryZoom(1);
 
-            // Tries to zoom out.
             if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.Minus))
                 _mapDisplay.TryZoom(-1);
+
+            // Units selection.
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                _unitSelection.StartSelectionBox();
+                _mouseDownTime = Time.time;
+            }
+
+            else if (Input.GetKey(KeyCode.Mouse0) && _mouseDownTime + _dragDelay < Time.time)
+                _unitSelection.ResizeSelectionBox();
+
+            else if (Input.GetKeyUp(KeyCode.Mouse0))
+            {
+                _unitSelection.EndSelectionBox();
+                _mouseDownTime = 0;
+            }
+
+            else if (Input.GetKeyDown(KeyCode.Mouse1))
+                _unitSelection.DeselectAll();
         }
     }
 
@@ -143,6 +164,7 @@ public class Controller : MonoBehaviour
                 // Resets control variables.
                 _isMapDisplayed = false;
                 _isInspecting = false;
+                _isControllingUnits = false;
 
                 // Sets UI state to pre-start.
                 _userInterface.ChangeUIState(UIStates.PRE_START);
@@ -188,8 +210,13 @@ public class Controller : MonoBehaviour
                     _userInterface.ChangeUIState(UIStates.RESUME_FROM_INSPECTOR);
                 }
 
-                // Otherwise, resume from units control.
-                else _userInterface.ChangeUIState(UIStates.RESUME_FROM_UNITS_CONTROL);
+                // Otherwise, must be in units control.
+                else
+                {
+                    // Sets UI state to resume from units control.
+                    _isControllingUnits = false;
+                    _userInterface.ChangeUIState(UIStates.RESUME_FROM_UNITS_CONTROL);
+                }
 
                 break;
 
@@ -199,6 +226,14 @@ public class Controller : MonoBehaviour
                 _isInspecting = true;
                 _userInterface.ChangeUIState(UIStates.INSPECTOR);
 
+                break;
+
+            case GameStates.UNITS_CONTROL:
+
+                // Sets UI state to units control.
+                _isControllingUnits = true;
+                _userInterface.ChangeUIState(UIStates.UNITS_CONTROL);
+                
                 break;
         }
     }
@@ -243,5 +278,22 @@ public class Controller : MonoBehaviour
 
         // If not, display warning.
         else _warnings.DisplayInvalidFilesWarning();
+    }
+
+    /// <summary>
+    /// Handles units control game state, depending on number of selected units.
+    /// </summary>
+    /// <param name="p_unitsSelected">Selected units.</param>
+    private void HandleUnitsSelected(ICollection<Unit> p_unitsSelected)
+    {
+        Debug.Log(0);
+        
+        // If units control panel isn't being displayed and there are units selected.
+        if (!_isControllingUnits && p_unitsSelected.Count > 0)
+            ChangeGameState(GameStates.UNITS_CONTROL);
+
+        // If units control panel is being displayed, but there are no units selected.
+        else if (_isControllingUnits && p_unitsSelected.Count == 0)
+            ChangeGameState(GameStates.GAMEPLAY);
     }
 }

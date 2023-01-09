@@ -33,7 +33,7 @@ public class UIPanelUnitsControl : UIPanel
     /// </summary>
     private void OnEnable()
     {
-        UIPanelGameplay.OnNewSelectedUnits += DisplayUnitsData;
+        UnitSelection.OnUnitsSelected += DisplayUnitsData;
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public class UIPanelUnitsControl : UIPanel
     /// </summary>
     private void OnDisable()
     {
-        UIPanelGameplay.OnNewSelectedUnits += DisplayUnitsData;
+        UnitSelection.OnUnitsSelected -= DisplayUnitsData;
     }
 
     /// <summary>
@@ -132,7 +132,7 @@ public class UIPanelUnitsControl : UIPanel
             .Select(t => t.First());
 
         GameObject m_rCounter;
-        
+
         // For each unique resource.
         foreach (Resource r in m_resourceTypes)
         {
@@ -150,8 +150,5 @@ public class UIPanelUnitsControl : UIPanel
                 .Count(u => u.Name == r.Name)
                 .ToString();
         }
-
-        // If this panel is still closed, reveal it.
-        if (!_subPanelAnim.GetBool("visible")) OpenPanel();
     }
 }

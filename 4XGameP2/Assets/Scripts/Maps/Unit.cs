@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class Unit : MonoBehaviour
+public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, 
+    IPointerExitHandler
 {
-    /// <summary>
-    /// Event raised when a unit is selected (true) or deselected (false).
-    /// </summary>
-    public static event Action<Unit, bool> OnSelection;
+    public static event Action<Unit> OnClick;
+    public static event Action<Unit> OnEnter;
+    public static event Action<Unit> OnExit;
 
     /// <summary>
     /// Constant float ratio value of display's size.
@@ -71,9 +72,6 @@ public class Unit : MonoBehaviour
     // Private Vector2 that handles the rectTransform's size modifications.
     private Vector2 _rectSize;
 
-    // Private status to control if this unit is selected or not.
-    private bool _isSelected;
-
     /// <summary>
     /// Unity method, on enable, subscribes to events.
     /// </summary>
@@ -104,7 +102,6 @@ public class Unit : MonoBehaviour
 
         Icon = _frontImg.sprite;
         _frontImg.color = Color.clear;
-        OnPointerExit();
 
         // Saves names of resources this unit should collect & generate.
         _resourceNamesToCollect = p_unitData.ResourceNamesToCollect;
@@ -123,8 +120,7 @@ public class Unit : MonoBehaviour
         UpdateScale(Camera.main.orthographicSize);
 
         // Deselects unit.
-        _isSelected = false;
-        _selectedRing.SetActive(false);
+        OnDeselect();
     }
 
     /// <summary>
@@ -146,9 +142,9 @@ public class Unit : MonoBehaviour
     /// Fades the icon color to hovered.
     /// </summary>
     /// <remarks>
-    /// Called when the unit is hovered, by a Unity event trigger.
+    /// Called by Unit Selection.
     /// </remarks>
-    public void OnPointerEnter()
+    public void OnHover()
     {
         // Stops (just in case) and starts the Color Fade coroutine.
         StopCoroutine(ColorFadeTo(Color.clear));
@@ -156,47 +152,29 @@ public class Unit : MonoBehaviour
     }
 
     /// <summary>
-    /// Fades the icon color to normal or selected, depending on state.
+    /// Selects this unit.
     /// </summary>
     /// <remarks>
-    /// Called when the unit stop's being hovered, by a Unity event trigger.
+    /// Called by Unit Selection.
     /// </remarks>
-    public void OnPointerExit()
+    public void OnSelect()
     {
-        // Stops coroutine just in case.
+        _selectedRing.SetActive(true);
         StopCoroutine(ColorFadeTo(Color.clear));
-
-        // Starts coroutine depending on unit's selected state.
-        if (_isSelected) StartCoroutine(ColorFadeTo(_selectedColor));
-        else StartCoroutine(ColorFadeTo(_normalColor));
+        StartCoroutine(ColorFadeTo(_selectedColor));
     }
 
     /// <summary>
-    /// Selects / Deselects this unit.
+    /// De-selects this unit.
     /// </summary>
     /// <remarks>
-    /// Called when the unit is clicked, by a Unity event trigger.
+    /// Called by Unit Selection.
     /// </remarks>
-    public void OnClick()
+    public void OnDeselect()
     {
-        // If this unit wasn't selected.
-        if (!_isSelected)
-        {
-            // Selects it.
-            _selectedRing.SetActive(true);
-            OnSelection?.Invoke(this, true);
-        }
-
-        // If it was selected.
-        else
-        {
-            // De-selects it.
-            _selectedRing.SetActive(false);
-            OnSelection?.Invoke(this, false);
-        }
-
-        // Inverts selected status.
-        _isSelected = !_isSelected;
+        _selectedRing.SetActive(false);
+        StopCoroutine(ColorFadeTo(Color.clear));
+        StartCoroutine(ColorFadeTo(_normalColor));
     }
 
     /// <summary>
@@ -226,4 +204,37 @@ public class Unit : MonoBehaviour
         // (Prevents color lerp inaccuracies).
         _frontImg.color = p_targetColor;
     }
+
+    /// <summary>
+    /// Raises event that unit has been LEFT clicked.
+    /// </summary>
+    /// <param name="p_pointerData">Pointer event data.</param>
+    /// <remarks>
+    /// Called when the cell is clicked, by IPointerClickHandler.
+    /// </remarks>
+    public void OnPointerClick(PointerEventData p_pointerData)
+    {
+        if (p_pointerData.button == PointerEventData.InputButton.Left)
+            OnClick?.Invoke(this);
+    }
+
+    /// <summary>
+    /// Raises event that unit is being hovered.
+    /// </summary>
+    /// <param name="p_pointerData">Pointer event data.</param>
+    /// <remarks>
+    /// Called when the cell is hovered, by IPointerEnterHandler.
+    /// </remarks>
+    public void OnPointerEnter(PointerEventData p_pointerData) =>
+        OnEnter?.Invoke(this);
+
+    /// <summary>
+    /// Raises event that unit is no longer being hovered.
+    /// </summary>
+    /// <param name="p_pointerData">Pointer event data.</param>
+    /// <remarks>
+    /// Called when the cell stops being hovered, by IPointerExitHandler.
+    /// </remarks>
+    public void OnPointerExit(PointerEventData p_pointerData) =>
+        OnExit?.Invoke(this);
 }

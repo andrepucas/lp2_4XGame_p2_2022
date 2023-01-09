@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Displays a game tile.
 /// </summary>
-public class MapCell : MonoBehaviour
+public class MapCell : MonoBehaviour, IPointerClickHandler
 {
     /// <summary>
     /// Event raised when this cell is clicked.
@@ -79,12 +80,16 @@ public class MapCell : MonoBehaviour
     /// can be enabled.
     /// </summary>
     /// <remarks>
-    /// Called when the cell is clicked, by a Unity event trigger.
+    /// Called when the cell is LEFT clicked, by IPointerClickHandler.
     /// </remarks>
-    public void OnClick()
+    public void OnPointerClick(PointerEventData p_clickData)
     {
-        OnInspectView?.Invoke();
-        OnInspectData?.Invoke(_tile, _activeRSpritesList);
+        // Only raises events if the clicked button is the left one.
+        if (p_clickData.button == PointerEventData.InputButton.Left)
+        {
+            OnInspectView?.Invoke();
+            OnInspectData?.Invoke(_tile, _activeRSpritesList);
+        }
     }
 
     /// <summary>

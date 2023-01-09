@@ -112,6 +112,13 @@ public class PanelsUserInterface : MonoBehaviour, IUserInterface
 
                 break;
 
+            case UIStates.UNITS_CONTROL:
+
+                // Opens units control panel.
+                _unitsControl.OpenPanel();
+
+                break;
+
             case UIStates.RESUME_FROM_UNITS_CONTROL:
 
                 // Closes units control panel.
