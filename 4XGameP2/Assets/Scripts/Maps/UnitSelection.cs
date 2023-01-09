@@ -12,8 +12,6 @@ public class UnitSelection : MonoBehaviour
     // Serialized variables.
     [Tooltip("Manipulable rect transform component.")]
     [SerializeField] private RectTransform _selectionBox;
-    [Tooltip("Layer where units are instantiated.")]
-    [SerializeField] private LayerMask _unitsLayer;
 
     // Private collection containing all spawned units.
     private IList<Unit> _unitsInGame;
@@ -160,7 +158,6 @@ public class UnitSelection : MonoBehaviour
     /// <param name="p_unit">Clicked unit.</param>
     private void ClickSelect(Unit p_unit)
     {
-        Debug.Log("Click");
         StopHover(p_unit);
 
         // If left control or right control are also pressed.
@@ -210,7 +207,6 @@ public class UnitSelection : MonoBehaviour
     /// <param name="p_unit">Unit.</param>
     private void Select(Unit p_unit)
     {
-        Debug.Log("Select");
         _unitsSelected.Add(p_unit);
         p_unit.OnSelect();
 
@@ -224,7 +220,6 @@ public class UnitSelection : MonoBehaviour
     /// <param name="p_unit">Unit.</param>
     private void Deselect(Unit p_unit)
     {
-        Debug.Log("Deselect");
         _unitsSelected.Remove(p_unit);
         p_unit.OnDeselect();
 
@@ -237,7 +232,6 @@ public class UnitSelection : MonoBehaviour
     /// </summary>
     public void DeselectAll()
     {
-        Debug.Log("Deselect all");
         IList<Unit> _auxList = new List<Unit>(_unitsSelected);
 
         foreach (Unit f_unit in _auxList)

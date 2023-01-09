@@ -286,8 +286,6 @@ public class Controller : MonoBehaviour
     /// <param name="p_unitsSelected">Selected units.</param>
     private void HandleUnitsSelected(ICollection<Unit> p_unitsSelected)
     {
-        Debug.Log(0);
-        
         // If units control panel isn't being displayed and there are units selected.
         if (!_isControllingUnits && p_unitsSelected.Count > 0)
             ChangeGameState(GameStates.UNITS_CONTROL);

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4037239762681300055}
   - component: {fileID: 3430732688696666257}
   - component: {fileID: 2076974542266850214}
-  m_Layer: 3
+  m_Layer: 5
   m_Name: Front Img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 3754135468953636894}
   - component: {fileID: 3754135468953636893}
   - component: {fileID: -7382663259064861670}
-  m_Layer: 3
+  m_Layer: 5
   m_Name: Unit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -187,7 +187,7 @@ GameObject:
   - component: {fileID: 388512308648766808}
   - component: {fileID: 3166071327973497063}
   - component: {fileID: 8140652691485563980}
-  m_Layer: 3
+  m_Layer: 5
   m_Name: Selected Ring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
