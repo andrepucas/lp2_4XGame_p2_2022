@@ -32,6 +32,10 @@ public class UIPanelUnitsControl : UIPanel
     [SerializeField] private Transform _unitIconsFolder;
     [Tooltip("Prefab of unit icon.")]
     [SerializeField] private GameObject _unitIcon;
+    [Tooltip("Limit of displayable icons.")]
+    [SerializeField] private int _iconsDisplayedLimit;
+    [Tooltip("Prefab of unit overflow count.")]
+    [SerializeField] private GameObject _unitOverflowCount;
     [Header("UNIT RESOURCES")]
     [Tooltip("Parent game object where the resource counters are stored.")]
     [SerializeField] private Transform _resourceCountFolder;
@@ -41,7 +45,7 @@ public class UIPanelUnitsControl : UIPanel
     [Tooltip("Scriptable Object with Ongoing Game Data.")]
     [SerializeField] private OngoingGameDataSO _ongoingData;
 
-    private ICollection<Unit> _selectedUnits;
+    private List<Unit> _selectedUnits;
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
@@ -133,13 +137,25 @@ public class UIPanelUnitsControl : UIPanel
             _unitOrUnitsSelectedTxt.text = "UNITS SELECTED";
         }
 
-        Image m_unitIconImg;
+        int m_iconsIndex = 0;
 
-        // Displays each unit's icon.
-        foreach (Unit f_unit in p_selectedUnits)
+        // If there are more icons to display than there is space.
+        if (p_selectedUnits.Count > _iconsDisplayedLimit)
         {
-            m_unitIconImg = Instantiate(_unitIcon, _unitIconsFolder).GetComponent<Image>();
-            m_unitIconImg.sprite = f_unit.Icon;
+            m_iconsIndex = p_selectedUnits.Count - _iconsDisplayedLimit + 1;
+
+            // Instantiates a counter in the first slot, which represents how 
+            // many icons are hidden.
+            Instantiate(_unitOverflowCount, _unitIconsFolder)
+                .GetComponent<TMP_Text>().text = $"+{m_iconsIndex}";
+        }
+
+        // Displays most recent unit icons.
+        for (int i = m_iconsIndex; i < p_selectedUnits.Count; i++)
+        {
+            // Instantiates unit icons.
+            Instantiate(_unitIcon, _unitIconsFolder)
+                .GetComponent<Image>().sprite = _selectedUnits[i].Icon;
         }
 
         // Collection with all unique resource types, across all selected units.
