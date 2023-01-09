@@ -32,7 +32,7 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     [SerializeField] private GameObject _resourceImgPrefab;
 
     // Reference to the game tile this cell represents.
-    private GameTile _tile;
+    public GameTile Tile { get; private set; }
 
     // List containing actively displayed resource sprites.
     private List<Sprite> _activeRSpritesList;
@@ -47,7 +47,7 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     public void Initialize(GameTile p_tile)
     {
         // Saves game tile reference.
-        _tile = p_tile;
+        Tile = p_tile;
 
         // Creates list of active displayed resources.
         _activeRSpritesList = new List<Sprite>();
@@ -60,7 +60,7 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
         EnableResourceSprites();
 
         // Sets the terrain sprite as the base sprite.
-        _terrainImg.sprite = _tile.Sprites[0];
+        _terrainImg.sprite = Tile.Sprites[0];
     }
 
     /// <summary>
@@ -72,14 +72,14 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
         Image m_resourceImage;
 
         // Iterate tile resources.
-        for (int i = 0; i < _tile.Resources.Count; i++)
+        for (int i = 0; i < Tile.Resources.Count; i++)
         {
             // Instantiates image for this resource and saves its image component.
             m_resourceImage = Instantiate(_resourceImgPrefab, _resourceImgFolder).
                 GetComponent<Image>();
 
             // Updates it's sprite.
-            m_resourceImage.sprite = _tile.Resources[i].SpritesDict[_tile.Name];
+            m_resourceImage.sprite = Tile.Resources[i].SpritesDict[Tile.Name];
 
             // Saves it in a list.
             _activeRSpritesList.Add(m_resourceImage.sprite);
@@ -95,9 +95,9 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// Called when the cell starts to be clicked, on pointer down,
     /// by IPointerDownHandler.
     /// </remarks>
-    public void OnPointerDown(PointerEventData p_pointerData) => 
+    public void OnPointerDown(PointerEventData p_pointerData) =>
         _mouseDownPos = Input.mousePosition;
-    
+
     /// <summary>
     /// Raises event that this cell has been clicked, so that inspector
     /// can be enabled.
@@ -116,7 +116,7 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
             _mouseClickDelta.sqrMagnitude < 1)
         {
             OnInspectView?.Invoke();
-            OnInspectData?.Invoke(_tile, _activeRSpritesList);
+            OnInspectData?.Invoke(Tile, _activeRSpritesList);
         }
     }
 
@@ -131,7 +131,7 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     public void OnPointerEnter(PointerEventData p_pointerData)
     {
         if (!Input.GetKey(KeyCode.Mouse0))
-            _terrainImg.sprite = _tile.Sprites[1];
+            _terrainImg.sprite = Tile.Sprites[1];
     }
 
     /// <summary>
@@ -141,8 +141,8 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// <remarks>
     /// Called when the cell stop's being hovered, by IPointerExitHandler.
     /// </remarks>
-    public void OnPointerExit(PointerEventData p_pointerData) => 
-        _terrainImg.sprite = _tile.Sprites[0];
+    public void OnPointerExit(PointerEventData p_pointerData) =>
+        _terrainImg.sprite = Tile.Sprites[0];
 }
 
 

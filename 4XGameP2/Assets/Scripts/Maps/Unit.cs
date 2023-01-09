@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, 
+public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     IPointerExitHandler
 {
     public static event Action<Unit> OnClick;
@@ -46,19 +46,19 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// Self implemented property that stores the name of the unit.
     /// </summary>
     /// <value>Name of the unit (type).</value>
-    public string Name {get; private set;}
+    public string Name { get; private set; }
 
     /// <summary>
     /// Self implemented property that stores the unit's icon sprite.
     /// </summary>
     /// <value></value>
-    public Sprite Icon {get; private set;}
+    public Sprite Icon { get; private set; }
 
     /// <summary>
     /// Public self implemented property that stores the unit's relative map position.
     /// </summary>
     /// <value>Relative map position. Ex: (0, 1).</value>
-    public Vector2 MapPosition {get; set;}
+    public Vector2 MapPosition { get; set; }
 
     /// <summary>
     /// Readonly self implemented property that returns this unit's selectable radius.
@@ -75,7 +75,9 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     private List<Resource> _resourceList;
 
     // Private arrays of resource's names to collect and generate.
-    private string[] _resourceNamesToCollect, _resourceNamesToGenerate;
+    public string[] ResourceNamesToCollect { get; private set; }
+
+    public string[] ResourceNamesToGenerate { get; private set; }
 
     // Private Vector2 that handles the rectTransform's size modifications.
     private Vector2 _rectSize;
@@ -112,8 +114,8 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
         _frontImg.color = Color.clear;
 
         // Saves names of resources this unit should collect & generate.
-        _resourceNamesToCollect = p_unitData.ResourceNamesToCollect;
-        _resourceNamesToGenerate = p_unitData.ResourceNamesToGenerate;
+        ResourceNamesToCollect = p_unitData.ResourceNamesToCollect;
+        ResourceNamesToGenerate = p_unitData.ResourceNamesToGenerate;
 
         // Saves relative map position.
         MapPosition = p_mapPos;
