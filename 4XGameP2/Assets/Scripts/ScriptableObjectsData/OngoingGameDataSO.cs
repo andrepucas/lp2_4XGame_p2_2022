@@ -18,10 +18,22 @@ public class OngoingGameDataSO : ScriptableObject
     public IReadOnlyDictionary<Vector2, Unit> MapUnits => _mapUnits;
 
     /// <summary>
+    /// Self implemented property that holds the number of map cells.
+    /// </summary>
+    /// <value>Number of cells in the generated mad.</value>
+    public int MapCellsCount {get; private set;}
+
+    /// <summary>
     /// Self implemented property that holds the value of a map cell size.
     /// </summary>
     /// <value>Size of a map cell after being generated.</value>
     public float MapCellSize {get; private set;}
+
+    /// <summary>
+    /// Self implemented property that holds the number of spawned map units.
+    /// </summary>
+    /// <value>Number of units in the map.</value>
+    public int MapUnitsCount {get; private set;}
 
     // Private dictionary containing cells and respective positions.
     private Dictionary<Vector2, MapCell> _mapCells;
@@ -30,15 +42,19 @@ public class OngoingGameDataSO : ScriptableObject
     private Dictionary<Vector2, Unit> _mapUnits;
 
     /// <summary>
-    /// Saves map cell size and creates new map dictionaries.
+    /// Saves map info and creates new dictionaries.
     /// </summary>
+    /// <param name="p_mapSize">Number of map cells.</param>
     /// <param name="p_cellSize">Map cell size.</param>
-    public void NewMap(float p_cellSize)
+    public void NewMap(int p_mapSize, float p_cellSize)
     {
+        MapCellsCount = p_mapSize;
         MapCellSize = p_cellSize;
 
         _mapCells = new Dictionary<Vector2, MapCell>();
         _mapUnits = new Dictionary<Vector2, Unit>();
+
+        MapUnitsCount = 0;
     }
 
     /// <summary>
@@ -60,27 +76,33 @@ public class OngoingGameDataSO : ScriptableObject
     /// </summary>
     /// <param name="p_unit">Unit.</param>
     /// <param name="p_mapPos">Relative map position.</param>
-    public void AddUnitTo(Unit p_unit, Vector2 p_mapPos) => 
+    public void AddUnitTo(Unit p_unit, Vector2 p_mapPos)
+    {
         _mapUnits[p_mapPos] = p_unit;
+        MapUnitsCount++;
+    }
 
     /// <summary>
     /// Removes unit from map dictionary (sets it to null).
     /// </summary>
     /// <param name="p_unit">Unit.</param>
-    /// <param name="p_mapPos">Relative map position.</param>
-    public void RemoveUnitFrom(Unit p_unit, Vector2 p_mapPos) => 
-        _mapUnits[p_mapPos] = null;
+    public void RemoveUnit(Unit p_unit)
+    {
+        _mapUnits[p_unit.MapPosition] = null;
+        MapUnitsCount--;
+    }
 
     /// <summary>
     /// Removes unit from old relative map position and adds it to the new 
     /// relative map position.
     /// </summary>
     /// <param name="p_unit">Unit.</param>
-    /// <param name="p_oldMapPos">Old relative map position.</param>
     /// <param name="p_newMapPos">New relative map position.</param>
-    public void MoveUnitFromTo(Unit p_unit, Vector2 p_oldMapPos, Vector2 p_newMapPos)
+    public void MoveUnitTo(Unit p_unit, Vector2 p_newMapPos)
     {
-        _mapUnits[p_oldMapPos] = null;
+        _mapUnits[p_unit.MapPosition] = null;
+
         _mapUnits[p_newMapPos] = p_unit;
+        p_unit.MapPosition = p_newMapPos;
     }
 }

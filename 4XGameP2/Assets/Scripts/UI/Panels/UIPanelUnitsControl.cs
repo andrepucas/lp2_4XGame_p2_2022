@@ -1,11 +1,21 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 
+/// <summary>
+/// Panel displayed when 1+ units are selected.
+/// Contains info regarding selected units and action buttons.
+/// </summary>
 public class UIPanelUnitsControl : UIPanel
 {
+    /// <summary>
+    /// Event raised when the 'REMOVE' units button is pressed.
+    /// </summary>
+    public static event Action<ICollection<Unit>> OnUnitsRemoved;
+
     // Serialized variables.
     [Header("ANIMATOR")]
     [Tooltip("Animator component of info sub-panel.")]
@@ -27,6 +37,11 @@ public class UIPanelUnitsControl : UIPanel
     [SerializeField] private Transform _resourceCountFolder;
     [Tooltip("Prefab of resource counter.")]
     [SerializeField] private GameObject _resourceCount;
+    [Header("GAME DATA")]
+    [Tooltip("Scriptable Object with Ongoing Game Data.")]
+    [SerializeField] private OngoingGameDataSO _ongoingData;
+
+    private ICollection<Unit> _selectedUnits;
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
@@ -99,6 +114,8 @@ public class UIPanelUnitsControl : UIPanel
     /// <param name="_selectedUnits"></param>
     private void DisplayUnitsData(ICollection<Unit> p_selectedUnits)
     {
+        _selectedUnits = new List<Unit>(p_selectedUnits);
+
         // Destroy left-over instantiated prefabs.
         DestroyPrefabs();
 
@@ -150,5 +167,45 @@ public class UIPanelUnitsControl : UIPanel
                 .Count(u => u.Name == r.Name)
                 .ToString();
         }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// Called by the 'MOVE' Unity button, in this panel.
+    /// </remarks>
+    public void OnMoveButton()
+    {
+
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// Called by the 'HARVEST' Unity button, in this panel.
+    /// </remarks>
+    public void OnHarvestButton()
+    {
+
+    }
+
+    /// <summary>
+    /// Removes every selected unit from the ongoing data collection, destroys
+    /// their game objects and raises event containing the units removed.
+    /// </summary>
+    /// <remarks>
+    /// Called by the 'REMOVE' Unity button, in this panel.
+    /// </remarks>
+    public void OnRemoveButton()
+    {
+        foreach(Unit f_unit in _selectedUnits)
+        {
+            _ongoingData.RemoveUnit(f_unit);
+            Destroy(f_unit.gameObject);
+        }
+
+        OnUnitsRemoved?.Invoke(_selectedUnits);
     }
 }

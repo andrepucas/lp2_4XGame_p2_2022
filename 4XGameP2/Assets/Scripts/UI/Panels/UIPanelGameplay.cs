@@ -158,6 +158,9 @@ public class UIPanelGameplay : UIPanel
         if (p_index > _presetData.Units.Count)
             throw new IndexOutOfRangeException("Button index exceeds available units.");
 
+        // Returns if maximum number of units has been spawned in.
+        if (_ongoingData.MapUnitsCount == _ongoingData.MapCellsCount) return;
+
         Debug.Log($"Adding Unit: {p_index}");
 
         Vector2 m_randomMapPos;

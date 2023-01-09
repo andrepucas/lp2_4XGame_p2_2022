@@ -55,6 +55,12 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     public Sprite Icon {get; private set;}
 
     /// <summary>
+    /// Public self implemented property that stores the unit's relative map position.
+    /// </summary>
+    /// <value>Relative map position. Ex: (0, 1).</value>
+    public Vector2 MapPosition {get; set;}
+
+    /// <summary>
     /// Read only self implemented property that stores all unit's resources.
     /// </summary>
     /// <value>Current resources of the unit.</value>
@@ -65,9 +71,6 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
 
     // Private arrays of resource's names to collect and generate.
     private string[] _resourceNamesToCollect, _resourceNamesToGenerate;
-
-    // Private reference to the relative map position. Ex: (0,1).
-    private Vector2 _mapPos;
 
     // Private Vector2 that handles the rectTransform's size modifications.
     private Vector2 _rectSize;
@@ -108,7 +111,7 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
         _resourceNamesToGenerate = p_unitData.ResourceNamesToGenerate;
 
         // Saves relative map position.
-        _mapPos = p_mapPos;
+        MapPosition = p_mapPos;
 
         // Positions unit on top of a map cell, with a slight offset.
         Vector3 m_position = p_worldPos;

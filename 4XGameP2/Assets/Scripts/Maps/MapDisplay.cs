@@ -128,7 +128,7 @@ public class MapDisplay : MonoBehaviour
         float m_rows = 0;
         float m_cols = 0;
 
-        _ongoingData.NewMap(_cellSize);
+        _ongoingData.NewMap(p_map.XCols * p_map.YRows, _cellSize);
 
         // Iterates every game tile in Map Data.
         for (int i = 0; i < p_map.GameTiles.Count; i++)

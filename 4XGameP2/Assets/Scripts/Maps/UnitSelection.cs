@@ -40,6 +40,7 @@ public class UnitSelection : MonoBehaviour
     private void OnEnable()
     {
         UIPanelGameplay.OnUnitAdded += (p_unit) => {_unitsInGame.Add(p_unit);};
+        UIPanelUnitsControl.OnUnitsRemoved += RemoveUnits;
         Unit.OnEnter += Hover;
         Unit.OnExit += StopHover;
         Unit.OnClick += ClickSelect;
@@ -48,15 +49,17 @@ public class UnitSelection : MonoBehaviour
     private void OnDisable()
     {
         UIPanelGameplay.OnUnitAdded -= (p_unit) => {};
+        UIPanelUnitsControl.OnUnitsRemoved -= RemoveUnits;
         Unit.OnEnter -= Hover;
         Unit.OnExit -= StopHover;
         Unit.OnClick -= ClickSelect;
     }
 
     /// <summary>
-    /// Called by controller on Awake, initializes variables.
+    /// Called by controller whenever a new map is generated.
+    /// Resets variables.
     /// </summary>
-    public void Initialize()
+    public void Reset()
     {
         _unitsInGame = new List<Unit>();
         _unitsHovered = new List<Unit>();
@@ -144,7 +147,8 @@ public class UnitSelection : MonoBehaviour
 
         // Selects hovered units.
         foreach(Unit f_unit in _unitsHovered)
-            Select(f_unit);
+            if (!_unitsSelected.Contains(f_unit))
+                Select(f_unit);
 
         // Clears hovered units list.
         _unitsHovered.Clear();
@@ -239,5 +243,21 @@ public class UnitSelection : MonoBehaviour
 
         _unitsSelected.Clear();
         _unitsHovered.Clear();
+    }
+
+    /// <summary>
+    /// Removes units from collections.
+    /// </summary>
+    /// <param name="p_unitsToRemove">Units to remove.</param>
+    private void RemoveUnits(ICollection<Unit> p_unitsToRemove)
+    {
+        foreach(Unit f_unit in p_unitsToRemove)
+        {
+            _unitsInGame.Remove(f_unit);
+            _unitsHovered.Remove(f_unit);
+            _unitsSelected.Remove(f_unit);
+        }
+
+        OnUnitsSelected?.Invoke(_unitsSelected);
     }
 }

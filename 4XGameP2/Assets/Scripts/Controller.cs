@@ -47,7 +47,6 @@ public class Controller : MonoBehaviour
         // Initializes user interface and map display.
         _userInterface.Initialize();
         _mapDisplay.Initialize();
-        _unitSelection.Initialize();
 
         // Clear all warnings.
         _warnings.ClearAll();
@@ -189,6 +188,9 @@ public class Controller : MonoBehaviour
 
                 // Generates map with loaded data.
                 _mapDisplay.GenerateMap(_selectedMap);
+
+                // Resets unit selection variables.
+                _unitSelection.Reset();
 
                 break;
 
