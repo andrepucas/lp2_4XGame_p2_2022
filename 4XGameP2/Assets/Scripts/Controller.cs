@@ -147,7 +147,6 @@ public class Controller : MonoBehaviour
             else if (Input.GetKey(KeyCode.Mouse0) && 
                 (_mouseDelta.magnitude > .5f && Time.time > _mouseDownTime + _dragDelay))
             {
-                Debug.Log(_mouseDelta.sqrMagnitude);
                 _unitSelection.ResizeSelectionBox();
             }
 

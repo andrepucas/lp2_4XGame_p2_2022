@@ -61,6 +61,11 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     public Vector2 MapPosition {get; set;}
 
     /// <summary>
+    /// Readonly self implemented property that returns this unit's selectable radius.
+    /// </summary>
+    public float SelectableRadius => (_rectSize.x / 2) * 0.8f;
+
+    /// <summary>
     /// Read only self implemented property that stores all unit's resources.
     /// </summary>
     /// <value>Current resources of the unit.</value>

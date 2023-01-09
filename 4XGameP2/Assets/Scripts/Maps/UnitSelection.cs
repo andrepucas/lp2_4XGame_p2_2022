@@ -106,8 +106,8 @@ public class UnitSelection : MonoBehaviour
         for (int i = 0; i < _unitsInGame.Count; i++)
         {
             // If this units is within the selection box's bounds.
-            if (UnitIsInSelectionBox(_cam.WorldToScreenPoint(
-                _unitsInGame[i].transform.position), _bounds))
+            if (UnitIsInSelectionBox(_unitsInGame[i].transform.position, 
+                _unitsInGame[i].SelectableRadius, _bounds))
             {
                 // If it's not already hovered, hover it.
                 if (!_unitsHovered.Contains(_unitsInGame[i]))
@@ -125,15 +125,36 @@ public class UnitSelection : MonoBehaviour
     }
 
     /// <summary>
-    /// Verifies if the given position is within the given bounds.
+    /// Verifies if either the center or edges of the unit are within the
+    /// selection box's bounds.
     /// </summary>
-    /// <param name="p_pos">Position.</param>
-    /// <param name="p_bounds">Bounds.</param>
+    /// <param name="p_centerPos">Center position of the unit.</param>
+    /// <param name="p_radius">Radius value of the unit.</param>
+    /// <param name="p_bounds">Selection box bounds.</param>
     /// <returns></returns>
-    private bool UnitIsInSelectionBox(Vector2 p_pos, Bounds p_bounds)
+    private bool UnitIsInSelectionBox(Vector3 p_centerPos, float p_radius, Bounds p_bounds)
     {
-        return p_pos.x > p_bounds.min.x && p_pos.x < p_bounds.max.x &&
-            p_pos.y > p_bounds.min.y && p_pos.y < p_bounds.max.y;
+        // Saves center and edge positions.
+        Vector2[] m_pos = new Vector2[]
+        {
+            _cam.WorldToScreenPoint(p_centerPos),
+            _cam.WorldToScreenPoint(p_centerPos + new Vector3(p_radius, p_radius)),
+            _cam.WorldToScreenPoint(p_centerPos + new Vector3(-p_radius, p_radius)),
+            _cam.WorldToScreenPoint(p_centerPos + new Vector3(p_radius, -p_radius)),
+            _cam.WorldToScreenPoint(p_centerPos + new Vector3(-p_radius, -p_radius)),
+        };
+
+        // If at least one of these positions is within bounds, return true.
+        for (int i = 0; i < m_pos.Length; i++)
+        {
+            if (m_pos[i].x > p_bounds.min.x && m_pos[i].x < p_bounds.max.x &&
+            m_pos[i].y > p_bounds.min.y && m_pos[i].y < p_bounds.max.y)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
