@@ -110,6 +110,15 @@ public class GameTile
     }
 
     /// <summary>
+    /// Removes a resource from the list.
+    /// </summary>
+    /// <param name="resource">Resource to remove from tile.</param>
+    public void RemoveResource(Resource resource)
+    {
+        _resourceList.Remove(resource);
+    }
+
+    /// <summary>
     /// Shows all of the tile's important information.
     /// </summary>
     /// <remarks>Specially useful for debugging.</remarks>

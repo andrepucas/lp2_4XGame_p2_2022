@@ -247,4 +247,9 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// </remarks>
     public void OnPointerExit(PointerEventData p_pointerData) =>
         OnExit?.Invoke(this);
+
+    public void AddResource(Resource resource)
+    {
+        _resourceList.Add(resource);
+    }
 }
