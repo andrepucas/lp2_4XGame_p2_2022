@@ -71,7 +71,6 @@ public class UIPanelUnitsControl : UIPanel
     [SerializeField] private OngoingGameDataSO _ongoingData;
     [Tooltip("Scriptable Object with Preset Game Data.")]
     [SerializeField] private PresetGameDataSO _gameData;
-    [SerializeField] private PresetResourcesData _resourceData;
 
     // Private list containing displayed selected units.
     private List<Unit> _selectedUnits;
@@ -331,11 +330,20 @@ public class UIPanelUnitsControl : UIPanel
         GameTile m_targetTile;
 
         // Control variable to check if resources have been harvested.
-        bool m_resourceCollected = false;
+        bool m_resourceCollected;
+
+        // Control variable used to check if a resource is already existent in
+        // a specific game tile.
+        bool m_dupResource;
+
 
         // For each selected unit.
         foreach (Unit f_unit in _selectedUnits)
         {
+
+            // Sets control variable to false;
+            m_resourceCollected = false;
+
             // Gets the tiles position.
             m_targetTile = _ongoingData.MapCells[f_unit.MapPosition].Tile;
 
@@ -376,32 +384,47 @@ public class UIPanelUnitsControl : UIPanel
                 // after harvesting.
                 for (int i = 0; i < f_unit.ResourceNamesToGenerate.Count; i++)
                 {
-                    // Goes through each possible resource in the game.
-                    foreach (PresetResourcesData f_resourceToCompare in _gameData.Resources)
+                    // Sets control variable to false.
+                    m_dupResource = false;
+
+                    // Goes through each resource of target game tile.
+                    foreach (Resource f_tileResource in m_targetTile.Resources)
                     {
-                        // Checks if the current resource name is equals to this
-                        // iteration's name.
-                        if (f_resourceToCompare.Name == f_unit.ResourceNamesToGenerate[i])
+                        // Checks if the tile already has any resource to generate.
+                        if (f_tileResource.Name == f_unit.ResourceNamesToGenerate[i])
                         {
-                            // Adds of the previous type to the game tile.
-                            m_targetTile.AddResource(new Resource(
-                                f_resourceToCompare.Name,
-                                f_resourceToCompare.Coin,
-                                f_resourceToCompare.Food,
-                                _gameData.GetSpriteDictOf(f_resourceToCompare.Name),
-                                f_resourceToCompare.DefaultResourceSprite));
+                            // Sets control variable to true.
+                            m_dupResource = true;
 
                             break;
+                        }
+                    }
+
+                    // Checks if the control variable is false.
+                    if (!m_dupResource)
+                    {   
+                        // Goes through each possible resource in the game.
+                        foreach (PresetResourcesData f_resourceToCompare in _gameData.Resources)
+                        {
+                            // Checks if the current resource name is equals to this
+                            // iteration's name.
+                            if (f_resourceToCompare.Name == f_unit.ResourceNamesToGenerate[i])
+                            {
+                                // Adds of the previous type to the game tile.
+                                m_targetTile.AddResource(new Resource(
+                                    f_resourceToCompare.Name,
+                                    f_resourceToCompare.Coin,
+                                    f_resourceToCompare.Food,
+                                    _gameData.GetSpriteDictOf(f_resourceToCompare.Name),
+                                    f_resourceToCompare.DefaultResourceSprite));
+                            }
                         }
                     }
                 }
             }
 
-            // Raises event.
-            OnHarvest?.Invoke();
-
-            // Updates the UnitsUiPanel
-            DisplayUnitsData(_selectedUnits);
+            // Updates game cell's sprites.
+            _ongoingData.MapCells[f_unit.MapPosition].UpdateResourceSprites();
 
             // Debug code.
             foreach (Resource f_tileResource in m_targetTile.Resources)
@@ -409,6 +432,12 @@ public class UIPanelUnitsControl : UIPanel
                 Debug.Log("AFTER - " + f_tileResource.Name);
             }
         }
+        
+        // Raises event.
+        OnHarvest?.Invoke();
+
+        // Updates the UnitsUiPanel
+        DisplayUnitsData(_selectedUnits);
     }
 
     /// <summary>

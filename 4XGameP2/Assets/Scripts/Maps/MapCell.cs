@@ -37,7 +37,7 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     [SerializeField] private GameObject _resourceImgPrefab;
 
     // Reference to the game tile this cell represents.
-    public GameTile Tile {get; private set;}
+    public GameTile Tile { get; private set; }
 
     // List containing actively displayed resource sprites.
     private List<Sprite> _activeRSpritesList;
@@ -53,8 +53,8 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// </summary>
     private void OnEnable()
     {
-        UIPanelUnitsControl.OnSelectingMoveTarget += (p_selecting) => 
-            {isSelecting = p_selecting;};
+        UIPanelUnitsControl.OnSelectingMoveTarget += (p_selecting) =>
+            { isSelecting = p_selecting; };
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// </summary>
     private void OnDisable()
     {
-        UIPanelUnitsControl.OnSelectingMoveTarget -= (p_moving) => {};
+        UIPanelUnitsControl.OnSelectingMoveTarget -= (p_moving) => { };
     }
 
     /// <summary>
@@ -77,12 +77,8 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
         // Creates list of active displayed resources.
         _activeRSpritesList = new List<Sprite>();
 
-        // Destroy any resource images that might be instantiated.
-        foreach (Transform resourceImage in _resourceImgFolder)
-            Destroy(resourceImage.gameObject);
-
         // Displays the resource sprites present in the game tile reference.
-        EnableResourceSprites();
+        UpdateResourceSprites();
 
         // Sets the terrain sprite as the base sprite.
         _terrainImg.sprite = Tile.Sprites[0];
@@ -92,9 +88,16 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// Displays resources by instantiating individual image game objects 
     /// on top of the terrain and updating it's sprite.
     /// </summary>
-    private void EnableResourceSprites()
+    public void UpdateResourceSprites()
     {
         Image m_resourceImage;
+
+        // Destroy any resource images that might be instantiated.
+        foreach (Transform resourceImage in _resourceImgFolder)
+            Destroy(resourceImage.gameObject);
+
+        // Clears list of active displayed resources.
+        _activeRSpritesList.Clear();
 
         // Iterate tile resources.
         for (int i = 0; i < Tile.Resources.Count; i++)
@@ -109,6 +112,7 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
             // Saves it in a list.
             _activeRSpritesList.Add(m_resourceImage.sprite);
         }
+
     }
 
     /// <summary>
