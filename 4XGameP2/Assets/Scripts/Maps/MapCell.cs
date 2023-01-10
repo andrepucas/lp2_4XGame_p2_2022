@@ -21,6 +21,11 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// </summary>
     public static event Action<GameTile, List<Sprite>> OnInspectData;
 
+    /// <summary>
+    /// Event raised when this cell is targeted for units to move towards.
+    /// </summary>
+    public static event Action<MapCell> OnTargeted;
+
     // Serialized
     [Header("TERRAIN")]
     [Tooltip("Image component of the tile's terrain.")]
@@ -32,13 +37,33 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     [SerializeField] private GameObject _resourceImgPrefab;
 
     // Reference to the game tile this cell represents.
-    public GameTile Tile { get; private set; }
+    public GameTile Tile {get; private set;}
 
     // List containing actively displayed resource sprites.
     private List<Sprite> _activeRSpritesList;
 
     // Private pointer control variables.
     private Vector3 _mouseDownPos, _mouseClickDelta;
+
+    // Private control variable to know if this cell is being targeted.
+    private bool isSelecting;
+
+    /// <summary>
+    /// Unity method, on enable, subscribes to events.
+    /// </summary>
+    private void OnEnable()
+    {
+        UIPanelUnitsControl.OnSelectingMoveTarget += (p_selecting) => 
+            {isSelecting = p_selecting;};
+    }
+
+    /// <summary>
+    /// Unity method, on disable, unsubscribes to events.
+    /// </summary>
+    private void OnDisable()
+    {
+        UIPanelUnitsControl.OnSelectingMoveTarget -= (p_moving) => {};
+    }
 
     /// <summary>
     /// Sets up the cell after being instantiated.
@@ -115,8 +140,20 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
         if (p_pointerData.button == PointerEventData.InputButton.Left &&
             _mouseClickDelta.sqrMagnitude < 1)
         {
-            OnInspectView?.Invoke();
-            OnInspectData?.Invoke(Tile, _activeRSpritesList);
+            // If cell is being targeted by units movement control.
+            if (isSelecting)
+            {
+                // Targets this cell.
+                OnTargeted?.Invoke(this);
+            }
+
+            // Otherwise.
+            else
+            {
+                // Inspects cell.
+                OnInspectView?.Invoke();
+                OnInspectData?.Invoke(Tile, _activeRSpritesList);
+            }
         }
     }
 

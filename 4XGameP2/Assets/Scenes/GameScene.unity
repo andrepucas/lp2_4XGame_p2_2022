@@ -159,7 +159,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 722.7, y: 45}
+  m_AnchoredPosition: {x: 451.70004, y: 45}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &16743738
@@ -235,7 +235,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9411765, g: 0.9411765, b: 0.9411765, a: 1}
     m_PressedColor: {r: 1, g: 0.78431374, b: 0.3921569, a: 1}
     m_SelectedColor: {r: 1, g: 0.7843138, b: 0.3921569, a: 1}
-    m_DisabledColor: {r: 1, g: 0.19607845, b: 0.3921569, a: 1}
+    m_DisabledColor: {r: 0.5, g: 0.09803921, b: 0.19607852, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -484,7 +484,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchorMin.x
@@ -492,15 +492,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 900
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -532,11 +532,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 450
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -180
       objectReference: {fileID: 0}
     - target: {fileID: 7824544393726433327, guid: 2b12dc2bb27db3349bf410151f969fc4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -884,7 +884,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 471, y: 45}
+  m_AnchoredPosition: {x: 200.00003, y: 45}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &173561835
@@ -1149,7 +1149,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9411765, g: 0.9411765, b: 0.9411765, a: 1}
     m_PressedColor: {r: 1, g: 0.78431374, b: 0.3921569, a: 1}
     m_SelectedColor: {r: 1, g: 0.7843138, b: 0.3921569, a: 1}
-    m_DisabledColor: {r: 1, g: 0.19607845, b: 0.3921569, a: 1}
+    m_DisabledColor: {r: 0.5, g: 0.09803921, b: 0.19607852, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -2165,7 +2165,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -336, y: 45}
+  m_AnchoredPosition: {x: -607, y: 45}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &462794200
@@ -2624,7 +2624,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 272, y: 45}
+  m_AnchoredPosition: {x: 1.0000305, y: 45}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &552430590
@@ -4543,6 +4543,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canvasGroup: {fileID: 883661754}
   _subPanelAnim: {fileID: 465021133}
+  _moveButton: {fileID: 1592354401}
+  _normalColor: {r: 1, g: 0.19607843, b: 0.39215687, a: 1}
+  _selectedColor: {r: 1, g: 0.78431374, b: 0.39215687, a: 1}
   _toggleButtons:
   - {fileID: 2023154447}
   - {fileID: 1700070081}
@@ -5069,7 +5072,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 951418924}
   m_HandleRect: {fileID: 951418923}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -7366,7 +7369,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9411765, g: 0.9411765, b: 0.9411765, a: 1}
     m_PressedColor: {r: 1, g: 0.78431374, b: 0.3921569, a: 1}
     m_SelectedColor: {r: 1, g: 0.7843138, b: 0.3921569, a: 1}
-    m_DisabledColor: {r: 1, g: 0.19607845, b: 0.3921569, a: 1}
+    m_DisabledColor: {r: 0.5, g: 0.09803921, b: 0.19607852, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -8096,7 +8099,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9411765, g: 0.9411765, b: 0.9411765, a: 1}
     m_PressedColor: {r: 1, g: 0.78431374, b: 0.3921569, a: 1}
     m_SelectedColor: {r: 1, g: 0.7843138, b: 0.3921569, a: 1}
-    m_DisabledColor: {r: 1, g: 0.19607845, b: 0.3921569, a: 1}
+    m_DisabledColor: {r: 0.5, g: 0.09803921, b: 0.19607852, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -8767,7 +8770,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9411765, g: 0.9411765, b: 0.9411765, a: 1}
     m_PressedColor: {r: 1, g: 0.78431374, b: 0.3921569, a: 1}
     m_SelectedColor: {r: 1, g: 0.7843138, b: 0.3921569, a: 1}
-    m_DisabledColor: {r: 1, g: 0.19607845, b: 0.3921569, a: 1}
+    m_DisabledColor: {r: 0.5, g: 0.09803921, b: 0.19607852, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -9006,7 +9009,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -118, y: 45}
+  m_AnchoredPosition: {x: -389, y: 45}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &1715299714
@@ -10566,7 +10569,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9411765, g: 0.9411765, b: 0.9411765, a: 1}
     m_PressedColor: {r: 1, g: 0.78431374, b: 0.3921569, a: 1}
     m_SelectedColor: {r: 1, g: 0.7843138, b: 0.3921569, a: 1}
-    m_DisabledColor: {r: 1, g: 0.19607845, b: 0.3921569, a: 1}
+    m_DisabledColor: {r: 0.5, g: 0.09803921, b: 0.19607852, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -10905,7 +10908,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 0.9411765, g: 0.9411765, b: 0.9411765, a: 1}
     m_PressedColor: {r: 1, g: 0.78431374, b: 0.3921569, a: 1}
     m_SelectedColor: {r: 1, g: 0.7843138, b: 0.3921569, a: 1}
-    m_DisabledColor: {r: 1, g: 0.19607845, b: 0.3921569, a: 1}
+    m_DisabledColor: {r: 0.5, g: 0.09803921, b: 0.19607852, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -11942,7 +11945,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchorMin.x
@@ -11950,15 +11953,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 900
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_LocalPosition.x
@@ -11990,11 +11993,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 450
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 4629194048996933021, guid: 25bbf165c5bf96146b1a4e388421ab09, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

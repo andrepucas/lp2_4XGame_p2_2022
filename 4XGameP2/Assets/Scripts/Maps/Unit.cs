@@ -5,11 +5,25 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// Contains info about each Map Unit.
+/// </summary>
 public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     IPointerExitHandler
 {
+    /// <summary>
+    /// Event raised when this unit is clicked.
+    /// </summary>
     public static event Action<Unit> OnClick;
+
+    /// <summary>
+    /// Event raised when this unit is hovered.
+    /// </summary>
     public static event Action<Unit> OnEnter;
+
+    /// <summary>
+    /// Event raised when this unit stops being hovered.
+    /// </summary>
     public static event Action<Unit> OnExit;
 
     /// <summary>
@@ -46,19 +60,19 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// Self implemented property that stores the name of the unit.
     /// </summary>
     /// <value>Name of the unit (type).</value>
-    public string Name { get; private set; }
+    public string Name {get; private set;}
 
     /// <summary>
     /// Self implemented property that stores the unit's icon sprite.
     /// </summary>
     /// <value></value>
-    public Sprite Icon { get; private set; }
+    public Sprite Icon {get; private set;}
 
     /// <summary>
     /// Public self implemented property that stores the unit's relative map position.
     /// </summary>
     /// <value>Relative map position. Ex: (0, 1).</value>
-    public Vector2 MapPosition { get; set; }
+    public Vector2 MapPosition {get; set;}
 
     /// <summary>
     /// Readonly self implemented property that returns this unit's selectable radius.
@@ -75,15 +89,14 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     private List<Resource> _resourceList;
 
     // Private arrays of resource's names to collect and generate.
-    public string[] ResourceNamesToCollect { get; private set; }
-
-    public string[] ResourceNamesToGenerate { get; private set; }
+    public IReadOnlyList<string> ResourceNamesToCollect {get; private set;}
+    public IReadOnlyList<string> ResourceNamesToGenerate {get; private set;}
 
     // Private Vector2 that handles the rectTransform's size modifications.
     private Vector2 _rectSize;
 
     // Control variable so that unit can't be selected.
-    private bool _unitsMoving;
+    private bool _isSelectingUnitsTarget;
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
@@ -91,7 +104,8 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     private void OnEnable()
     {
         MapDisplay.OnCamZoom += UpdateScale;
-        UIPanelUnitsControl.OnUnitsMoving += (p_moving) => { _unitsMoving = p_moving; };
+        UIPanelUnitsControl.OnSelectingMoveTarget += (p_selecting) => 
+            {_isSelectingUnitsTarget = p_selecting;};
     }
 
     /// <summary>
@@ -100,7 +114,7 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     private void OnDisable()
     {
         MapDisplay.OnCamZoom -= UpdateScale;
-        UIPanelUnitsControl.OnUnitsMoving -= (p_moving) => { };
+        UIPanelUnitsControl.OnSelectingMoveTarget -= (p_selecting) => {};
     }
 
     /// <summary>
@@ -235,7 +249,7 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// </remarks>
     public void OnPointerClick(PointerEventData p_pointerData)
     {
-        if (!_unitsMoving && p_pointerData.button == PointerEventData.InputButton.Left)
+        if (!_isSelectingUnitsTarget && p_pointerData.button == PointerEventData.InputButton.Left)
             OnClick?.Invoke(this);
     }
 
@@ -248,7 +262,7 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// </remarks>
     public void OnPointerEnter(PointerEventData p_pointerData)
     {
-        if (!_unitsMoving) OnEnter?.Invoke(this);
+        if (!_isSelectingUnitsTarget) OnEnter?.Invoke(this);
     }
 
     public void AddResource(Resource resource)
@@ -265,6 +279,6 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// </remarks>
     public void OnPointerExit(PointerEventData p_pointerData)
     {
-        if (!_unitsMoving) OnExit?.Invoke(this);
+        if (!_isSelectingUnitsTarget) OnExit?.Invoke(this);
     }
 }

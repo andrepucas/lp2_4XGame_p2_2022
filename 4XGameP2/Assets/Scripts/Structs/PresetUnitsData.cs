@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -26,6 +27,6 @@ public struct PresetUnitsData
     public Sprite BaseIcon => _baseIcon;
     public Sprite FrontIcon => _frontIcon;
     public MovementType Movement => _movement;
-    public string[] ResourceNamesToCollect => _resourceNamesToCollect;
-    public string[] ResourceNamesToGenerate => _resourceNamesToGenerate;
+    public IReadOnlyList<string> ResourceNamesToCollect => _resourceNamesToCollect;
+    public IReadOnlyList<string> ResourceNamesToGenerate => _resourceNamesToGenerate;
 }

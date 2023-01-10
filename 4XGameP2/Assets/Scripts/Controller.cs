@@ -71,7 +71,7 @@ public class Controller : MonoBehaviour
         MapDisplay.OnMapGenerated += (_) => ChangeGameState(GameStates.GAMEPLAY);
         MapCell.OnInspectView += () => ChangeGameState(GameStates.INSPECTOR);
         UnitSelection.OnUnitsSelected += HandleUnitsSelected;
-        UIPanelUnitsControl.OnUnitsMoving += SetCursorImage;
+        UIPanelUnitsControl.OnSelectingMoveTarget += SetCursorImage;
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public class Controller : MonoBehaviour
         MapDisplay.OnMapGenerated -= (_) => ChangeGameState(GameStates.GAMEPLAY);
         MapCell.OnInspectView -= () => ChangeGameState(GameStates.INSPECTOR);
         UnitSelection.OnUnitsSelected -= HandleUnitsSelected;
-        UIPanelUnitsControl.OnUnitsMoving -= SetCursorImage;
+        UIPanelUnitsControl.OnSelectingMoveTarget -= SetCursorImage;
     }
 
     /// <summary>
@@ -334,12 +334,12 @@ public class Controller : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the cursor's image depending if units are being moved or not.
+    /// Sets the cursor's image depending if units destination is being targeted.
     /// </summary>
-    /// <param name="p_moving">True if units are moving.</param>
-    private void SetCursorImage(bool p_moving = false)
+    /// <param name="p_selectingTarget">Unit target are being selected.</param>
+    private void SetCursorImage(bool p_selectingTarget = false)
     {
-        _isMovingUnits = p_moving;
+        _isMovingUnits = p_selectingTarget;
 
         if (_isMovingUnits) 
             Cursor.SetCursor(_movementCursorImg, Vector2.one*3, CursorMode.Auto);

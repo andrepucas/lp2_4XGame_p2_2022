@@ -8,7 +8,7 @@ using System.Linq;
 
 /// <summary>
 /// Panel displayed when 1+ units are selected.
-/// Contains info regarding selected units and action buttons.
+/// Contains info regarding selected units and handles action buttons.
 /// </summary>
 public class UIPanelUnitsControl : UIPanel
 {
@@ -17,15 +17,15 @@ public class UIPanelUnitsControl : UIPanel
     /// </summary>
     public static event Action<ICollection<Unit>> OnUnitsRemoved;
 
-    public static event Action<bool> OnUnitsMoving;
+    /// <summary>
+    /// Event raised when the 'MOVE' units button is toggled. True = on.
+    /// </summary>
+    public static event Action<bool> OnSelectingMoveTarget;
 
     // Serialized variables.
     [Header("ANIMATOR")]
     [Tooltip("Animator component of info sub-panel.")]
     [SerializeField] private Animator _subPanelAnim;
-    [Header("TOGGLE BUTTONS")]
-    [Tooltip("Buttons to disable when units are moving.")]
-    [SerializeField] private Button[] _toggleButtons;
     [Header("UNIT'S TYPE/COUNT")]
     [Tooltip("Text component where the type of the single selected unit or " +
         "number of overall selected units is displayed.")]
@@ -47,6 +47,20 @@ public class UIPanelUnitsControl : UIPanel
     [SerializeField] private Transform _resourceCountFolder;
     [Tooltip("Prefab of resource counter.")]
     [SerializeField] private GameObject _resourceCount;
+    [Header("BUTTONS")]
+    [Tooltip("Move button.")]
+    [SerializeField] private Button _moveButton;
+    [Tooltip("Color for 'MOVE' button to displayed when it toggled OFF.")]
+    [SerializeField] private Color _normalColor;
+    [Tooltip("Color for 'MOVE' button to displayed when it toggled ON.")]
+    [SerializeField] private Color _selectedColor;
+    [Tooltip("Buttons to disable when units are moving.")]
+    [SerializeField] private Button[] _toggleButtons;
+    [Header("MOVEMENT TARGET")]
+    [Tooltip("Parent game object where enemies are instantiated.")]
+    [SerializeField] private Transform _enemiesFolder;
+    [Tooltip("Prefab of units target destination.")]
+    [SerializeField] private GameObject _targetDestinationPrefab;
     [Header("GAME DATA")]
     [Tooltip("Scriptable Object with Ongoing Game Data.")]
     [SerializeField] private OngoingGameDataSO _ongoingData;
@@ -56,8 +70,11 @@ public class UIPanelUnitsControl : UIPanel
     // Private list containing displayed selected units.
     private List<Unit> _selectedUnits;
 
-    // Control variable for moving units.
-    private bool _isMoving;
+    // Private reference to hold block of button colors.
+    private ColorBlock _colorBlock;
+
+    // Control variables for moving units.
+    private bool _isSelectingTarget;
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
@@ -65,6 +82,7 @@ public class UIPanelUnitsControl : UIPanel
     private void OnEnable()
     {
         UnitSelection.OnUnitsSelected += DisplayUnitsData;
+        MapCell.OnTargeted += MoveUnitsTo;
     }
 
     /// <summary>
@@ -73,12 +91,17 @@ public class UIPanelUnitsControl : UIPanel
     private void OnDisable()
     {
         UnitSelection.OnUnitsSelected -= DisplayUnitsData;
+        MapCell.OnTargeted -= MoveUnitsTo;
     }
 
     /// <summary>
     /// Sets up panel.
     /// </summary>
-    public void SetupPanel() => ClosePanel();
+    public void SetupPanel()
+    {
+        _colorBlock = _moveButton.colors;
+        ClosePanel();
+    }
 
     /// <summary>
     /// Reveals panel.
@@ -100,7 +123,7 @@ public class UIPanelUnitsControl : UIPanel
     public void ClosePanel(float p_transitionTime = 0)
     {
         // Resets control moving variable.
-        _isMoving = false;
+        _isSelectingTarget = false;
         
         // Activate closing trigger of sub-panel animator.
         _subPanelAnim.SetBool("visible", false);
@@ -111,8 +134,8 @@ public class UIPanelUnitsControl : UIPanel
         // Destroys instantiated objects.
         DestroyPrefabs();
 
-        // Toggles buttons on.
-        ToggleButtons();
+        // Toggles all buttons on and resets display of move button.
+        UpdateButtons();
     }
 
     /// <summary>
@@ -130,12 +153,31 @@ public class UIPanelUnitsControl : UIPanel
     }
 
     /// <summary>
-    /// Toggles selected buttons on or off, depending if units are moving or not.
+    /// Toggles selected buttons on or off, depending if units are moving.
+    /// Changes color of 'MOVE' button to manually display if it's selected.
     /// </summary>
-    private void ToggleButtons()
+    private void UpdateButtons()
     {
+        // Toggles affected buttons.
         foreach(Button f_btn in _toggleButtons)
-            f_btn.interactable = !_isMoving;
+            f_btn.interactable = !_isSelectingTarget;
+
+        // Updates move button colors.
+        if (_isSelectingTarget)
+        {
+            _colorBlock.normalColor = _selectedColor;
+            _colorBlock.pressedColor = _selectedColor;
+            _colorBlock.selectedColor = _selectedColor;
+        }
+
+        else
+        {
+            _colorBlock.normalColor = _normalColor;
+            _colorBlock.pressedColor = _normalColor;
+            _colorBlock.selectedColor = _normalColor;
+        }
+
+        _moveButton.colors = _colorBlock;
     }
 
     /// <summary>
@@ -213,38 +255,48 @@ public class UIPanelUnitsControl : UIPanel
     }
 
     /// <summary>
-    /// 
+    /// Toggles units movement mode.
     /// </summary>
     /// <remarks>
     /// Called by the 'MOVE' Unity button, in this panel.
     /// </remarks>
     public void OnMoveButton()
     {
-        _isMoving = !_isMoving;
-        OnUnitsMoving?.Invoke(_isMoving);
+        _isSelectingTarget = !_isSelectingTarget;
+        OnSelectingMoveTarget?.Invoke(_isSelectingTarget);
 
-        // Enable / Disable toggle buttons.
-        ToggleButtons();
+        // Toggles affected buttons and update move button display.
+        UpdateButtons();
 
-        if (_isMoving) StartCoroutine(MovingUnits());
-        else StopCoroutine(MovingUnits());
+        // Toggles target selection.
+        if (_isSelectingTarget) StartCoroutine(SelectingTarget());
+        else StopCoroutine(SelectingTarget());
     }
 
     /// <summary>
-    /// Handles units movement, as long as the move button or right click aren't
-    /// pressed.
+    /// Handles units movement target selection mode.
     /// </summary>
     /// <returns>Null.</returns>
-    private IEnumerator MovingUnits()
+    private IEnumerator SelectingTarget()
     {
         // While right click isn't pressed.
         while (!Input.GetMouseButtonDown(1))
-        {
             yield return null;
-        }
 
         // Calls move button again, to negate variables.
         OnMoveButton();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_targetCell"></param>
+    private void MoveUnitsTo(MapCell _targetCell)
+    {
+        Debug.Log("Units moving to " + _targetCell.Tile.Name);
+        OnMoveButton();
+
+        Instantiate(_targetDestinationPrefab, _enemiesFolder);
     }
 
     /// <summary>
@@ -265,7 +317,12 @@ public class UIPanelUnitsControl : UIPanel
             // Gets the tiles position
             m_targetTile = _ongoingData.MapCells[f_unit.MapPosition].Tile;
 
-            for (int i = 0; i < f_unit.ResourceNamesToCollect.Length; i++)
+            foreach (Resource f_tileResource in m_targetTile.Resources)
+            {
+                Debug.Log("BEFORE - " + f_tileResource.Name);
+            }
+
+            for (int i = 0; i < f_unit.ResourceNamesToCollect.Count; i++)
             {
                 // If the resource's name is on the unit's resourceToCollect list
                 foreach (Resource f_currentResource in m_targetTile.Resources)
@@ -287,7 +344,7 @@ public class UIPanelUnitsControl : UIPanel
 
             if (m_resourceCollected)
             {
-                for (int i = 0; i < f_unit.ResourceNamesToGenerate.Length; i++)
+                for (int i = 0; i < f_unit.ResourceNamesToGenerate.Count; i++)
                 {
                     foreach (PresetResourcesData f_resourceToCompare in _gameData.Resources)
                     {
@@ -309,10 +366,8 @@ public class UIPanelUnitsControl : UIPanel
 
             foreach (Resource f_tileResource in m_targetTile.Resources)
             {
-                Debug.Log("IN TILE - " + f_tileResource.Name);
+                Debug.Log("AFTER - " + f_tileResource.Name);
             }
-
-
         }
     }
 
