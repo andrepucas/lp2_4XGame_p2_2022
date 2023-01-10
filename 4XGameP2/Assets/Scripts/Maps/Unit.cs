@@ -82,15 +82,26 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     // Private Vector2 that handles the rectTransform's size modifications.
     private Vector2 _rectSize;
 
+    // Control variable so that unit can't be selected.
+    private bool _unitsMoving;
+
     /// <summary>
     /// Unity method, on enable, subscribes to events.
     /// </summary>
-    private void OnEnable() => MapDisplay.OnCamZoom += UpdateScale;
+    private void OnEnable()
+    {
+        MapDisplay.OnCamZoom += UpdateScale;
+        UIPanelUnitsControl.OnUnitsMoving += (p_moving) => { _unitsMoving = p_moving; };
+    }
 
     /// <summary>
     /// Unity method, on disable, unsubscribes from events.
     /// </summary>
-    private void OnDisable() => MapDisplay.OnCamZoom -= UpdateScale;
+    private void OnDisable()
+    {
+        MapDisplay.OnCamZoom -= UpdateScale;
+        UIPanelUnitsControl.OnUnitsMoving -= (p_moving) => { };
+    }
 
     /// <summary>
     /// Sets up unit after being instantiated, like a constructor.
@@ -224,7 +235,7 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// </remarks>
     public void OnPointerClick(PointerEventData p_pointerData)
     {
-        if (p_pointerData.button == PointerEventData.InputButton.Left)
+        if (!_unitsMoving && p_pointerData.button == PointerEventData.InputButton.Left)
             OnClick?.Invoke(this);
     }
 
@@ -235,8 +246,15 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// <remarks>
     /// Called when the cell is hovered, by IPointerEnterHandler.
     /// </remarks>
-    public void OnPointerEnter(PointerEventData p_pointerData) =>
-        OnEnter?.Invoke(this);
+    public void OnPointerEnter(PointerEventData p_pointerData)
+    {
+        if (!_unitsMoving) OnEnter?.Invoke(this);
+    }
+
+    public void AddResource(Resource resource)
+    {
+        _resourceList.Add(resource);
+    }
 
     /// <summary>
     /// Raises event that unit is no longer being hovered.
@@ -245,11 +263,8 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// <remarks>
     /// Called when the cell stops being hovered, by IPointerExitHandler.
     /// </remarks>
-    public void OnPointerExit(PointerEventData p_pointerData) =>
-        OnExit?.Invoke(this);
-
-    public void AddResource(Resource resource)
+    public void OnPointerExit(PointerEventData p_pointerData)
     {
-        _resourceList.Add(resource);
+        if (!_unitsMoving) OnExit?.Invoke(this);
     }
 }

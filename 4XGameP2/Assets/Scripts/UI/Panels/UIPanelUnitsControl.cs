@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,10 +17,15 @@ public class UIPanelUnitsControl : UIPanel
     /// </summary>
     public static event Action<ICollection<Unit>> OnUnitsRemoved;
 
+    public static event Action<bool> OnUnitsMoving;
+
     // Serialized variables.
     [Header("ANIMATOR")]
     [Tooltip("Animator component of info sub-panel.")]
     [SerializeField] private Animator _subPanelAnim;
+    [Header("TOGGLE BUTTONS")]
+    [Tooltip("Buttons to disable when units are moving.")]
+    [SerializeField] private Button[] _toggleButtons;
     [Header("UNIT'S TYPE/COUNT")]
     [Tooltip("Text component where the type of the single selected unit or " +
         "number of overall selected units is displayed.")]
@@ -47,7 +53,11 @@ public class UIPanelUnitsControl : UIPanel
     [Tooltip("Scriptable Object with Preset Game Data.")]
     [SerializeField] private PresetGameDataSO _gameData;
 
+    // Private list containing displayed selected units.
     private List<Unit> _selectedUnits;
+
+    // Control variable for moving units.
+    private bool _isMoving;
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
@@ -89,6 +99,9 @@ public class UIPanelUnitsControl : UIPanel
     /// <param name="p_transitionTime">Hiding time (s).</param>
     public void ClosePanel(float p_transitionTime = 0)
     {
+        // Resets control moving variable.
+        _isMoving = false;
+        
         // Activate closing trigger of sub-panel animator.
         _subPanelAnim.SetBool("visible", false);
 
@@ -97,6 +110,9 @@ public class UIPanelUnitsControl : UIPanel
 
         // Destroys instantiated objects.
         DestroyPrefabs();
+
+        // Toggles buttons on.
+        ToggleButtons();
     }
 
     /// <summary>
@@ -111,6 +127,15 @@ public class UIPanelUnitsControl : UIPanel
         // Destroy all resource counts that might be instantiated.
         foreach (Transform resourceCount in _resourceCountFolder)
             Destroy(resourceCount.gameObject);
+    }
+
+    /// <summary>
+    /// Toggles selected buttons on or off, depending if units are moving or not.
+    /// </summary>
+    private void ToggleButtons()
+    {
+        foreach(Button f_btn in _toggleButtons)
+            f_btn.interactable = !_isMoving;
     }
 
     /// <summary>
@@ -195,7 +220,31 @@ public class UIPanelUnitsControl : UIPanel
     /// </remarks>
     public void OnMoveButton()
     {
+        _isMoving = !_isMoving;
+        OnUnitsMoving?.Invoke(_isMoving);
 
+        // Enable / Disable toggle buttons.
+        ToggleButtons();
+
+        if (_isMoving) StartCoroutine(MovingUnits());
+        else StopCoroutine(MovingUnits());
+    }
+
+    /// <summary>
+    /// Handles units movement, as long as the move button or right click aren't
+    /// pressed.
+    /// </summary>
+    /// <returns>Null.</returns>
+    private IEnumerator MovingUnits()
+    {
+        // While right click isn't pressed.
+        while (!Input.GetMouseButtonDown(1))
+        {
+            yield return null;
+        }
+
+        // Calls move button again, to negate variables.
+        OnMoveButton();
     }
 
     /// <summary>

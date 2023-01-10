@@ -14,6 +14,11 @@ public class Controller : MonoBehaviour
     [SerializeField] private UnitSelection _unitSelection;
     [Tooltip("UI Warnings reference")]
     [SerializeField] private UIWarnings _warnings;
+    [Header("CURSORS")]
+    [Tooltip("Default game cursor texture.")]
+    [SerializeField] private Texture2D _defaultCursorImg;
+    [Tooltip("Cursor texture for when the player is choosing units destination.")]
+    [SerializeField] private Texture2D _movementCursorImg;
     [Header("GAME DATA")]
     [Tooltip("Scriptable Object with Preset Game Data")]
     [SerializeField] private PresetGameDataSO _presetData;
@@ -31,6 +36,7 @@ public class Controller : MonoBehaviour
     private bool _isMapDisplayed;
     private bool _isInspecting;
     private bool _isControllingUnits;
+    private bool _isMovingUnits;
 
     // Control variables for input.
     private Vector3 _lastMousePos, _mouseDelta;
@@ -65,6 +71,7 @@ public class Controller : MonoBehaviour
         MapDisplay.OnMapGenerated += (_) => ChangeGameState(GameStates.GAMEPLAY);
         MapCell.OnInspectView += () => ChangeGameState(GameStates.INSPECTOR);
         UnitSelection.OnUnitsSelected += HandleUnitsSelected;
+        UIPanelUnitsControl.OnUnitsMoving += SetCursorImage;
     }
 
     /// <summary>
@@ -79,6 +86,7 @@ public class Controller : MonoBehaviour
         MapDisplay.OnMapGenerated -= (_) => ChangeGameState(GameStates.GAMEPLAY);
         MapCell.OnInspectView -= () => ChangeGameState(GameStates.INSPECTOR);
         UnitSelection.OnUnitsSelected -= HandleUnitsSelected;
+        UIPanelUnitsControl.OnUnitsMoving -= SetCursorImage;
     }
 
     /// <summary>
@@ -88,82 +96,6 @@ public class Controller : MonoBehaviour
     {
         // Sets starting game state as PRE-START.
         ChangeGameState(GameStates.PRE_START);
-    }
-
-    /// <summary>
-    /// Unity method, called every frame.
-    /// </summary>
-    private void Update()
-    {
-        // Input for Inspector game state
-        if (_currentState == GameStates.INSPECTOR)
-        {
-            // Backs out from inspector state.
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(0))
-                ChangeGameState(GameStates.GAMEPLAY);
-        }
-
-        // Input for Gameplay game state (when the Map is displayed and controllable).
-        if (_currentState == GameStates.GAMEPLAY || _currentState == GameStates.UNITS_CONTROL)
-        {
-            // MAP PANNING /////////////////////////////////////////////////////
-            // Tries to pan left.
-            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-                _mapDisplay.TryMove(Vector2.left);
-
-            // Tries to pan right.
-            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-                _mapDisplay.TryMove(Vector2.right);
-
-            // Tries to pan up.
-            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-                _mapDisplay.TryMove(Vector2.up);
-
-            // Tries to pan down.
-            if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-                _mapDisplay.TryMove(Vector2.down);
-
-            // MAP ZOOMING /////////////////////////////////////////////////////
-            // Tries to zoom in.
-            if (Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.Plus))
-                _mapDisplay.TryZoom(1);
-
-            // Tries to zoom out.
-            if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.Minus))
-                _mapDisplay.TryZoom(-1);
-
-            // UNIT SELECTION //////////////////////////////////////////////////
-            // Gets current mouse delta, to detect movement.
-            _mouseDelta = Input.mousePosition - _lastMousePos;
-
-            // On mouse down.
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                _unitSelection.StartSelectionBox();
-                _mouseDownTime = Time.time;
-            }
-
-            // On mouse being held or moved.
-            else if (Input.GetKey(KeyCode.Mouse0) && 
-                (_mouseDelta.magnitude > .5f && Time.time > _mouseDownTime + _dragDelay))
-            {
-                _unitSelection.ResizeSelectionBox();
-            }
-
-            // On mouse being released.
-            else if (Input.GetKeyUp(KeyCode.Mouse0))
-            {
-                _unitSelection.EndSelectionBox();
-                _mouseDownTime = 0;
-            }
-
-            // On mouse right click.
-            else if (Input.GetKeyDown(KeyCode.Mouse1))
-                _unitSelection.DeselectAll();
-
-            // Stores last mouse position.
-            _lastMousePos = Input.mousePosition;
-        }
     }
 
     /// <summary>
@@ -179,6 +111,9 @@ public class Controller : MonoBehaviour
         switch (_currentState)
         {
             case GameStates.PRE_START:
+
+                // Sets cursor to default.
+                SetCursorImage();
 
                 // Resets control variables.
                 _isMapDisplayed = false;
@@ -255,8 +190,89 @@ public class Controller : MonoBehaviour
                 // Sets UI state to units control.
                 _isControllingUnits = true;
                 _userInterface.ChangeUIState(UIStates.UNITS_CONTROL);
-                
+
                 break;
+        }
+    }
+
+    /// <summary>
+    /// Unity method, called every frame.
+    /// </summary>
+    private void Update()
+    {
+        // Input for Gameplay game state (when the Map is displayed and controllable).
+        if (_currentState == GameStates.GAMEPLAY || _currentState == GameStates.UNITS_CONTROL)
+        {
+            // MAP PANNING /////////////////////////////////////////////////////
+            // Tries to pan left.
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+                _mapDisplay.TryMove(Vector2.left);
+
+            // Tries to pan right.
+            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+                _mapDisplay.TryMove(Vector2.right);
+
+            // Tries to pan up.
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
+                _mapDisplay.TryMove(Vector2.up);
+
+            // Tries to pan down.
+            if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
+                _mapDisplay.TryMove(Vector2.down);
+
+            // MAP ZOOMING /////////////////////////////////////////////////////
+            // Tries to zoom in.
+            if (Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.Plus))
+                _mapDisplay.TryZoom(1);
+
+            // Tries to zoom out.
+            if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.Minus))
+                _mapDisplay.TryZoom(-1);
+
+            // UNIT SELECTION //////////////////////////////////////////////////
+            if (!_isMovingUnits)
+            {
+                // Gets current mouse delta, to detect movement.
+                _mouseDelta = Input.mousePosition - _lastMousePos;
+
+                // On mouse down.
+                if (Input.GetMouseButtonDown(0))
+                {
+                    _unitSelection.StartSelectionBox();
+                    _mouseDownTime = Time.time;
+                }
+
+                // On mouse being held or moved.
+                else if (Input.GetMouseButton(0) && 
+                    (_mouseDelta.magnitude > .5f && Time.time > _mouseDownTime + _dragDelay))
+                {
+                    _unitSelection.ResizeSelectionBox();
+                }
+
+                // On mouse being released.
+                else if (Input.GetMouseButtonUp(0))
+                {
+                    _unitSelection.EndSelectionBox();
+                    _mouseDownTime = 0;
+                }
+
+                // On mouse right click.
+                else if (Input.GetMouseButtonDown(1)) _unitSelection.DeselectAll();
+
+                // Stores last mouse position.
+                _lastMousePos = Input.mousePosition;
+            }
+        }
+
+        // Input for Inspector game state
+        else if (_currentState == GameStates.INSPECTOR)
+        {
+            // Backs out from inspector state.
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(0) ||
+                Input.GetMouseButtonDown(1))
+            {
+                ChangeGameState(GameStates.GAMEPLAY);
+            }
         }
     }
 
@@ -315,5 +331,19 @@ public class Controller : MonoBehaviour
         // If units control panel is being displayed, but there are no units selected.
         else if (_isControllingUnits && p_unitsSelected.Count == 0)
             ChangeGameState(GameStates.GAMEPLAY);
+    }
+
+    /// <summary>
+    /// Sets the cursor's image depending if units are being moved or not.
+    /// </summary>
+    /// <param name="p_moving">True if units are moving.</param>
+    private void SetCursorImage(bool p_moving = false)
+    {
+        _isMovingUnits = p_moving;
+
+        if (_isMovingUnits) 
+            Cursor.SetCursor(_movementCursorImg, Vector2.one*3, CursorMode.Auto);
+
+        else Cursor.SetCursor(_defaultCursorImg, Vector2.one*3, CursorMode.Auto);
     }
 }
