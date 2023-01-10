@@ -24,7 +24,7 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// <summary>
     /// Event raised when this cell is targeted for units to move towards.
     /// </summary>
-    public static event Action<MapCell> OnTargeted;
+    public static event Action<Vector3> OnTargeted;
 
     // Serialized
     [Header("TERRAIN")]
@@ -46,15 +46,15 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     private Vector3 _mouseDownPos, _mouseClickDelta;
 
     // Private control variable to know if this cell is being targeted.
-    private bool isSelecting;
+    private bool _isSelecting;
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
     /// </summary>
     private void OnEnable()
     {
-        UIPanelUnitsControl.OnSelectingMoveTarget += (p_selecting) =>
-            { isSelecting = p_selecting; };
+        UIPanelUnitsControl.OnSelectingMoveTarget += (p_selecting) => 
+            {_isSelecting = p_selecting;};
     }
 
     /// <summary>
@@ -145,10 +145,10 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
             _mouseClickDelta.sqrMagnitude < 1)
         {
             // If cell is being targeted by units movement control.
-            if (isSelecting)
+            if (_isSelecting)
             {
                 // Targets this cell.
-                OnTargeted?.Invoke(this);
+                OnTargeted?.Invoke(transform.position);
             }
 
             // Otherwise.

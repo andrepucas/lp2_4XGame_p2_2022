@@ -26,16 +26,6 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// </summary>
     public static event Action<Unit> OnExit;
 
-    /// <summary>
-    /// Constant float ratio value of display's size.
-    /// </summary>
-    private const float DISPLAY_SIZE_RATIO = 0.2f;
-
-    /// <summary>
-    /// Constant float ratio value of display's offset.
-    /// </summary>
-    private const float DISPLAY_OFFSET_RATIO = -0.25f;
-
     // Serialized
     [Header("COMPONENTS")]
     [Tooltip("Rect Transform component.")]
@@ -98,6 +88,9 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     // Control variable so that unit can't be selected.
     private bool _isSelectingUnitsTarget;
 
+    // Private float value that holds the ratio size of this unit.
+    private float _displaySizeRatio;
+
     /// <summary>
     /// Unity method, on enable, subscribes to events.
     /// </summary>
@@ -120,11 +113,11 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// <summary>
     /// Sets up unit after being instantiated, like a constructor.
     /// </summary>
+    /// <param name="p_unitData">Data relative to this unit.</param>
     /// <param name="p_mapPos">Relative position (map).</param>
-    /// <param name="p_worldPos">Absolute position (world).</param>
-    /// <param name="p_cellSize">Size of map cells.</param>
+    /// <param name="p_sizeRatio">Ratio size of this unit at all times.</param>
     public void Initialize(PresetUnitsData p_unitData, Vector2 p_mapPos,
-        Vector3 p_worldPos, float p_cellSize)
+        float p_sizeRatio)
     {
         // Sets unit name.
         Name = p_unitData.Name;
@@ -145,12 +138,8 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
         // Saves relative map position.
         MapPosition = p_mapPos;
 
-        // Positions unit on top of a map cell, with a slight offset.
-        Vector3 m_position = p_worldPos;
-        m_position.y += (p_cellSize * DISPLAY_OFFSET_RATIO);
-        transform.position = m_position;
-
         // Updates scale to remain consistent.
+        _displaySizeRatio = p_sizeRatio;
         _rectSize = _rectTransform.sizeDelta;
         UpdateScale(Camera.main.orthographicSize);
 
@@ -163,10 +152,10 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// same size.
     /// </summary>
     /// <param name="p_camZoom">Camera's orthographic size value.</param>
-    private void UpdateScale(float p_camZoom)
+    protected virtual void UpdateScale(float p_camZoom)
     {
         // Calculates size based on camera zoom and preset size ratio.
-        _rectSize.x = p_camZoom * DISPLAY_SIZE_RATIO;
+        _rectSize.x = p_camZoom * _displaySizeRatio;
 
         // Equals width and height and sets it as the new rect transform's size.
         _rectSize.y = _rectSize.x;

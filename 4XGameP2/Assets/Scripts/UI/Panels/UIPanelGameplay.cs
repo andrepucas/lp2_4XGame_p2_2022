@@ -164,8 +164,6 @@ public class UIPanelGameplay : UIPanel
         if (_ongoingData.MapUnitsCount == _ongoingData.MapCellsCount) return;
 
         Vector2 m_randomMapPos;
-        Vector3 m_worldPos;
-        Unit m_unit;
 
         // Finds a random map position that doesn't have a unit in it.
         do
@@ -175,11 +173,13 @@ public class UIPanelGameplay : UIPanel
         }
         while (_ongoingData.MapUnits[m_randomMapPos] != null);
 
-        // Gets Map Cell's world position.
-        m_worldPos = _ongoingData.MapCells[m_randomMapPos].transform.position;
+        // Calculates spawn position.
+        Vector3 m_worldPos = _ongoingData.MapCells[m_randomMapPos].transform.position;
+        m_worldPos.y += (_ongoingData.MapCellSize * _presetData.UnitDisplayOffset);
 
-        // Instantiates unit in it's positions, but on an overlaying layer.
-        m_unit = Instantiate(_unitPrefab, _unitsFolder).GetComponent<Unit>();
+        // Instantiates unit in it's positions, on an overlaying layer.
+        Unit m_unit = Instantiate(_unitPrefab, m_worldPos, Quaternion.identity, 
+            _unitsFolder).GetComponent<Unit>();
 
         // Adds unit to ongoing saved data, together with it's relative position.
         _ongoingData.AddUnitTo(m_unit, m_randomMapPos);
@@ -189,7 +189,7 @@ public class UIPanelGameplay : UIPanel
 
         // Initializes unit with the given index.
         m_unit.Initialize(_presetData.Units[p_index], m_randomMapPos, 
-            m_worldPos, _ongoingData.MapCellSize);
+            _presetData.UnitDisplaySize);
     }
 
     /// <summary>

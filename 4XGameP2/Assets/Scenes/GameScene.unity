@@ -3293,7 +3293,7 @@ MonoBehaviour:
   m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 10, y: 10}
+  m_CellSize: {x: 5, y: 5}
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 1
   m_ConstraintCount: 2
@@ -4543,6 +4543,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _canvasGroup: {fileID: 883661754}
   _subPanelAnim: {fileID: 465021133}
+  _unitTypeOrCountTxt: {fileID: 2142199762}
+  _unitOrUnitsSelectedTxt: {fileID: 745227508}
+  _unitIconsFolder: {fileID: 2106528111}
+  _unitIcon: {fileID: 837150148198171847, guid: 6b54a840b62c3f246beb6d08ff3c2148, type: 3}
+  _iconsDisplayedLimit: 15
+  _unitOverflowCount: {fileID: 3869011078663565280, guid: 791229db317c8914c9a5379b97685a30, type: 3}
+  _resourceCountFolder: {fileID: 498224796}
+  _resourceCount: {fileID: 6959098923499027189, guid: 9eda881ecaf8f6a43ba4948c70ada597, type: 3}
   _moveButton: {fileID: 1592354401}
   _normalColor: {r: 1, g: 0.19607843, b: 0.39215687, a: 1}
   _selectedColor: {r: 1, g: 0.78431374, b: 0.39215687, a: 1}
@@ -4553,14 +4561,8 @@ MonoBehaviour:
   - {fileID: 1995789252}
   - {fileID: 28082369}
   - {fileID: 1412975528}
-  _unitTypeOrCountTxt: {fileID: 2142199762}
-  _unitOrUnitsSelectedTxt: {fileID: 745227508}
-  _unitIconsFolder: {fileID: 2106528111}
-  _unitIcon: {fileID: 837150148198171847, guid: 6b54a840b62c3f246beb6d08ff3c2148, type: 3}
-  _iconsDisplayedLimit: 15
-  _unitOverflowCount: {fileID: 3869011078663565280, guid: 791229db317c8914c9a5379b97685a30, type: 3}
-  _resourceCountFolder: {fileID: 498224796}
-  _resourceCount: {fileID: 6959098923499027189, guid: 9eda881ecaf8f6a43ba4948c70ada597, type: 3}
+  _enemiesFolder: {fileID: 612545446}
+  _targetDestinationPrefab: {fileID: 6215497303217353523, guid: f6f6c8c71cf227f48a3942863c287401, type: 3}
   _ongoingData: {fileID: 11400000, guid: 3328a118a3ff226468ce3cb2c936dd30, type: 2}
   _gameData: {fileID: 11400000, guid: d80cc0443de6e254c9a9a90c9370d8e8, type: 2}
 --- !u!1 &884576931

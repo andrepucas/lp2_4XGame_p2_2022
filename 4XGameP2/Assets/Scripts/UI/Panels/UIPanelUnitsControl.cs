@@ -79,7 +79,7 @@ public class UIPanelUnitsControl : UIPanel
     private ColorBlock _colorBlock;
 
     // Control variables for moving units.
-    private bool _isSelectingTarget;
+    private bool _isSelectingTarget, _isMoving;
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
@@ -127,8 +127,9 @@ public class UIPanelUnitsControl : UIPanel
     /// <param name="p_transitionTime">Hiding time (s).</param>
     public void ClosePanel(float p_transitionTime = 0)
     {
-        // Resets control moving variable.
+        // Resets movement control variables.
         _isSelectingTarget = false;
+        _isMoving = false;
 
         // Activate closing trigger of sub-panel animator.
         _subPanelAnim.SetBool("visible", false);
@@ -163,9 +164,12 @@ public class UIPanelUnitsControl : UIPanel
     /// </summary>
     private void UpdateButtons()
     {
-        // Toggles affected buttons.
-        foreach (Button f_btn in _toggleButtons)
-            f_btn.interactable = !_isSelectingTarget;
+        // Buttons are toggled off if selecting units destination or moving.
+        foreach(Button f_btn in _toggleButtons)
+            f_btn.interactable = !(_isSelectingTarget || _isMoving);
+
+        // Disables move button while units are moving.
+        _moveButton.interactable = !_isMoving;
 
         // Updates move button colors.
         if (_isSelectingTarget)
@@ -307,13 +311,23 @@ public class UIPanelUnitsControl : UIPanel
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="_targetCell"></param>
-    private void MoveUnitsTo(MapCell _targetCell)
+    /// <param name="p_targetCellPos"></param>
+    private void MoveUnitsTo(Vector3 p_targetCellPos)
     {
-        Debug.Log("Units moving to " + _targetCell.Tile.Name);
+        _isMoving = true;
+
+        // Toggle move button. Stops selection mode and updates buttons.
         OnMoveButton();
 
-        Instantiate(_targetDestinationPrefab, _enemiesFolder);
+        // Calculates spawn position.
+        p_targetCellPos.y += (_ongoingData.MapCellSize * _gameData.UnitDisplayOffset);
+
+        // Instantiates destination target on top of target cell.
+        UnitTarget m_target = Instantiate(_targetDestinationPrefab, p_targetCellPos,
+            Quaternion.identity, _enemiesFolder).GetComponent<UnitTarget>();
+
+        // Initializes target.
+        m_target.Initialize(_gameData.UnitDisplaySize);
     }
 
     /// <summary>

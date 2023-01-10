@@ -14,6 +14,10 @@ public class PresetGameDataSO : ScriptableObject
     [SerializeField] private PresetResourcesData[] _resources;
     [Tooltip("All possible units.")]
     [SerializeField] private PresetUnitsData[] _units;
+    [Tooltip("Float ratio value of unit display's size.")]
+    [SerializeField] private float _unitDisplaySize = 0.2f;
+    [Tooltip("Float ratio value of unit display's offset.")]
+    [SerializeField] private float _unitDisplayOffset = -0.25f;
 
     /// <summary>
     /// Readonly self-implemented property list of all possible terrains.
@@ -29,6 +33,16 @@ public class PresetGameDataSO : ScriptableObject
     /// Readonly self-implemented property list of all possible units.
     /// </summary>
     public IReadOnlyList<PresetUnitsData> Units => _units;
+
+    /// <summary>
+    /// Readonly self implemented property that returns screen size ratio of a unit.
+    /// </summary>
+    public float UnitDisplaySize => _unitDisplaySize;
+
+    /// <summary>
+    /// Readonly self implemented property that returns cell offset ratio of a unit.
+    /// </summary>
+    public float UnitDisplayOffset => _unitDisplayOffset;
 
     /// <summary>
     /// Property that returns all terrains' raw names.
