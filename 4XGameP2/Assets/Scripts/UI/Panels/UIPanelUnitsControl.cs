@@ -370,6 +370,7 @@ public class UIPanelUnitsControl : UIPanel
             }
 
             OnHarvest?.Invoke();
+            DisplayUnitsData(_selectedUnits);
 
             foreach (Resource f_tileResource in m_targetTile.Resources)
             {
