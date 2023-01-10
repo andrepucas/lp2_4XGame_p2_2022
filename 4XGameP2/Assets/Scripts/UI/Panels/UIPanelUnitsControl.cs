@@ -318,41 +318,50 @@ public class UIPanelUnitsControl : UIPanel
     }
 
     /// <summary>
-    /// 
+    /// Makes selected units remove a resource a resource from a game tile and
+    /// add it to it's inventory. Depending on the unit, may also add a resource
+    /// to the game tile.
     /// </summary>
     /// <remarks>
     /// Called by the 'HARVEST' Unity button, in this panel.
     /// </remarks>
     public void OnHarvestButton()
     {
-        // Tile that the unit is standing on
+        // Tile that the unit is standing on.
         GameTile m_targetTile;
+
+        // Control variable to check if resources have been harvested.
         bool m_resourceCollected = false;
 
-        // For each selected unit
+        // For each selected unit.
         foreach (Unit f_unit in _selectedUnits)
         {
-            // Gets the tiles position
+            // Gets the tiles position.
             m_targetTile = _ongoingData.MapCells[f_unit.MapPosition].Tile;
 
+            // Debug code.
             foreach (Resource f_tileResource in m_targetTile.Resources)
             {
                 Debug.Log("BEFORE - " + f_tileResource.Name);
             }
 
+            // Iterates over the number of possible resources to collect.
             for (int i = 0; i < f_unit.ResourceNamesToCollect.Count; i++)
             {
-                // If the resource's name is on the unit's resourceToCollect list
+                // If the resource's name is on the unit's resourceToCollect list.
                 foreach (Resource f_currentResource in m_targetTile.Resources)
                 {
+                    // Checks if the current resource name is equals to the current
+                    // possible resource to collect.
                     if (f_currentResource.Name == f_unit.ResourceNamesToCollect[i])
                     {
-                        // Adds resource to unit
+                        // Adds resource to unit.
                         f_unit.AddResource(f_currentResource);
 
-                        // Removes resource from tile
+                        // Removes resource from tile.
                         m_targetTile.RemoveResource(f_currentResource);
 
+                        // Sets control variable to true.
                         m_resourceCollected = true;
 
                         break;
@@ -360,14 +369,21 @@ public class UIPanelUnitsControl : UIPanel
                 }
             }
 
+            // Checks if resources have been harvested.
             if (m_resourceCollected)
             {
+                // Iterates over the number of possible resources to generate
+                // after harvesting.
                 for (int i = 0; i < f_unit.ResourceNamesToGenerate.Count; i++)
                 {
+                    // Goes through each possible resource in the game.
                     foreach (PresetResourcesData f_resourceToCompare in _gameData.Resources)
                     {
+                        // Checks if the current resource name is equals to this
+                        // iteration's name.
                         if (f_resourceToCompare.Name == f_unit.ResourceNamesToGenerate[i])
                         {
+                            // Adds of the previous type to the game tile.
                             m_targetTile.AddResource(new Resource(
                                 f_resourceToCompare.Name,
                                 f_resourceToCompare.Coin,
@@ -378,13 +394,16 @@ public class UIPanelUnitsControl : UIPanel
                             break;
                         }
                     }
-
                 }
             }
 
+            // Raises event.
             OnHarvest?.Invoke();
+
+            // Updates the UnitsUiPanel
             DisplayUnitsData(_selectedUnits);
 
+            // Debug code.
             foreach (Resource f_tileResource in m_targetTile.Resources)
             {
                 Debug.Log("AFTER - " + f_tileResource.Name);
