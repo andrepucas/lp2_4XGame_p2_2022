@@ -52,6 +52,7 @@ public class UIPanelGameplay : UIPanel
     private void OnEnable()
     {
         MapDisplay.OnMapGenerated += SetUpResourceCounters;
+        UIPanelUnitsControl.OnHarvest += UpdateResourceCounters;
     }
 
     /// <summary>
@@ -60,6 +61,7 @@ public class UIPanelGameplay : UIPanel
     private void OnDisable()
     {
         MapDisplay.OnMapGenerated -= SetUpResourceCounters;
+        UIPanelUnitsControl.OnHarvest -= UpdateResourceCounters;
     }
 
     /// <summary>

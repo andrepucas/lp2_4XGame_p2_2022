@@ -22,6 +22,11 @@ public class UIPanelUnitsControl : UIPanel
     /// </summary>
     public static event Action<bool> OnSelectingMoveTarget;
 
+    /// <summary>
+    /// Event raised when the units harvest resources.
+    /// </summary>
+    public static event Action OnHarvest;
+
     // Serialized variables.
     [Header("ANIMATOR")]
     [Tooltip("Animator component of info sub-panel.")]
@@ -363,6 +368,8 @@ public class UIPanelUnitsControl : UIPanel
 
                 }
             }
+
+            OnHarvest?.Invoke();
 
             foreach (Resource f_tileResource in m_targetTile.Resources)
             {
