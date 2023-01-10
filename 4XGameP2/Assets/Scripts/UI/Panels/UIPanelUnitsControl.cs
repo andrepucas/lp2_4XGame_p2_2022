@@ -44,6 +44,8 @@ public class UIPanelUnitsControl : UIPanel
     [Header("GAME DATA")]
     [Tooltip("Scriptable Object with Ongoing Game Data.")]
     [SerializeField] private OngoingGameDataSO _ongoingData;
+    [Tooltip("Scriptable Object with Preset Game Data.")]
+    [SerializeField] private PresetGameDataSO _gameData;
 
     private List<Unit> _selectedUnits;
 
@@ -204,7 +206,65 @@ public class UIPanelUnitsControl : UIPanel
     /// </remarks>
     public void OnHarvestButton()
     {
+        // Tile that the unit is standing on
+        GameTile m_targetTile;
+        bool m_resourceCollected = false;
 
+        // For each selected unit
+        foreach (Unit f_unit in _selectedUnits)
+        {
+            // Gets the tiles position
+            m_targetTile = _ongoingData.MapCells[f_unit.MapPosition].Tile;
+
+            for (int i = 0; i < f_unit.ResourceNamesToCollect.Length; i++)
+            {
+                // If the resource's name is on the unit's resourceToCollect list
+                foreach (Resource f_currentResource in m_targetTile.Resources)
+                {
+                    if (f_currentResource.Name == f_unit.ResourceNamesToCollect[i])
+                    {
+                        // Adds resource to unit
+                        f_unit.AddResource(f_currentResource);
+
+                        // Removes resource from tile
+                        m_targetTile.RemoveResource(f_currentResource);
+
+                        m_resourceCollected = true;
+
+                        break;
+                    }
+                }
+            }
+
+            if (m_resourceCollected)
+            {
+                for (int i = 0; i < f_unit.ResourceNamesToGenerate.Length; i++)
+                {
+                    foreach (PresetResourcesData f_resourceToCompare in _gameData.Resources)
+                    {
+                        if (f_resourceToCompare.Name == f_unit.ResourceNamesToGenerate[i])
+                        {
+                            m_targetTile.AddResource(new Resource(
+                                f_resourceToCompare.Name,
+                                f_resourceToCompare.Coin,
+                                f_resourceToCompare.Food,
+                                _gameData.GetSpriteDictOf(f_resourceToCompare.Name),
+                                f_resourceToCompare.DefaultResourceSprite));
+                            
+                            break;
+                        }
+                    }
+
+                }
+            }
+
+            foreach (Resource f_tileResource in m_targetTile.Resources)
+            {
+                Debug.Log("IN TILE - " + f_tileResource.Name);
+            }
+
+
+        }
     }
 
     /// <summary>
@@ -216,7 +276,7 @@ public class UIPanelUnitsControl : UIPanel
     /// </remarks>
     public void OnRemoveButton()
     {
-        foreach(Unit f_unit in _selectedUnits)
+        foreach (Unit f_unit in _selectedUnits)
         {
             _ongoingData.RemoveUnit(f_unit);
             Destroy(f_unit.gameObject);
