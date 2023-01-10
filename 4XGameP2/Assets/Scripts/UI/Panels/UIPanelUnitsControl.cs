@@ -71,6 +71,7 @@ public class UIPanelUnitsControl : UIPanel
     [SerializeField] private OngoingGameDataSO _ongoingData;
     [Tooltip("Scriptable Object with Preset Game Data.")]
     [SerializeField] private PresetGameDataSO _gameData;
+    [SerializeField] private PresetResourcesData _resourceData;
 
     // Private list containing displayed selected units.
     private List<Unit> _selectedUnits;
@@ -129,7 +130,7 @@ public class UIPanelUnitsControl : UIPanel
     {
         // Resets control moving variable.
         _isSelectingTarget = false;
-        
+
         // Activate closing trigger of sub-panel animator.
         _subPanelAnim.SetBool("visible", false);
 
@@ -164,7 +165,7 @@ public class UIPanelUnitsControl : UIPanel
     private void UpdateButtons()
     {
         // Toggles affected buttons.
-        foreach(Button f_btn in _toggleButtons)
+        foreach (Button f_btn in _toggleButtons)
             f_btn.interactable = !_isSelectingTarget;
 
         // Updates move button colors.
@@ -194,6 +195,8 @@ public class UIPanelUnitsControl : UIPanel
     {
         _selectedUnits = new List<Unit>(p_selectedUnits);
 
+        HashSet<string> m_possibleResources = new HashSet<string>();
+
         // Destroy left-over instantiated prefabs.
         DestroyPrefabs();
 
@@ -211,6 +214,7 @@ public class UIPanelUnitsControl : UIPanel
             _unitOrUnitsSelectedTxt.text = "UNITS SELECTED";
         }
 
+        // Control variable
         int m_iconsIndex = 0;
 
         // If there are more icons to display than there is space.
@@ -232,29 +236,38 @@ public class UIPanelUnitsControl : UIPanel
                 .GetComponent<Image>().sprite = _selectedUnits[i].Icon;
         }
 
-        // Collection with all unique resource types, across all selected units.
-        IEnumerable<Resource> m_resourceTypes = p_selectedUnits
-            .SelectMany(r => r.Resources)
-            .GroupBy(t => t.Name)
-            .Select(t => t.First());
+        // Clears possible resources hash set.
+        m_possibleResources.Clear();
 
+        // Goes through selected units.
+        foreach (Unit _currentUnit in p_selectedUnits)
+        {
+            // Goes through each resource name that the current unit can collect.
+            foreach (string f_resourceName in _currentUnit.ResourceNamesToCollect)
+            {
+                // Adds resource name to previous hash set.
+                m_possibleResources.Add(f_resourceName);
+            }
+        }
+
+        // Variable that current counter.
         GameObject m_rCounter;
 
-        // For each unique resource.
-        foreach (Resource r in m_resourceTypes)
+        // Goes through each possible resource name.
+        foreach (string f_resourceName in m_possibleResources)
         {
             // Instantiates a resource counter.
             m_rCounter = Instantiate(_resourceCount, _resourceCountFolder);
 
             // Updates the image of the resource counter to match the resource
             // type.
-            m_rCounter.GetComponentInChildren<Image>().sprite = r.DefaultSprite;
+            m_rCounter.GetComponentInChildren<Image>().sprite = _gameData.ResourceDefaultSprites[f_resourceName];
 
             // Updates the counter value, with the number of this resource 
             // across all selected units.
             m_rCounter.GetComponentInChildren<TMP_Text>().text = p_selectedUnits
                 .SelectMany(u => u.Resources)
-                .Count(u => u.Name == r.Name)
+                .Count(u => u.Name == f_resourceName)
                 .ToString();
         }
     }
@@ -361,7 +374,7 @@ public class UIPanelUnitsControl : UIPanel
                                 f_resourceToCompare.Food,
                                 _gameData.GetSpriteDictOf(f_resourceToCompare.Name),
                                 f_resourceToCompare.DefaultResourceSprite));
-                            
+
                             break;
                         }
                     }

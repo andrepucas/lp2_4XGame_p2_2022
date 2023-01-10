@@ -56,6 +56,24 @@ public class PresetGameDataSO : ScriptableObject
         }
     }
 
+
+    /// <summary>
+    /// MISSING COMMENTS <--------------------------------------------------------------------------------------------------------------------
+    /// </summary>
+    /// <value></value>
+    public IReadOnlyDictionary<string, Sprite> ResourceDefaultSprites
+    {
+        get
+        {
+            Dictionary<string, Sprite> _resourceIcons = new Dictionary<string, Sprite>();
+
+            foreach (PresetResourcesData f_resource in Resources)
+                _resourceIcons.Add(f_resource.Name, f_resource.DefaultResourceSprite);
+
+            return _resourceIcons;
+        }
+    }
+
     /// <summary>
     /// Method that returns a dictionary of the terrain sprite variations for
     /// a given resource.
