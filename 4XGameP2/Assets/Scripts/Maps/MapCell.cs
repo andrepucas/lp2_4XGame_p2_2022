@@ -163,7 +163,7 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
 
         // If clicked with the left mouse button and click wasn't dragged.
         if (p_pointerData.button == PointerEventData.InputButton.Left &&
-            _mouseClickDelta.sqrMagnitude < 1)
+            _mouseClickDelta.sqrMagnitude < 2)
         {
             // If units are trying to select next move destination.
             if (_moveSelecting)

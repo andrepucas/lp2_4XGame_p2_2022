@@ -316,16 +316,17 @@ public class UIPanelUnitsControl : UIPanel
     }
 
     /// <summary>
-    /// 
+    /// Handles selected units' movement, advancing a turn each time a set of units move.
+    /// Units stop moving when blocked or when they reach the destination.
     /// </summary>
-    /// <param name="p_targetCell"></param>
-    /// <returns></returns>
+    /// <param name="p_targetCell">Target map cell to move to.</param>
+    /// <returns>Time in seconds a unit takes to move.</returns>
     private IEnumerator MovingUnitsTo(MapCell p_targetCell)
     {
         ISet<Unit> m_movingUnits = new HashSet<Unit>(_selectedUnits);
         ISet<Unit> m_blockedUnits = new HashSet<Unit>();
 
-        YieldInstruction m_waitForUnitToMove = new WaitForSeconds(_gameData.UnitMoveTime);
+        YieldInstruction m_waitForUnitToMove = new WaitForSeconds(_gameData.UnitMoveTime * 1.25f);
 
         _isMoving = true;
         OnMoving?.Invoke(_isMoving);
@@ -359,7 +360,7 @@ public class UIPanelUnitsControl : UIPanel
                 // +++ DEBUG +++ //
                 Debug.Log(f_unit.Name.ToUpper() + "'S POSSIBLE MOVE: " + m_nextMove);
 
-                // If there is a next move and it isn't out of the map's bounds.
+                // If next move isn't out of the map's bounds.
                 if (_ongoingData.MapCells.ContainsKey(m_nextMove))
                 {
                     // If the cell the unit is moving to isn't already occupied.
@@ -369,12 +370,11 @@ public class UIPanelUnitsControl : UIPanel
                         m_worldPosMove = _ongoingData.MapCells[m_nextMove].transform.position;
                         m_worldPosMove.y += (_ongoingData.MapCellSize * _gameData.UnitDisplayOffset);
 
-                        // Moves unit
-                        f_unit.MoveTo(m_nextMove, m_worldPosMove);
+                        // Moves unit.
                         _ongoingData.MoveUnitTo(f_unit, m_nextMove);
-                        yield return m_waitForUnitToMove;
+                        f_unit.MoveTo(m_nextMove, m_worldPosMove);
 
-                        // Moves on to next unit.
+                        // Iterates next unit.
                         continue;
                     }
                 }
@@ -391,6 +391,9 @@ public class UIPanelUnitsControl : UIPanel
 
             // Clears blocked units.
             m_blockedUnits.Clear();
+
+            // Waits for units to move.
+            if (m_movingUnits.Count > 0) yield return m_waitForUnitToMove;
         }
 
         _isMoving = false;

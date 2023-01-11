@@ -71,16 +71,27 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
 
     /// <summary>
     /// Read only self implemented property that stores all unit's resources.
-    /// </summary>S
+    /// </summary>
     /// <value>Current resources of the unit.</value>
     public IReadOnlyList<Resource> Resources => _resourceList;
 
+    /// <summary>
+    /// Self implemented property that stores the names of resources this unit collects.
+    /// </summary>
+    /// <value>Name list.</value>
+    public IReadOnlyList<string> ResourceNamesToCollect { get; private set; }
+
+    /// <summary>
+    /// Self implemented property that stores the names of resources this unit generates.
+    /// </summary>
+    /// <value>Name list.</value>
+    public IReadOnlyList<string> ResourceNamesToGenerate { get; private set; }
+
+    // Stores this unit's movement behaviour.
+    private IUnitMoveBehaviour _moveBehaviour;
+
     // Private list of Resources.
     private List<Resource> _resourceList;
-
-    // Private arrays of resource's names to collect and generate.
-    public IReadOnlyList<string> ResourceNamesToCollect { get; private set; }
-    public IReadOnlyList<string> ResourceNamesToGenerate { get; private set; }
 
     // Private Vector2 that handles the rectTransform's size modifications.
     private Vector2 _rectSize;
@@ -123,11 +134,12 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     public void Initialize(PresetUnitsData p_unitData, Vector2 p_mapPos,
         float p_sizeRatio, float p_moveTime)
     {
-        // Sets unit name and move time.
+        // Sets unit's name.
         Name = p_unitData.Name;
-        _moveTime = p_moveTime;
 
-        _resourceList = new List<Resource>();
+        // Sets unit's movement behaviour.
+        _moveBehaviour = p_unitData.MoveBehaviour;
+        _moveTime = p_moveTime;
 
         // Sets unit sprites.
         _baseImg.sprite = p_unitData.BaseIcon;
@@ -135,6 +147,9 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
 
         Icon = _frontImg.sprite;
         _frontImg.color = Color.clear;
+
+        // Initialize resource's list
+        _resourceList = new List<Resource>();
 
         // Saves names of resources this unit should collect & generate.
         ResourceNamesToCollect = p_unitData.ResourceNamesToCollect;
@@ -173,18 +188,36 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// <param name="resource">Resource to add.</param>
     public void AddResource(Resource resource) => _resourceList.Add(resource);
 
-    public Vector2 GetNextMoveTowards(Vector2 p_mapPos)
-    {
-        return MapPosition + Vector2.one;
-    }
-    
+    /// <summary>
+    /// Returns map position this unit will move to, towards the target, depending
+    /// of its movement type.
+    /// </summary>
+    /// <param name="p_targetMapPos">Target map position.</param>
+    /// <returns>Vector2 with next move.</returns>
+    public Vector2 GetNextMoveTowards(Vector2 p_targetMapPos) => 
+        _moveBehaviour.GetNextMove(MapPosition, p_targetMapPos);
+
+    /// <summary>
+    /// Set's unit's map position as the new position and starts to physically
+    /// move towards its world position.
+    /// </summary>
+    /// <param name="p_mapPos">New relative map position.</param>
+    /// <param name="p_worldPos">Target physical (world) map position.</param>
     public void MoveTo(Vector2 p_mapPos, Vector3 p_worldPos)
     {
         MapPosition = p_mapPos;
-
+        StopCoroutine(MovingTo(p_worldPos));
         StartCoroutine(MovingTo(p_worldPos));
+
+        // ++ DEBUG +++//
+        Debug.Log(Name.ToUpper() + " MOVED TO: " + MapPosition);
     }
 
+    /// <summary>
+    /// Moves from current position to new position through lerp.
+    /// </summary>
+    /// <param name="p_worldPos">Target world position.</param>
+    /// <returns>Null.</returns>
     private IEnumerator MovingTo(Vector3 p_worldPos)
     {
         float m_elapsedTime = 0;
@@ -198,7 +231,7 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
             yield return null;
         }
 
-        Debug.Log(Name.ToUpper() + " MOVED TO " + transform.position);
+        transform.position = p_worldPos;
     }
 
     /// <summary>

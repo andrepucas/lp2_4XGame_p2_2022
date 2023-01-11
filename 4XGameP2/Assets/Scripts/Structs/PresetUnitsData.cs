@@ -13,8 +13,8 @@ public struct PresetUnitsData
     [Tooltip("Icon Sprites")]
     [SerializeField] private Sprite _baseIcon, _frontIcon;
     [Header("ACTIONS")]
-    [Tooltip("Unit's movement type.")]
-    [SerializeField] private MovementType _movement;
+    [Tooltip("Unit's movement type prefab.")]
+    [SerializeField] private GameObject _moveBehaviour;
     [Tooltip("String name of resources this unit collects.")]
     [SerializeField] private string[] _resourceNamesToCollect;
     [Tooltip("String name of resources this unit generates after collecting.")]
@@ -26,7 +26,7 @@ public struct PresetUnitsData
         System.StringSplitOptions.RemoveEmptyEntries)).ToLower();
     public Sprite BaseIcon => _baseIcon;
     public Sprite FrontIcon => _frontIcon;
-    public MovementType Movement => _movement;
+    public IUnitMoveBehaviour MoveBehaviour => _moveBehaviour.GetComponent<IUnitMoveBehaviour>();
     public IReadOnlyList<string> ResourceNamesToCollect => _resourceNamesToCollect;
     public IReadOnlyList<string> ResourceNamesToGenerate => _resourceNamesToGenerate;
 }
