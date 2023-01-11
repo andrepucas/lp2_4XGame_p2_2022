@@ -10,11 +10,10 @@ public class VonNeumannMoveBehaviour : MonoBehaviour, IUnitMoveBehaviour
 {
     /// <summary>
     /// Returns next move towards the target position. 
-    /// Can only return up, down, left or right vectors.
     /// </summary>
     /// <param name="p_start">Start position.</param>
     /// <param name="p_target">Target position.</param>
-    /// <returns>Next position.</returns>
+    /// <returns>Start position + (Up, Down, Left or Right) Vector.</returns>
     public Vector2 GetNextMove(Vector2 p_start, Vector2 p_target)
     {
         // Sets next move base as start position.

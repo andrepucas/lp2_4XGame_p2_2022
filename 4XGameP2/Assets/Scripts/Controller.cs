@@ -122,6 +122,8 @@ public class Controller : MonoBehaviour
                 _isMapDisplayed = false;
                 _isInspecting = false;
                 _isControllingUnits = false;
+                _isMoveSelecting = false;
+                _isMoving = false;
 
                 // Sets UI state to pre-start.
                 _userInterface.ChangeUIState(UIStates.PRE_START);
