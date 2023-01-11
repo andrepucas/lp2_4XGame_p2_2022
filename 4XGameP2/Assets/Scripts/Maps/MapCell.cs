@@ -207,8 +207,8 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// </remarks>
     public void OnPointerExit(PointerEventData p_pointerData)
     {
-        // Ignores method if units are moving or if mouse was already being pressed.
-        if (_moving || Input.GetMouseButton(0)) return;
+        // Ignores method if units are moving.
+        if (_moving) return;
 
         // Sets terrain sprite as normal version.
         _terrainImg.sprite = Tile.Sprites[0];

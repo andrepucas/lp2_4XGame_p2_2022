@@ -387,8 +387,8 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// </remarks>
     public void OnPointerExit(PointerEventData p_pointerData)
     {
-        // Ignores method if busy or mouse was already being held.
-        if (_isBusy || Input.GetMouseButton(0)) return;
+        // Ignores method if busy.
+        if (_isBusy) return;
 
         OnExit?.Invoke(this);
     }
