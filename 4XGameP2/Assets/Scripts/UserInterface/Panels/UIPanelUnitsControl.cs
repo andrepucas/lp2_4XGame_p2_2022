@@ -371,11 +371,14 @@ public class UIPanelUnitsControl : UIPanel
         YieldInstruction m_waitForUnitsToMove = 
             new WaitForSeconds(_gameData.UnitMoveTime * 1.25f);
 
+        // Toggle move button.
+        OnMoveButton();
+
         _isMoving = true;
         OnMoving?.Invoke(_isMoving);
 
-        // Toggle move button. Stops selecting move mode and updates buttons.
-        OnMoveButton();
+        // Update buttons with moving info.
+        UpdateButtons();
 
         // Calculates destination target prompt spawn position.
         Vector3 m_spawnPos = p_targetCell.transform.position;
@@ -400,9 +403,6 @@ public class UIPanelUnitsControl : UIPanel
                 // Saves unit's next move towards destination.
                 m_nextMove = f_unit.GetNextMoveTowards(p_targetCell.MapPosition);
 
-                // +++ DEBUG +++ //
-                Debug.Log(f_unit.Name.ToUpper() + "'S POSSIBLE MOVE: " + m_nextMove);
-
                 // If next move isn't out of the map's bounds.
                 if (_ongoingData.MapCells.ContainsKey(m_nextMove))
                 {
@@ -411,7 +411,7 @@ public class UIPanelUnitsControl : UIPanel
                     {
                         // Calculates world position for this unit to move to.
                         m_worldPosMove = 
-                        _ongoingData.MapCells[m_nextMove].transform.position;
+                            _ongoingData.MapCells[m_nextMove].transform.position;
 
                         m_worldPosMove.y += 
                             (_ongoingData.MapCellSize * _gameData.UnitDisplayOffset);
@@ -424,9 +424,6 @@ public class UIPanelUnitsControl : UIPanel
                         continue;
                     }
                 }
-
-                // +++ DEBUG +++ //
-                Debug.Log(f_unit.Name.ToUpper() + " BLOCKED");
 
                 // If the unit didn't move, add it to blocked units collection.
                 m_blockedUnits.Add(f_unit);

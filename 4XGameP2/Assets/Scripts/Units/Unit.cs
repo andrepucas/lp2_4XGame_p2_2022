@@ -259,9 +259,6 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
         MapPosition = p_mapPos;
         StopCoroutine(MovingTo(p_worldPos));
         StartCoroutine(MovingTo(p_worldPos));
-
-        // ++ DEBUG +++//
-        Debug.Log(Name.ToUpper() + " MOVED TO: " + MapPosition);
     }
 
     /// <summary>
