@@ -53,6 +53,7 @@ public class UIPanelGameplay : UIPanel
     {
         MapDisplay.OnMapGenerated += SetUpResourceCounters;
         UIPanelUnitsControl.OnHarvest += UpdateResourceCounters;
+        UIPanelUnitsControl.OnHarvest += UpdateTurnCounter;
     }
 
     /// <summary>
@@ -62,6 +63,7 @@ public class UIPanelGameplay : UIPanel
     {
         MapDisplay.OnMapGenerated -= SetUpResourceCounters;
         UIPanelUnitsControl.OnHarvest -= UpdateResourceCounters;
+        UIPanelUnitsControl.OnHarvest += UpdateTurnCounter;
     }
 
     /// <summary>
@@ -141,10 +143,9 @@ public class UIPanelGameplay : UIPanel
     /// <summary>
     /// Updates current turn display.
     /// </summary>
-    /// <param name="p_turnsToAdd">Number of turns to add.</param>
-    private void UpdateTurnCounter(uint p_turnsToAdd = 0)
+    private void UpdateTurnCounter()
     {
-        _turnCount += p_turnsToAdd;
+        _turnCount++;
         _turnDisplay.text = _turnCount.ToString("00");
     }
 
