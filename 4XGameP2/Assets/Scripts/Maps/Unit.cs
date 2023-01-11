@@ -27,15 +27,22 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     public static event Action<Unit> OnExit;
 
     // Serialized
-    [Header("COMPONENTS")]
+    [Header("DISPLAY")]
     [Tooltip("Rect Transform component.")]
     [SerializeField] private RectTransform _rectTransform;
     [Tooltip("Base Image component.")]
     [SerializeField] private Image _baseImg;
     [Tooltip("Icon Image component.")]
     [SerializeField] private Image _frontImg;
+    [Header("SELECTION RING")]
     [Tooltip("Selected Ring Game Object component.")]
     [SerializeField] private GameObject _selectedRing;
+    [Tooltip("Animation state of selected ring idle rotation.")]
+    [SerializeField] private Animator _ringRotation;
+    [Tooltip("Max speed for ring's rotation.")]
+    [SerializeField] private float _ringMaxSpeed;
+    [Tooltip("Seconds that the max speed lasts.")]
+    [SerializeField] private float _ringMaxSpeedDuration;
     [Header("COLORS")]
     [Tooltip("Unit color normally.")]
     [SerializeField] private Color _normalColor;
@@ -43,6 +50,8 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     [SerializeField] private Color _hoveredColor;
     [Tooltip("Unit color when selected.")]
     [SerializeField] private Color _selectedColor;
+    [Tooltip("Unit color when harvesting.")]
+    [SerializeField] private Color _harvestingColor;
     [Tooltip("Seconds to transition in-between colors")]
     [SerializeField] private float _colorFadeTime;
 
@@ -102,8 +111,8 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     // Private float value that holds cell to cell movement duration of this unit.
     private float _moveTime;
 
-    // Control variables so that unit can't be selected when moving.
-    private bool _moveSelecting, _moving;
+    // Control variable so that unit can't be selected.
+    private bool _isBusy;
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
@@ -111,8 +120,8 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     private void OnEnable()
     {
         MapDisplay.OnCamZoom += UpdateScale;
-        UIPanelUnitsControl.OnMoveSelect += (p_selecting) => _moveSelecting = p_selecting;
-        UIPanelUnitsControl.OnMoving += (p_moving) => { _moving = p_moving; };
+        UIPanelUnitsControl.OnMoveSelect += (p_selecting) => { _isBusy = p_selecting; };
+        UIPanelUnitsControl.OnMoving += (p_moving) => { _isBusy = p_moving; };
     }
 
     /// <summary>
@@ -183,10 +192,52 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     }
 
     /// <summary>
-    /// Adds a resource to this unit's private resource list.
+    /// Adds resource to this unit's private collection and plays animation.
     /// </summary>
     /// <param name="resource">Resource to add.</param>
-    public void AddResource(Resource resource) => _resourceList.Add(resource);
+    public void HarvestResource(Resource resource)
+    {
+        _resourceList.Add(resource);
+        StartCoroutine(HarvestingAnimation());
+    }
+
+    /// <summary>
+    /// Harvesting animation. 
+    /// Speeds up the selection ring and changes unit's color for a short time.
+    /// </summary>
+    /// <returns>Null.</returns>
+    private IEnumerator HarvestingAnimation()
+    {
+        _isBusy = true;
+
+        float m_elapsedTime = 0;
+        float m_originalSpeed = _ringRotation.speed;
+        Color m_originalColor = _frontImg.color;
+
+        // Speeds up selection ring and changes unit's color.
+        _ringRotation.speed = _ringMaxSpeed;
+        _frontImg.color = _harvestingColor;
+
+        // Holds it for a quarter of the set time.
+        yield return new WaitForSecondsRealtime(_ringMaxSpeedDuration * 0.25f);
+
+        // Fades values back to normal over the the 3/4 left of time.
+        while (_ringRotation.speed != m_originalSpeed)
+        {
+            _ringRotation.speed = Mathf.Lerp(_ringMaxSpeed, m_originalSpeed, 
+                (m_elapsedTime/(_ringMaxSpeedDuration * 0.75f)));
+
+            _frontImg.color = Color.Lerp(_harvestingColor, m_originalColor,
+                (m_elapsedTime / (_ringMaxSpeedDuration * 0.75f)));
+
+            m_elapsedTime += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        _ringRotation.speed = m_originalSpeed;
+        _frontImg.color = m_originalColor;
+        _isBusy = false;
+    }
 
     /// <summary>
     /// Returns map position this unit will move to, towards the target, depending
@@ -235,45 +286,6 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     }
 
     /// <summary>
-    /// Fades the icon color to hovered.
-    /// </summary>
-    /// <remarks>
-    /// Called by Unit Selection.
-    /// </remarks>
-    public void OnHover()
-    {
-        // Stops (just in case) and starts the Color Fade coroutine.
-        StopCoroutine(ColorFadeTo(Color.clear));
-        StartCoroutine(ColorFadeTo(_hoveredColor));
-    }
-
-    /// <summary>
-    /// Selects this unit.
-    /// </summary>
-    /// <remarks>
-    /// Called by Unit Selection.
-    /// </remarks>
-    public void OnSelect()
-    {
-        _selectedRing.SetActive(true);
-        StopCoroutine(ColorFadeTo(Color.clear));
-        StartCoroutine(ColorFadeTo(_selectedColor));
-    }
-
-    /// <summary>
-    /// De-selects this unit.
-    /// </summary>
-    /// <remarks>
-    /// Called by Unit Selection.
-    /// </remarks>
-    public void OnDeselect()
-    {
-        _selectedRing.SetActive(false);
-        StopCoroutine(ColorFadeTo(Color.clear));
-        StartCoroutine(ColorFadeTo(_normalColor));
-    }
-
-    /// <summary>
     /// Fades the current icon color to the received target color using the
     /// serialized fade time (s).
     /// </summary>
@@ -302,6 +314,42 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     }
 
     /// <summary>
+    /// Fades the icon color to hovered.
+    /// </summary>
+    /// <remarks>
+    /// Called by Unit Selection.
+    /// </remarks>
+    public void OnHover()
+    {
+        // Starts the Color Fade coroutine.
+        StartCoroutine(ColorFadeTo(_hoveredColor));
+    }
+
+    /// <summary>
+    /// Selects this unit.
+    /// </summary>
+    /// <remarks>
+    /// Called by Unit Selection.
+    /// </remarks>
+    public void OnSelect()
+    {
+        _selectedRing.SetActive(true);
+        StartCoroutine(ColorFadeTo(_selectedColor));
+    }
+
+    /// <summary>
+    /// De-selects this unit.
+    /// </summary>
+    /// <remarks>
+    /// Called by Unit Selection.
+    /// </remarks>
+    public void OnDeselect()
+    {
+        _selectedRing.SetActive(false);
+        StartCoroutine(ColorFadeTo(_normalColor));
+    }
+
+    /// <summary>
     /// Raises event that unit has been LEFT clicked.
     /// </summary>
     /// <param name="p_pointerData">Pointer event data.</param>
@@ -310,8 +358,8 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// </remarks>
     public void OnPointerClick(PointerEventData p_pointerData)
     {
-        // Ignores method if units are preparing to or moving.
-        if (_moveSelecting || _moving) return;
+        // Ignores method if busy.
+        if (_isBusy) return;
 
         // If clicked with the left mouse button.
         if (p_pointerData.button == PointerEventData.InputButton.Left)
@@ -327,8 +375,8 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// </remarks>
     public void OnPointerEnter(PointerEventData p_pointerData)
     {
-        // Ignores method if units are preparing to or moving.
-        if (_moveSelecting || _moving) return;
+        // Ignores method if busy or mouse was already being held.
+        if (_isBusy || Input.GetMouseButton(0)) return;
 
         OnEnter?.Invoke(this);
     }
@@ -342,8 +390,8 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// </remarks>
     public void OnPointerExit(PointerEventData p_pointerData)
     {
-        // Ignores method if units are preparing to or moving.
-        if (_moveSelecting || _moving) return;
+        // Ignores method if busy or mouse was already being held.
+        if (_isBusy || Input.GetMouseButton(0)) return;
 
         OnExit?.Invoke(this);
     }

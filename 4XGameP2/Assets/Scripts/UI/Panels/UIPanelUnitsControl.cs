@@ -67,6 +67,8 @@ public class UIPanelUnitsControl : UIPanel
     [Header("BUTTONS")]
     [Tooltip("Move button.")]
     [SerializeField] private Button _moveButton;
+    [Tooltip("Harvest button.")]
+    [SerializeField] private Button _harvestButton;
     [Tooltip("Color for 'MOVE' button to displayed when it toggled OFF.")]
     [SerializeField] private Color _normalColor;
     [Tooltip("Color for 'MOVE' button to displayed when it toggled ON.")]
@@ -151,9 +153,6 @@ public class UIPanelUnitsControl : UIPanel
 
         // Destroys instantiated objects.
         DestroyPrefabs();
-
-        // Toggles all buttons on and resets display of move button.
-        UpdateButtons();
     }
 
     /// <summary>
@@ -171,37 +170,6 @@ public class UIPanelUnitsControl : UIPanel
     }
 
     /// <summary>
-    /// Toggles selected buttons on or off, depending if units are moving.
-    /// Changes color of 'MOVE' button to manually display if it's selected.
-    /// </summary>
-    private void UpdateButtons()
-    {
-        // Buttons are toggled off if selecting units move destination or moving.
-        foreach(Button f_btn in _toggleButtons)
-            f_btn.interactable = !(_isSelectingMove || _isMoving);
-
-        // Disables move button while units are moving.
-        _moveButton.interactable = !_isMoving;
-
-        // Updates move button colors.
-        if (_isSelectingMove)
-        {
-            _colorBlock.normalColor = _selectedColor;
-            _colorBlock.pressedColor = _selectedColor;
-            _colorBlock.selectedColor = _selectedColor;
-        }
-
-        else
-        {
-            _colorBlock.normalColor = _normalColor;
-            _colorBlock.pressedColor = _normalColor;
-            _colorBlock.selectedColor = _normalColor;
-        }
-
-        _moveButton.colors = _colorBlock;
-    }
-
-    /// <summary>
     /// Displays data based on the units selected. 
     /// Reveals & Hides panel if no units are selected.
     /// </summary>
@@ -214,6 +182,9 @@ public class UIPanelUnitsControl : UIPanel
 
         // Destroy left-over instantiated prefabs.
         DestroyPrefabs();
+
+        // Toggles buttons and resets display of move button.
+        UpdateButtons();
 
         // If there's only one unit selected.
         if (p_selectedUnits.Count == 1)
@@ -288,6 +259,72 @@ public class UIPanelUnitsControl : UIPanel
     }
 
     /// <summary>
+    /// Toggles selected buttons, depending if units are moving.
+    /// Toggles 'HARVEST' button, depending if there are resources to harvest.
+    /// Changes color of 'MOVE' button to manually display if it's selected.
+    /// </summary>
+    private void UpdateButtons()
+    {
+        // Buttons are toggled off if selecting units' move destination or moving.
+        foreach(Button f_btn in _toggleButtons)
+            f_btn.interactable = !(_isSelectingMove || _isMoving);
+
+        // Disables move button while units are moving.
+        _moveButton.interactable = !_isMoving;
+
+        // Enables harvest button if not moving and there are resources to harvest.
+        _harvestButton.interactable = !(_isSelectingMove || _isMoving)
+            && SelectedUnitsCanHarvest();
+
+        // Updates move button colors.
+        if (_isSelectingMove)
+        {
+            _colorBlock.normalColor = _selectedColor;
+            _colorBlock.pressedColor = _selectedColor;
+            _colorBlock.selectedColor = _selectedColor;
+        }
+
+        else
+        {
+            _colorBlock.normalColor = _normalColor;
+            _colorBlock.pressedColor = _normalColor;
+            _colorBlock.selectedColor = _normalColor;
+        }
+
+        _moveButton.colors = _colorBlock;
+    }
+
+    /// <summary>
+    /// Checks if there are harvestable resources where the selected units are.
+    /// </summary>
+    /// <returns>True if a unit is on a tile with resources it can collect.</returns>
+    private bool SelectedUnitsCanHarvest()
+    {
+        GameTile m_targetTile;
+        
+        // Iterates every selected unit.
+        foreach (Unit f_unit in _selectedUnits)
+        {
+            // Gets the unit's tile.
+            m_targetTile = _ongoingData.MapCells[f_unit.MapPosition].Tile;
+
+            // Iterates resource names this unit can collect.
+            for (int i = 0; i < f_unit.ResourceNamesToCollect.Count; i++)
+            {
+                // Iterates resources present in this game tile.
+                foreach (Resource f_resource in m_targetTile.Resources)
+                {
+                    // If the resource's name the unit collects matches this one.
+                    if (f_resource.Name == f_unit.ResourceNamesToCollect[i])
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Toggles units movement mode.
     /// </summary>
     /// <remarks>
@@ -331,7 +368,8 @@ public class UIPanelUnitsControl : UIPanel
         ISet<Unit> m_movingUnits = new HashSet<Unit>(_selectedUnits);
         ISet<Unit> m_blockedUnits = new HashSet<Unit>();
 
-        YieldInstruction m_waitForUnitToMove = new WaitForSeconds(_gameData.UnitMoveTime * 1.25f);
+        YieldInstruction m_waitForUnitsToMove = 
+            new WaitForSeconds(_gameData.UnitMoveTime * 1.25f);
 
         _isMoving = true;
         OnMoving?.Invoke(_isMoving);
@@ -372,8 +410,11 @@ public class UIPanelUnitsControl : UIPanel
                     if (_ongoingData.MapUnits[m_nextMove] == null)
                     {
                         // Calculates world position for this unit to move to.
-                        m_worldPosMove = _ongoingData.MapCells[m_nextMove].transform.position;
-                        m_worldPosMove.y += (_ongoingData.MapCellSize * _gameData.UnitDisplayOffset);
+                        m_worldPosMove = 
+                        _ongoingData.MapCells[m_nextMove].transform.position;
+
+                        m_worldPosMove.y += 
+                            (_ongoingData.MapCellSize * _gameData.UnitDisplayOffset);
 
                         // Moves unit.
                         _ongoingData.MoveUnitTo(f_unit, m_nextMove);
@@ -400,7 +441,7 @@ public class UIPanelUnitsControl : UIPanel
             // Waits for units to move and ends turn.
             if (m_movingUnits.Count > 0)
             {
-                yield return m_waitForUnitToMove;
+                yield return m_waitForUnitsToMove;
                 OnNewTurn?.Invoke();
             }
         }
@@ -449,7 +490,7 @@ public class UIPanelUnitsControl : UIPanel
                     if (f_resource.Name == f_unit.ResourceNamesToCollect[i])
                     {
                         // Adds resource to unit.
-                        f_unit.AddResource(f_resource);
+                        f_unit.HarvestResource(f_resource);
 
                         // Removes resource from tile.
                         m_targetTile.RemoveResource(f_resource);

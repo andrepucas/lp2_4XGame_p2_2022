@@ -171,9 +171,13 @@ MonoBehaviour:
   _baseImg: {fileID: 3754135468953636893}
   _frontImg: {fileID: 2076974542266850214}
   _selectedRing: {fileID: 6245003520881240668}
+  _ringRotation: {fileID: 8140652691485563980}
+  _ringMaxSpeed: 5
+  _ringMaxSpeedDuration: 1
   _normalColor: {r: 0.9411765, g: 0.9411765, b: 0.9411765, a: 0.5882353}
   _hoveredColor: {r: 1, g: 0.19607843, b: 0.39215687, a: 0.5882353}
   _selectedColor: {r: 1, g: 0.19607843, b: 0.39215687, a: 1}
+  _harvestingColor: {r: 1, g: 0.78431374, b: 0.39215687, a: 1}
   _colorFadeTime: 0.1
 --- !u!1 &6245003520881240668
 GameObject:
@@ -265,7 +269,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 3ba674f325025d64ab51fedb74c12dda, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 2
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 

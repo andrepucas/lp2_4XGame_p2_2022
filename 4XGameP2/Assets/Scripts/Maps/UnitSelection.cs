@@ -17,10 +17,10 @@ public class UnitSelection : MonoBehaviour
     private IList<Unit> _unitsInGame;
 
     // Private collection containing all hovered units.
-    private IList<Unit> _unitsHovered;
+    private ISet<Unit> _unitsHovered;
 
     // Private collection containing all selected units.
-    private IList<Unit> _unitsSelected;
+    private ISet<Unit> _unitsSelected;
 
     // Camera reference.
     private Camera _cam;
@@ -62,8 +62,8 @@ public class UnitSelection : MonoBehaviour
     public void Reset()
     {
         _unitsInGame = new List<Unit>();
-        _unitsHovered = new List<Unit>();
-        _unitsSelected = new List<Unit>();
+        _unitsHovered = new HashSet<Unit>();
+        _unitsSelected = new HashSet<Unit>();
 
         _cam = Camera.main;
         _auxV2 = new Vector2();
@@ -168,8 +168,7 @@ public class UnitSelection : MonoBehaviour
 
         // Selects hovered units.
         foreach(Unit f_unit in _unitsHovered)
-            if (!_unitsSelected.Contains(f_unit))
-                Select(f_unit);
+            Select(f_unit);
 
         // Clears hovered units list.
         _unitsHovered.Clear();
@@ -210,6 +209,7 @@ public class UnitSelection : MonoBehaviour
     /// <param name="p_unit">Unit.</param>
     private void Hover(Unit p_unit)
     {
+        Debug.Log("HOVER");
         _unitsHovered.Add(p_unit);
         p_unit.OnHover();
     }
@@ -220,6 +220,7 @@ public class UnitSelection : MonoBehaviour
     /// <param name="p_unit">Unit.</param>
     private void StopHover(Unit p_unit)
     {
+        Debug.Log("STOP HOVER");
         _unitsHovered.Remove(p_unit);
 
         if (_unitsSelected.Contains(p_unit)) p_unit.OnSelect();
@@ -232,6 +233,7 @@ public class UnitSelection : MonoBehaviour
     /// <param name="p_unit">Unit.</param>
     private void Select(Unit p_unit)
     {
+        Debug.Log("SELECT");
         _unitsSelected.Add(p_unit);
         p_unit.OnSelect();
 
@@ -245,6 +247,7 @@ public class UnitSelection : MonoBehaviour
     /// <param name="p_unit">Unit.</param>
     private void Deselect(Unit p_unit)
     {
+        Debug.Log("DESELECT");
         _unitsSelected.Remove(p_unit);
         p_unit.OnDeselect();
 

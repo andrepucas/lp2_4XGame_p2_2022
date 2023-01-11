@@ -273,8 +273,7 @@ public class Controller : MonoBehaviour
         else if (_currentState == GameStates.INSPECTOR)
         {
             // Backs out from inspector state.
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(0) ||
-                Input.GetMouseButtonDown(1))
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))
             {
                 ChangeGameState(GameStates.GAMEPLAY);
             }

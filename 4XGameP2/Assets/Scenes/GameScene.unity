@@ -4552,10 +4552,10 @@ MonoBehaviour:
   _resourceCountFolder: {fileID: 498224796}
   _resourceCount: {fileID: 6959098923499027189, guid: 9eda881ecaf8f6a43ba4948c70ada597, type: 3}
   _moveButton: {fileID: 1592354401}
+  _harvestButton: {fileID: 2023154447}
   _normalColor: {r: 1, g: 0.19607843, b: 0.39215687, a: 1}
   _selectedColor: {r: 1, g: 0.78431374, b: 0.39215687, a: 1}
   _toggleButtons:
-  - {fileID: 2023154447}
   - {fileID: 1700070081}
   - {fileID: 296966013}
   - {fileID: 1995789252}
