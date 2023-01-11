@@ -16,25 +16,25 @@ public class MapData : IComparable<MapData>
     /// Public self implemented property that holds the map name.
     /// </summary>
     /// <value>Name of the map.</value>
-    public string Name {get; set;}
+    public string Name { get; set; }
 
     /// <summary>
     /// Read only self implemented property that holds the map X dimensions.
     /// </summary>
     /// <value>Map size in the X axis.</value>
-    public int XCols {get;}
+    public int XCols { get; }
 
     /// <summary>
     /// Read only self implemented property that holds the map Y dimensions.
     /// </summary>
     /// <value>Map size in the Y axis.</value>
-    public int YRows {get;}
+    public int YRows { get; }
 
     /// <summary>
     /// Read only self implemented property that holds all map file lines.
     /// </summary>
     /// <value>String array of each map file line.</value>
-    public IReadOnlyList<string> Data {get;}
+    public IReadOnlyList<string> Data { get; }
 
     /// <summary>
     /// Read only self implemented property that holds a list of all game tiles.

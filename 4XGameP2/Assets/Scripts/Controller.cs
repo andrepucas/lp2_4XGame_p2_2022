@@ -36,7 +36,8 @@ public class Controller : MonoBehaviour
     private bool _isMapDisplayed;
     private bool _isInspecting;
     private bool _isControllingUnits;
-    private bool _isMovingUnits;
+    private bool _isMoveSelecting;
+    private bool _isMoving;
 
     // Control variables for input.
     private Vector3 _lastMousePos, _mouseDelta;
@@ -71,7 +72,8 @@ public class Controller : MonoBehaviour
         MapDisplay.OnMapGenerated += (_) => ChangeGameState(GameStates.GAMEPLAY);
         MapCell.OnInspectView += () => ChangeGameState(GameStates.INSPECTOR);
         UnitSelection.OnUnitsSelected += HandleUnitsSelected;
-        UIPanelUnitsControl.OnSelectingMoveTarget += SetCursorImage;
+        UIPanelUnitsControl.OnMoveSelect += SetCursorImage;
+        UIPanelUnitsControl.OnMoving += (p_moving) => { _isMoving = p_moving; };
     }
 
     /// <summary>
@@ -86,7 +88,8 @@ public class Controller : MonoBehaviour
         MapDisplay.OnMapGenerated -= (_) => ChangeGameState(GameStates.GAMEPLAY);
         MapCell.OnInspectView -= () => ChangeGameState(GameStates.INSPECTOR);
         UnitSelection.OnUnitsSelected -= HandleUnitsSelected;
-        UIPanelUnitsControl.OnSelectingMoveTarget -= SetCursorImage;
+        UIPanelUnitsControl.OnMoveSelect -= SetCursorImage;
+        UIPanelUnitsControl.OnMoving += (p_moving) => { };
     }
 
     /// <summary>
@@ -230,7 +233,7 @@ public class Controller : MonoBehaviour
                 _mapDisplay.TryZoom(-1);
 
             // UNIT SELECTION //////////////////////////////////////////////////
-            if (!_isMovingUnits)
+            if (!(_isMoveSelecting || _isMoving))
             {
                 // Gets current mouse delta, to detect movement.
                 _mouseDelta = Input.mousePosition - _lastMousePos;
@@ -336,12 +339,12 @@ public class Controller : MonoBehaviour
     /// <summary>
     /// Sets the cursor's image depending if units destination is being targeted.
     /// </summary>
-    /// <param name="p_selectingTarget">Unit target are being selected.</param>
-    private void SetCursorImage(bool p_selectingTarget = false)
+    /// <param name="p_moveSelecting">Unit target is being selected.</param>
+    private void SetCursorImage(bool p_moveSelecting = false)
     {
-        _isMovingUnits = p_selectingTarget;
+        _isMoveSelecting = p_moveSelecting;
 
-        if (_isMovingUnits) 
+        if (_isMoveSelecting) 
             Cursor.SetCursor(_movementCursorImg, Vector2.one*3, CursorMode.Auto);
 
         else Cursor.SetCursor(_defaultCursorImg, Vector2.one*3, CursorMode.Auto);

@@ -39,7 +39,7 @@ public class UnitSelection : MonoBehaviour
 
     private void OnEnable()
     {
-        UIPanelGameplay.OnUnitAdded += (p_unit) => {_unitsInGame.Add(p_unit);};
+        UIPanelGameplay.OnUnitAdded += (p_unit) => { _unitsInGame.Add(p_unit); };
         UIPanelUnitsControl.OnUnitsRemoved += RemoveUnits;
         Unit.OnEnter += Hover;
         Unit.OnExit += StopHover;
@@ -48,7 +48,7 @@ public class UnitSelection : MonoBehaviour
 
     private void OnDisable()
     {
-        UIPanelGameplay.OnUnitAdded -= (p_unit) => {};
+        UIPanelGameplay.OnUnitAdded -= (p_unit) => { };
         UIPanelUnitsControl.OnUnitsRemoved -= RemoveUnits;
         Unit.OnEnter -= Hover;
         Unit.OnExit -= StopHover;

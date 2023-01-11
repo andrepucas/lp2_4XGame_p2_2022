@@ -12,29 +12,33 @@ public class Resource : IComparable<Resource>
     /// resource.
     /// </summary>
     /// <value>Name of the resource.</value>
-    public string Name {get;}
+    public string Name { get; }
 
     /// <summary>
     /// Read only self implemented property that returns the coin value of this
     /// resource.
     /// </summary>
     /// <value>Coin value of the resource.</value>
-    public int Coin {get;}
+    public int Coin { get; }
 
     /// <summary>
     /// Read only self implemented property that returns the food value of this 
     /// resource.
     /// </summary>
     /// <value>Food of the resource.</value>
-    public int Food {get;}
+    public int Food { get; }
 
     /// <summary>
     /// Read only self implemented property that returns all sprite variations 
     /// for this resource.
     /// </summary>
-    public IReadOnlyDictionary<string, Sprite> SpritesDict {get;}
+    public IReadOnlyDictionary<string, Sprite> SpritesDict { get; }
 
-    public Sprite DefaultSprite {get;}
+    /// <summary>
+    /// Readonly self implemented property that returns the resource's default sprite.
+    /// </summary>
+    /// <value>Default sprite, full sized.</value>
+    public Sprite DefaultSprite { get; }
 
     /// <summary>
     /// Constructor method. Sets properties' values.

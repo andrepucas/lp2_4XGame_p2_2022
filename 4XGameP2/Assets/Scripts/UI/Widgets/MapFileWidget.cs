@@ -54,7 +54,7 @@ public class MapFileWidget : MonoBehaviour
     /// the map this widget represents.
     /// </summary>
     /// <value></value>
-    public MapData MapData {get; private set;}
+    public MapData MapData { get; private set; }
 
     // Color block to temporarily hold and switch button colors.
     private ColorBlock _buttonColors;

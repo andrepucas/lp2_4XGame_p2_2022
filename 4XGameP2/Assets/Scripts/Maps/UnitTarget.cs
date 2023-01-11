@@ -28,12 +28,20 @@ public class UnitTarget : MonoBehaviour
     /// <summary>
     /// Unity method, on enable, subscribes to events.
     /// </summary>
-    private void OnEnable() => MapDisplay.OnCamZoom += UpdateScale;
+    private void OnEnable()
+    {
+        MapDisplay.OnCamZoom += UpdateScale;
+        UIPanelUnitsControl.OnMoving += DestroyWhenReached;
+    }
 
     /// <summary>
     /// Unity method, on disable, unsubscribes from events.
     /// </summary>
-    private void OnDisable() => MapDisplay.OnCamZoom -= UpdateScale;
+    private void OnDisable()
+    {
+        MapDisplay.OnCamZoom -= UpdateScale;
+        UIPanelUnitsControl.OnMoving -= DestroyWhenReached;
+    }
 
     /// <summary>
     /// Updates scale when camera zooms, so that the icon always remains the
@@ -48,5 +56,14 @@ public class UnitTarget : MonoBehaviour
         // Equals width and height and sets it as the new rect transform's size.
         _rectSize.y = _rectSize.x;
         _rectTransform.sizeDelta = _rectSize;
+    }
+
+    /// <summary>
+    /// Destroy this game object when a unit reached it (Units stop moving).
+    /// </summary>
+    /// <param name="p_moving">Units moving status.</param>
+    private void DestroyWhenReached(bool p_moving)
+    {
+        if (!p_moving) Destroy(gameObject);
     }
 }

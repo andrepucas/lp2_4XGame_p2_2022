@@ -21,19 +21,19 @@ public class OngoingGameDataSO : ScriptableObject
     /// Self implemented property that holds the number of map cells.
     /// </summary>
     /// <value>Number of cells in the generated mad.</value>
-    public int MapCellsCount {get; private set;}
+    public int MapCellsCount { get; private set; }
 
     /// <summary>
     /// Self implemented property that holds the value of a map cell size.
     /// </summary>
     /// <value>Size of a map cell after being generated.</value>
-    public float MapCellSize {get; private set;}
+    public float MapCellSize { get; private set; }
 
     /// <summary>
     /// Self implemented property that holds the number of spawned map units.
     /// </summary>
     /// <value>Number of units in the map.</value>
-    public int MapUnitsCount {get; private set;}
+    public int MapUnitsCount { get; private set; }
 
     // Private dictionary containing cells and respective positions.
     private Dictionary<Vector2, MapCell> _mapCells;

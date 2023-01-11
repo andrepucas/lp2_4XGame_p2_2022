@@ -18,12 +18,19 @@ public class UIPanelUnitsControl : UIPanel
     public static event Action<ICollection<Unit>> OnUnitsRemoved;
 
     /// <summary>
-    /// Event raised when the 'MOVE' units button is toggled. True = on.
+    /// Event raised when the 'MOVE' units button is toggled.
+    /// True = Selecting a move destination.
     /// </summary>
-    public static event Action<bool> OnSelectingMoveTarget;
+    public static event Action<bool> OnMoveSelect;
 
     /// <summary>
-    /// Event raised when the units harvest resources.
+    /// Event raised when the selected units start/stop moving.
+    /// True = Moving.
+    /// </summary>
+    public static event Action<bool> OnMoving;
+
+    /// <summary>
+    /// Event raised after the selected units try to harvest their tiles.
     /// </summary>
     public static event Action OnHarvest;
 
@@ -79,7 +86,7 @@ public class UIPanelUnitsControl : UIPanel
     private ColorBlock _colorBlock;
 
     // Control variables for moving units.
-    private bool _isSelectingTarget, _isMoving;
+    private bool _isSelectingMove, _isMoving;
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
@@ -87,7 +94,7 @@ public class UIPanelUnitsControl : UIPanel
     private void OnEnable()
     {
         UnitSelection.OnUnitsSelected += DisplayUnitsData;
-        MapCell.OnTargeted += MoveUnitsTo;
+        MapCell.OnTargeted += (p_targetCell) => StartCoroutine(MovingUnitsTo(p_targetCell));
     }
 
     /// <summary>
@@ -96,7 +103,7 @@ public class UIPanelUnitsControl : UIPanel
     private void OnDisable()
     {
         UnitSelection.OnUnitsSelected -= DisplayUnitsData;
-        MapCell.OnTargeted -= MoveUnitsTo;
+        MapCell.OnTargeted -= (p_targetCell) => { };
     }
 
     /// <summary>
@@ -128,7 +135,7 @@ public class UIPanelUnitsControl : UIPanel
     public void ClosePanel(float p_transitionTime = 0)
     {
         // Resets movement control variables.
-        _isSelectingTarget = false;
+        _isSelectingMove = false;
         _isMoving = false;
 
         // Activate closing trigger of sub-panel animator.
@@ -164,15 +171,15 @@ public class UIPanelUnitsControl : UIPanel
     /// </summary>
     private void UpdateButtons()
     {
-        // Buttons are toggled off if selecting units destination or moving.
+        // Buttons are toggled off if selecting units move destination or moving.
         foreach(Button f_btn in _toggleButtons)
-            f_btn.interactable = !(_isSelectingTarget || _isMoving);
+            f_btn.interactable = !(_isSelectingMove || _isMoving);
 
         // Disables move button while units are moving.
         _moveButton.interactable = !_isMoving;
 
         // Updates move button colors.
-        if (_isSelectingTarget)
+        if (_isSelectingMove)
         {
             _colorBlock.normalColor = _selectedColor;
             _colorBlock.pressedColor = _selectedColor;
@@ -283,22 +290,22 @@ public class UIPanelUnitsControl : UIPanel
     /// </remarks>
     public void OnMoveButton()
     {
-        _isSelectingTarget = !_isSelectingTarget;
-        OnSelectingMoveTarget?.Invoke(_isSelectingTarget);
+        _isSelectingMove = !_isSelectingMove;
+        OnMoveSelect?.Invoke(_isSelectingMove);
 
         // Toggles affected buttons and update move button display.
         UpdateButtons();
 
         // Toggles target selection.
-        if (_isSelectingTarget) StartCoroutine(SelectingTarget());
-        else StopCoroutine(SelectingTarget());
+        if (_isSelectingMove) StartCoroutine(SelectingMoveTarget());
+        else StopCoroutine(SelectingMoveTarget());
     }
 
     /// <summary>
     /// Handles units movement target selection mode.
     /// </summary>
     /// <returns>Null.</returns>
-    private IEnumerator SelectingTarget()
+    private IEnumerator SelectingMoveTarget()
     {
         // While right click isn't pressed.
         while (!Input.GetMouseButtonDown(1))
@@ -311,79 +318,98 @@ public class UIPanelUnitsControl : UIPanel
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="p_targetCellPos"></param>
-    private void MoveUnitsTo(Vector3 p_targetCellPos)
+    /// <param name="p_targetCell"></param>
+    /// <returns></returns>
+    private IEnumerator MovingUnitsTo(MapCell p_targetCell)
     {
-        _isMoving = true;
+        ISet<Unit> _movingUnits = new HashSet<Unit>(_selectedUnits);
 
-        // Toggle move button. Stops selection mode and updates buttons.
+        _isMoving = true;
+        OnMoving?.Invoke(_isMoving);
+
+        // Toggle move button. Stops selecting move mode and updates buttons.
         OnMoveButton();
 
-        // Calculates spawn position.
-        p_targetCellPos.y += (_ongoingData.MapCellSize * _gameData.UnitDisplayOffset);
+        // Calculates destination target prompt spawn position.
+        Vector3 m_spawnPos = p_targetCell.transform.position;
+        m_spawnPos.y += (_ongoingData.MapCellSize * _gameData.UnitDisplayOffset);
 
-        // Instantiates destination target on top of target cell.
-        UnitTarget m_target = Instantiate(_targetDestinationPrefab, p_targetCellPos,
+        // Instantiates destination target prompt on top of target cell.
+        UnitTarget m_target = Instantiate(_targetDestinationPrefab, m_spawnPos,
             Quaternion.identity, _enemiesFolder).GetComponent<UnitTarget>();
 
         // Initializes target.
         m_target.Initialize(_gameData.UnitDisplaySize);
+
+        // While there are moving units.
+        while (_movingUnits.Count > 0)
+        {
+            // foreach unit
+                // if (unit.MoveTowards(p_targetCell.MapPosition) != null)
+                    // move.
+                // else _movingUnits.Remove(unit)
+
+            // (MOVE TOWARDS METHOD)
+            // Strategy Pattern in Unit. Each Movement type is behavior. Defined on preset SO.
+
+            yield return new WaitForSeconds(5);
+            break;
+        }
+
+        _isMoving = false;
+        OnMoving?.Invoke(_isMoving);
+
+        p_targetCell.OnPointerExit(null);
+        UpdateButtons();
     }
 
     /// <summary>
-    /// Makes selected units remove a resource a resource from a game tile and
-    /// add it to it's inventory. Depending on the unit, may also add a resource
-    /// to the game tile.
+    /// Selected units try to harvest resources from the tile they are on.
+    /// Depending on the unit, may also add a resource to the game tile.
     /// </summary>
     /// <remarks>
     /// Called by the 'HARVEST' Unity button, in this panel.
     /// </remarks>
     public void OnHarvestButton()
     {
-        // Tile that the unit is standing on.
+        // Stores tile that unit is standing on.
         GameTile m_targetTile;
 
-        // Control variable to check if resources have been harvested.
+        // Controls if a resource has been collected.
         bool m_resourceCollected;
 
-        // Control variable used to check if a resource is already existent in
-        // a specific game tile.
+        // Controls duplicate resources when trying to add to the tile.
         bool m_dupResource;
-
 
         // For each selected unit.
         foreach (Unit f_unit in _selectedUnits)
         {
-
-            // Sets control variable to false;
+            // Sets resource collected control to false;
             m_resourceCollected = false;
 
-            // Gets the tiles position.
+            // Gets the unit's tile.
             m_targetTile = _ongoingData.MapCells[f_unit.MapPosition].Tile;
 
-            // Debug code.
+            // +++ DEBUG +++ //
             foreach (Resource f_tileResource in m_targetTile.Resources)
-            {
                 Debug.Log("BEFORE - " + f_tileResource.Name);
-            }
 
-            // Iterates over the number of possible resources to collect.
+            // Iterates resource names this unit can collect.
             for (int i = 0; i < f_unit.ResourceNamesToCollect.Count; i++)
             {
-                // If the resource's name is on the unit's resourceToCollect list.
-                foreach (Resource f_currentResource in m_targetTile.Resources)
+                // Iterates resources present in this game tile.
+                foreach (Resource f_resource in m_targetTile.Resources)
                 {
-                    // Checks if the current resource name is equals to the current
-                    // possible resource to collect.
-                    if (f_currentResource.Name == f_unit.ResourceNamesToCollect[i])
+                    // If the resource's name the unit collects matches this one.
+                    if (f_resource.Name == f_unit.ResourceNamesToCollect[i])
                     {
                         // Adds resource to unit.
-                        f_unit.AddResource(f_currentResource);
+                        f_unit.AddResource(f_resource);
 
                         // Removes resource from tile.
-                        m_targetTile.RemoveResource(f_currentResource);
+                        m_targetTile.RemoveResource(f_resource);
 
-                        // Sets control variable to true.
+                        // Sets resource collected control to true.
                         m_resourceCollected = true;
 
                         break;
@@ -391,66 +417,63 @@ public class UIPanelUnitsControl : UIPanel
                 }
             }
 
-            // Checks if resources have been harvested.
+            // If the unit managed to collect any resource.
             if (m_resourceCollected)
             {
-                // Iterates over the number of possible resources to generate
-                // after harvesting.
+                // Iterates resource names this unit can generate.
                 for (int i = 0; i < f_unit.ResourceNamesToGenerate.Count; i++)
                 {
-                    // Sets control variable to false.
+                    // Sets duplicate resource control to false.
                     m_dupResource = false;
 
-                    // Goes through each resource of target game tile.
-                    foreach (Resource f_tileResource in m_targetTile.Resources)
+                    // Iterates resources present in this game tile.
+                    foreach (Resource f_resource in m_targetTile.Resources)
                     {
-                        // Checks if the tile already has any resource to generate.
-                        if (f_tileResource.Name == f_unit.ResourceNamesToGenerate[i])
+                        // If the resource's name the unit generates matches this one.
+                        if (f_resource.Name == f_unit.ResourceNamesToGenerate[i])
                         {
-                            // Sets control variable to true.
+                            // It already exists in the tile.
+                            // Sets duplicate resource control to false.
                             m_dupResource = true;
 
                             break;
                         }
                     }
 
-                    // Checks if the control variable is false.
+                    // If the tile doesn't have the resource the unit is generating.
                     if (!m_dupResource)
-                    {   
-                        // Goes through each possible resource in the game.
-                        foreach (PresetResourcesData f_resourceToCompare in _gameData.Resources)
+                    {
+                        // Iterates data of every possible game resource.
+                        foreach (PresetResourcesData f_resourceData in _gameData.Resources)
                         {
-                            // Checks if the current resource name is equals to this
-                            // iteration's name.
-                            if (f_resourceToCompare.Name == f_unit.ResourceNamesToGenerate[i])
+                            // If the resource the units is generating is found.
+                            if (f_resourceData.Name == f_unit.ResourceNamesToGenerate[i])
                             {
-                                // Adds of the previous type to the game tile.
+                                // Adds the resource to the tile.
                                 m_targetTile.AddResource(new Resource(
-                                    f_resourceToCompare.Name,
-                                    f_resourceToCompare.Coin,
-                                    f_resourceToCompare.Food,
-                                    _gameData.GetSpriteDictOf(f_resourceToCompare.Name),
-                                    f_resourceToCompare.DefaultResourceSprite));
+                                    f_resourceData.Name,
+                                    f_resourceData.Coin,
+                                    f_resourceData.Food,
+                                    _gameData.GetSpriteDictOf(f_resourceData.Name),
+                                    f_resourceData.DefaultResourceSprite));
                             }
                         }
                     }
                 }
             }
 
-            // Updates game cell's sprites.
+            // Updates map cell's sprites.
             _ongoingData.MapCells[f_unit.MapPosition].UpdateResourceSprites();
 
-            // Debug code.
+            // +++ DEBUG +++ //
             foreach (Resource f_tileResource in m_targetTile.Resources)
-            {
                 Debug.Log("AFTER - " + f_tileResource.Name);
-            }
         }
-        
-        // Raises event.
+
+        // Raises event that harvest action has been completed.
         OnHarvest?.Invoke();
 
-        // Updates the UnitsUiPanel
+        // Updates data in this panel.
         DisplayUnitsData(_selectedUnits);
     }
 

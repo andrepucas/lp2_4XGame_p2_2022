@@ -136,12 +136,12 @@ public class MapDisplay : MonoBehaviour
             // Instantiates a cell as a child of this game object.
             m_mapCell = Instantiate(_cell, transform).GetComponent<MapCell>();
 
-            // Initializes it.
-            m_mapCell.Initialize(p_map.GameTiles[i]);
-
             // Saves current map position.
             m_mapPosition.y = m_rows;
             m_mapPosition.x = m_cols;
+
+            // Initializes map cell.
+            m_mapCell.Initialize(p_map.GameTiles[i], m_mapPosition);
 
             // Saves cell together with it's relative map position.
             _ongoingData.SetupMapInfo(m_mapCell, m_mapPosition);

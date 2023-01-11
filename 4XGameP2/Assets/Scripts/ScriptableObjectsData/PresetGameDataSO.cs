@@ -72,9 +72,9 @@ public class PresetGameDataSO : ScriptableObject
 
 
     /// <summary>
-    /// MISSING COMMENTS <--------------------------------------------------------------------------------------------------------------------
+    /// Readonly property that returns the default sprite of a given resource name.
     /// </summary>
-    /// <value></value>
+    /// <value>Resource's Default Sprite.</value>
     public IReadOnlyDictionary<string, Sprite> ResourceDefaultSprites
     {
         get

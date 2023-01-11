@@ -50,19 +50,19 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// Self implemented property that stores the name of the unit.
     /// </summary>
     /// <value>Name of the unit (type).</value>
-    public string Name {get; private set;}
+    public string Name { get; private set; }
 
     /// <summary>
     /// Self implemented property that stores the unit's icon sprite.
     /// </summary>
     /// <value></value>
-    public Sprite Icon {get; private set;}
+    public Sprite Icon { get; private set; }
 
     /// <summary>
     /// Public self implemented property that stores the unit's relative map position.
     /// </summary>
     /// <value>Relative map position. Ex: (0, 1).</value>
-    public Vector2 MapPosition {get; set;}
+    public Vector2 MapPosition { get; set; }
 
     /// <summary>
     /// Readonly self implemented property that returns this unit's selectable radius.
@@ -79,17 +79,17 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     private List<Resource> _resourceList;
 
     // Private arrays of resource's names to collect and generate.
-    public IReadOnlyList<string> ResourceNamesToCollect {get; private set;}
-    public IReadOnlyList<string> ResourceNamesToGenerate {get; private set;}
+    public IReadOnlyList<string> ResourceNamesToCollect { get; private set; }
+    public IReadOnlyList<string> ResourceNamesToGenerate { get; private set; }
 
     // Private Vector2 that handles the rectTransform's size modifications.
     private Vector2 _rectSize;
 
-    // Control variable so that unit can't be selected.
-    private bool _isSelectingUnitsTarget;
-
     // Private float value that holds the ratio size of this unit.
     private float _displaySizeRatio;
+
+    // Control variables so that unit can't be selected when moving.
+    private bool _moveSelecting, _moving;
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
@@ -97,8 +97,8 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     private void OnEnable()
     {
         MapDisplay.OnCamZoom += UpdateScale;
-        UIPanelUnitsControl.OnSelectingMoveTarget += (p_selecting) => 
-            {_isSelectingUnitsTarget = p_selecting;};
+        UIPanelUnitsControl.OnMoveSelect += (p_selecting) => _moveSelecting = p_selecting;
+        UIPanelUnitsControl.OnMoving += (p_moving) => { _moving = p_moving; };
     }
 
     /// <summary>
@@ -107,7 +107,8 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     private void OnDisable()
     {
         MapDisplay.OnCamZoom -= UpdateScale;
-        UIPanelUnitsControl.OnSelectingMoveTarget -= (p_selecting) => {};
+        UIPanelUnitsControl.OnMoveSelect -= (p_selecting) => { };
+        UIPanelUnitsControl.OnMoving -= (p_moving) => { };
     }
 
     /// <summary>
@@ -146,6 +147,12 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
         // Deselects unit.
         OnDeselect();
     }
+
+    /// <summary>
+    /// Adds a resource to this unit's private resource list.
+    /// </summary>
+    /// <param name="resource">Resource to add.</param>
+    public void AddResource(Resource resource) => _resourceList.Add(resource);
 
     /// <summary>
     /// Updates scale when camera zooms, so that the icon always remains the
@@ -238,7 +245,11 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// </remarks>
     public void OnPointerClick(PointerEventData p_pointerData)
     {
-        if (!_isSelectingUnitsTarget && p_pointerData.button == PointerEventData.InputButton.Left)
+        // Ignores method if units are preparing to or moving.
+        if (_moveSelecting || _moving) return;
+
+        // If clicked with the left mouse button.
+        if (p_pointerData.button == PointerEventData.InputButton.Left)
             OnClick?.Invoke(this);
     }
 
@@ -251,12 +262,10 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// </remarks>
     public void OnPointerEnter(PointerEventData p_pointerData)
     {
-        if (!_isSelectingUnitsTarget) OnEnter?.Invoke(this);
-    }
+        // Ignores method if units are preparing to or moving.
+        if (_moveSelecting || _moving) return;
 
-    public void AddResource(Resource resource)
-    {
-        _resourceList.Add(resource);
+        OnEnter?.Invoke(this);
     }
 
     /// <summary>
@@ -268,6 +277,9 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// </remarks>
     public void OnPointerExit(PointerEventData p_pointerData)
     {
-        if (!_isSelectingUnitsTarget) OnExit?.Invoke(this);
+        // Ignores method if units are preparing to or moving.
+        if (_moveSelecting || _moving) return;
+
+        OnExit?.Invoke(this);
     }
 }

@@ -24,7 +24,7 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// <summary>
     /// Event raised when this cell is targeted for units to move towards.
     /// </summary>
-    public static event Action<Vector3> OnTargeted;
+    public static event Action<MapCell> OnTargeted;
 
     // Serialized
     [Header("TERRAIN")]
@@ -36,8 +36,17 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     [Tooltip("Prefab of resource image.")]
     [SerializeField] private GameObject _resourceImgPrefab;
 
-    // Reference to the game tile this cell represents.
+    /// <summary>
+    /// Self implemented property that holds the Game Tile it represents.
+    /// </summary>
+    /// <value></value>
     public GameTile Tile { get; private set; }
+
+    /// <summary>
+    /// Public self implemented property that stores the cell's relative map position.
+    /// </summary>
+    /// <value>Relative map position. Ex: (0, 1).</value>
+    public Vector2 MapPosition { get; private set; }
 
     // List containing actively displayed resource sprites.
     private List<Sprite> _activeRSpritesList;
@@ -45,16 +54,16 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     // Private pointer control variables.
     private Vector3 _mouseDownPos, _mouseClickDelta;
 
-    // Private control variable to know if this cell is being targeted.
-    private bool _isSelecting;
+    // Private control for units selecting a destination cell and moving.
+    private bool _moveSelecting, _moving;
 
     /// <summary>
     /// Unity method, on enable, subscribes to events.
     /// </summary>
     private void OnEnable()
     {
-        UIPanelUnitsControl.OnSelectingMoveTarget += (p_selecting) => 
-            {_isSelecting = p_selecting;};
+        UIPanelUnitsControl.OnMoveSelect += (p_selecting) => _moveSelecting = p_selecting;
+        UIPanelUnitsControl.OnMoving += (p_moving) => { _moving = p_moving; };
     }
 
     /// <summary>
@@ -62,17 +71,21 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// </summary>
     private void OnDisable()
     {
-        UIPanelUnitsControl.OnSelectingMoveTarget -= (p_moving) => { };
+        UIPanelUnitsControl.OnMoveSelect -= (p_selecting) => { };
+        UIPanelUnitsControl.OnMoving -= (p_moving) => { };
     }
 
     /// <summary>
     /// Sets up the cell after being instantiated.
     /// </summary>
     /// <param name="p_tile">Game tile that the cell represents.</param>
-    public void Initialize(GameTile p_tile)
+    public void Initialize(GameTile p_tile, Vector2 p_mapPosition)
     {
         // Saves game tile reference.
         Tile = p_tile;
+
+        // Saves relative map position.
+        MapPosition = p_mapPosition;
 
         // Creates list of active displayed resources.
         _activeRSpritesList = new List<Sprite>();
@@ -112,7 +125,6 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
             // Saves it in a list.
             _activeRSpritesList.Add(m_resourceImage.sprite);
         }
-
     }
 
     /// <summary>
@@ -124,8 +136,14 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// Called when the cell starts to be clicked, on pointer down,
     /// by IPointerDownHandler.
     /// </remarks>
-    public void OnPointerDown(PointerEventData p_pointerData) =>
+    public void OnPointerDown(PointerEventData p_pointerData)
+    {
+        // Ignores method if units are moving.
+        if (_moving) return;
+
+        // Registers mouse click position.
         _mouseDownPos = Input.mousePosition;
+    }
 
     /// <summary>
     /// Raises event that this cell has been clicked, so that inspector
@@ -137,24 +155,26 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// </remarks>
     public void OnPointerClick(PointerEventData p_pointerData)
     {
+        // Ignores method if units are moving.
+        if (_moving) return;
+
+        // Calculates mouse drag since it was pressed down.
         _mouseClickDelta = Input.mousePosition - _mouseDownPos;
 
-        // Only raises events if the clicked button is the left one and wasn't 
-        // being dragged.
+        // If clicked with the left mouse button and click wasn't dragged.
         if (p_pointerData.button == PointerEventData.InputButton.Left &&
             _mouseClickDelta.sqrMagnitude < 1)
         {
-            // If cell is being targeted by units movement control.
-            if (_isSelecting)
+            // If units are trying to select next move destination.
+            if (_moveSelecting)
             {
                 // Targets this cell.
-                OnTargeted?.Invoke(transform.position);
+                OnTargeted?.Invoke(this);
             }
 
-            // Otherwise.
+            // Otherwise inspects cell.
             else
             {
-                // Inspects cell.
                 OnInspectView?.Invoke();
                 OnInspectData?.Invoke(Tile, _activeRSpritesList);
             }
@@ -171,8 +191,11 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// </remarks>
     public void OnPointerEnter(PointerEventData p_pointerData)
     {
-        if (!Input.GetKey(KeyCode.Mouse0))
-            _terrainImg.sprite = Tile.Sprites[1];
+        // Ignores method if units are moving or if mouse was already being pressed.
+        if (_moving || Input.GetKey(KeyCode.Mouse0)) return;
+
+        // Sets terrain sprite as hovered version.
+        _terrainImg.sprite = Tile.Sprites[1];
     }
 
     /// <summary>
@@ -182,8 +205,14 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// <remarks>
     /// Called when the cell stop's being hovered, by IPointerExitHandler.
     /// </remarks>
-    public void OnPointerExit(PointerEventData p_pointerData) =>
+    public void OnPointerExit(PointerEventData p_pointerData)
+    {
+        // Ignores method if units are moving.
+        if (_moving) return;
+
+        // Sets terrain sprite as normal version.
         _terrainImg.sprite = Tile.Sprites[0];
+    }
 }
 
 

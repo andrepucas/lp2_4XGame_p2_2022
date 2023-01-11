@@ -11,21 +11,21 @@ public class GameTile
     /// Read only self implemented property that returns the name of the tile.
     /// </summary>
     /// <value>Name of the tile (terrain).</value>
-    public string Name {get;}
+    public string Name { get; }
 
     /// <summary>
     /// Read only self implemented property that returns the base coin value of 
     /// the tile.
     /// </summary>
     /// <value>Base Coin of the game tile.</value>
-    public int BaseCoin {get;}
+    public int BaseCoin { get; }
 
     /// <summary>
     /// Read only self implemented property that returns the base food value of 
     /// the tile.
     /// </summary>
     /// <value>Base Food of the game tile.</value>
-    public int BaseFood {get;}
+    public int BaseFood { get; }
 
     /// <summary>
     /// Read only property that returns the total coin value of this game tile,
@@ -66,7 +66,7 @@ public class GameTile
     /// of this tile/terrain.
     /// </summary>
     /// <value>Base and Hovered sprites.</value>
-    public IReadOnlyList<Sprite> Sprites {get;}
+    public IReadOnlyList<Sprite> Sprites { get; }
 
     /// <summary>
     /// Read only self implemented property that stores all the current resources
