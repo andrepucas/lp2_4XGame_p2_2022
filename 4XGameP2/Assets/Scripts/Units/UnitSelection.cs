@@ -209,7 +209,6 @@ public class UnitSelection : MonoBehaviour
     /// <param name="p_unit">Unit.</param>
     private void Hover(Unit p_unit)
     {
-        Debug.Log("HOVER");
         _unitsHovered.Add(p_unit);
         p_unit.OnHover();
     }
@@ -220,7 +219,6 @@ public class UnitSelection : MonoBehaviour
     /// <param name="p_unit">Unit.</param>
     private void StopHover(Unit p_unit)
     {
-        Debug.Log("STOP HOVER");
         _unitsHovered.Remove(p_unit);
 
         if (_unitsSelected.Contains(p_unit)) p_unit.OnSelect();
@@ -233,7 +231,6 @@ public class UnitSelection : MonoBehaviour
     /// <param name="p_unit">Unit.</param>
     private void Select(Unit p_unit)
     {
-        Debug.Log("SELECT");
         _unitsSelected.Add(p_unit);
         p_unit.OnSelect();
 
@@ -247,7 +244,6 @@ public class UnitSelection : MonoBehaviour
     /// <param name="p_unit">Unit.</param>
     private void Deselect(Unit p_unit)
     {
-        Debug.Log("DESELECT");
         _unitsSelected.Remove(p_unit);
         p_unit.OnDeselect();
 
