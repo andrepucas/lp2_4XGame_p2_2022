@@ -101,8 +101,6 @@ public class OngoingGameDataSO : ScriptableObject
     public void MoveUnitTo(Unit p_unit, Vector2 p_newMapPos)
     {
         _mapUnits[p_unit.MapPosition] = null;
-
         _mapUnits[p_newMapPos] = p_unit;
-        p_unit.MapPosition = p_newMapPos;
     }
 }

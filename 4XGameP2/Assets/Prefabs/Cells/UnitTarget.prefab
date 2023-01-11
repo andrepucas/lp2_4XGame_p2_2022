@@ -107,6 +107,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6215497303217353524}
   - component: {fileID: 6215497303217353526}
+  - component: {fileID: 271524529492804981}
   - component: {fileID: 6416028083538914365}
   m_Layer: 5
   m_Name: UnitTarget
@@ -145,6 +146,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6215497303217353523}
   m_CullTransparentMesh: 1
+--- !u!225 &271524529492804981
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6215497303217353523}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!114 &6416028083538914365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,6 +171,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rectTransform: {fileID: 6215497303217353524}
+  _canvasGroup: {fileID: 271524529492804981}
+  _fadeOutTime: 0.5
 --- !u!1 &8469644638585518770
 GameObject:
   m_ObjectHideFlags: 0

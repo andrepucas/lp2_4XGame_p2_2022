@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -6,7 +7,12 @@ using UnityEngine;
 public class UnitTarget : MonoBehaviour
 {
     // Serialized variables.
+    [Header("COMPONENTS")]
     [SerializeField] private RectTransform _rectTransform;
+    [SerializeField] private CanvasGroup _canvasGroup;
+    [Header("PARAMETERS")]
+    [Tooltip("Time in seconds it takes this target to fade away.")]
+    [SerializeField] private float _fadeOutTime;
 
     // Private Vector2 to easily replace size delta of rect transform.
     private Vector2 _rectSize;
@@ -31,7 +37,7 @@ public class UnitTarget : MonoBehaviour
     private void OnEnable()
     {
         MapDisplay.OnCamZoom += UpdateScale;
-        UIPanelUnitsControl.OnMoving += DestroyWhenReached;
+        UIPanelUnitsControl.OnMoving += FadeOutWhenReached;
     }
 
     /// <summary>
@@ -40,7 +46,7 @@ public class UnitTarget : MonoBehaviour
     private void OnDisable()
     {
         MapDisplay.OnCamZoom -= UpdateScale;
-        UIPanelUnitsControl.OnMoving -= DestroyWhenReached;
+        UIPanelUnitsControl.OnMoving -= FadeOutWhenReached;
     }
 
     /// <summary>
@@ -62,8 +68,31 @@ public class UnitTarget : MonoBehaviour
     /// Destroy this game object when a unit reached it (Units stop moving).
     /// </summary>
     /// <param name="p_moving">Units moving status.</param>
-    private void DestroyWhenReached(bool p_moving)
+    private void FadeOutWhenReached(bool p_moving)
     {
-        if (!p_moving) Destroy(gameObject);
+        if (!p_moving) StartCoroutine(FadingOut());
+    }
+
+    /// <summary>
+    /// Coroutine that fades out this target, before destroying it.
+    /// </summary>
+    /// <returns>Null.</returns>
+    private IEnumerator FadingOut()
+    {
+        float m_elapsedTime = 0;
+
+        // While the canvas isn't fully hidden.
+        while (_canvasGroup.alpha > 0)
+        {
+            // Lerps the canvas alpha value from 1 to 0.
+            _canvasGroup.alpha = Mathf.Lerp(1, 0, (m_elapsedTime/_fadeOutTime));
+
+            // Updates elapsed time based on unscaled delta time.
+            m_elapsedTime += Time.unscaledDeltaTime;
+
+            yield return null;
+        }
+
+        Destroy(gameObject);
     }
 }

@@ -322,7 +322,10 @@ public class UIPanelUnitsControl : UIPanel
     /// <returns></returns>
     private IEnumerator MovingUnitsTo(MapCell p_targetCell)
     {
-        ISet<Unit> _movingUnits = new HashSet<Unit>(_selectedUnits);
+        ISet<Unit> m_movingUnits = new HashSet<Unit>(_selectedUnits);
+        ISet<Unit> m_blockedUnits = new HashSet<Unit>();
+
+        YieldInstruction m_waitForUnitToMove = new WaitForSeconds(_gameData.UnitMoveTime);
 
         _isMoving = true;
         OnMoving?.Invoke(_isMoving);
@@ -341,19 +344,53 @@ public class UIPanelUnitsControl : UIPanel
         // Initializes target.
         m_target.Initialize(_gameData.UnitDisplaySize);
 
+        Vector2 m_nextMove;
+        Vector3 m_worldPosMove;
+
         // While there are moving units.
-        while (_movingUnits.Count > 0)
+        while (m_movingUnits.Count > 0)
         {
-            // foreach unit
-                // if (unit.MoveTowards(p_targetCell.MapPosition) != null)
-                    // move.
-                // else _movingUnits.Remove(unit)
+            // Iterates every moving unit.
+            foreach (Unit f_unit in m_movingUnits)
+            {
+                // Saves unit's next move towards destination.
+                m_nextMove = f_unit.GetNextMoveTowards(p_targetCell.MapPosition);
 
-            // (MOVE TOWARDS METHOD)
-            // Strategy Pattern in Unit. Each Movement type is behavior. Defined on preset SO.
+                // +++ DEBUG +++ //
+                Debug.Log(f_unit.Name.ToUpper() + "'S POSSIBLE MOVE: " + m_nextMove);
 
-            yield return new WaitForSeconds(5);
-            break;
+                // If there is a next move and it isn't out of the map's bounds.
+                if (_ongoingData.MapCells.ContainsKey(m_nextMove))
+                {
+                    // If the cell the unit is moving to isn't already occupied.
+                    if (_ongoingData.MapUnits[m_nextMove] == null)
+                    {
+                        // Calculates world position for this unit to move to.
+                        m_worldPosMove = _ongoingData.MapCells[m_nextMove].transform.position;
+                        m_worldPosMove.y += (_ongoingData.MapCellSize * _gameData.UnitDisplayOffset);
+
+                        // Moves unit
+                        f_unit.MoveTo(m_nextMove, m_worldPosMove);
+                        _ongoingData.MoveUnitTo(f_unit, m_nextMove);
+                        yield return m_waitForUnitToMove;
+
+                        // Moves on to next unit.
+                        continue;
+                    }
+                }
+
+                // +++ DEBUG +++ //
+                Debug.Log(f_unit.Name.ToUpper() + " BLOCKED");
+
+                // If the unit didn't move, add it to blocked units collection.
+                m_blockedUnits.Add(f_unit);
+            }
+
+            // Removes blocked units from moving units collection.
+            m_movingUnits.ExceptWith(m_blockedUnits);
+
+            // Clears blocked units.
+            m_blockedUnits.Clear();
         }
 
         _isMoving = false;

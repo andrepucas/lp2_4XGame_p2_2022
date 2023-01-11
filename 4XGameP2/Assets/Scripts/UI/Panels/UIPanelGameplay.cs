@@ -189,7 +189,7 @@ public class UIPanelGameplay : UIPanel
 
         // Initializes unit with the given index.
         m_unit.Initialize(_presetData.Units[p_index], m_randomMapPos, 
-            _presetData.UnitDisplaySize);
+            _presetData.UnitDisplaySize, _presetData.UnitMoveTime);
     }
 
     /// <summary>

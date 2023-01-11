@@ -59,10 +59,10 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     public Sprite Icon { get; private set; }
 
     /// <summary>
-    /// Public self implemented property that stores the unit's relative map position.
+    /// Self implemented property that stores the unit's relative map position.
     /// </summary>
     /// <value>Relative map position. Ex: (0, 1).</value>
-    public Vector2 MapPosition { get; set; }
+    public Vector2 MapPosition { get; private set; }
 
     /// <summary>
     /// Readonly self implemented property that returns this unit's selectable radius.
@@ -71,7 +71,7 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
 
     /// <summary>
     /// Read only self implemented property that stores all unit's resources.
-    /// </summary>
+    /// </summary>S
     /// <value>Current resources of the unit.</value>
     public IReadOnlyList<Resource> Resources => _resourceList;
 
@@ -87,6 +87,9 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
 
     // Private float value that holds the ratio size of this unit.
     private float _displaySizeRatio;
+
+    // Private float value that holds cell to cell movement duration of this unit.
+    private float _moveTime;
 
     // Control variables so that unit can't be selected when moving.
     private bool _moveSelecting, _moving;
@@ -118,10 +121,11 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// <param name="p_mapPos">Relative position (map).</param>
     /// <param name="p_sizeRatio">Ratio size of this unit at all times.</param>
     public void Initialize(PresetUnitsData p_unitData, Vector2 p_mapPos,
-        float p_sizeRatio)
+        float p_sizeRatio, float p_moveTime)
     {
-        // Sets unit name.
+        // Sets unit name and move time.
         Name = p_unitData.Name;
+        _moveTime = p_moveTime;
 
         _resourceList = new List<Resource>();
 
@@ -149,17 +153,11 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     }
 
     /// <summary>
-    /// Adds a resource to this unit's private resource list.
-    /// </summary>
-    /// <param name="resource">Resource to add.</param>
-    public void AddResource(Resource resource) => _resourceList.Add(resource);
-
-    /// <summary>
     /// Updates scale when camera zooms, so that the icon always remains the
     /// same size.
     /// </summary>
     /// <param name="p_camZoom">Camera's orthographic size value.</param>
-    protected virtual void UpdateScale(float p_camZoom)
+    private void UpdateScale(float p_camZoom)
     {
         // Calculates size based on camera zoom and preset size ratio.
         _rectSize.x = p_camZoom * _displaySizeRatio;
@@ -167,6 +165,40 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
         // Equals width and height and sets it as the new rect transform's size.
         _rectSize.y = _rectSize.x;
         _rectTransform.sizeDelta = _rectSize;
+    }
+
+    /// <summary>
+    /// Adds a resource to this unit's private resource list.
+    /// </summary>
+    /// <param name="resource">Resource to add.</param>
+    public void AddResource(Resource resource) => _resourceList.Add(resource);
+
+    public Vector2 GetNextMoveTowards(Vector2 p_mapPos)
+    {
+        return MapPosition + Vector2.one;
+    }
+    
+    public void MoveTo(Vector2 p_mapPos, Vector3 p_worldPos)
+    {
+        MapPosition = p_mapPos;
+
+        StartCoroutine(MovingTo(p_worldPos));
+    }
+
+    private IEnumerator MovingTo(Vector3 p_worldPos)
+    {
+        float m_elapsedTime = 0;
+        Vector3 m_startPos = transform.position;
+
+        while (transform.position != p_worldPos)
+        {
+            transform.position = Vector3.Lerp(m_startPos, p_worldPos, (m_elapsedTime/_moveTime));
+
+            m_elapsedTime += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        Debug.Log(Name.ToUpper() + " MOVED TO " + transform.position);
     }
 
     /// <summary>

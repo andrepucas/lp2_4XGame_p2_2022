@@ -127,3 +127,6 @@ MonoBehaviour:
     _resourceNamesToCollect:
     - Animals
     _resourceNamesToGenerate: []
+  _unitDisplaySize: 0.2
+  _unitDisplayOffset: -0.25
+  _unitMoveTime: 0.5
