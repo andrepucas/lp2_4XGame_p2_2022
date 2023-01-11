@@ -53,7 +53,7 @@ public class UIPanelGameplay : UIPanel
     {
         MapDisplay.OnMapGenerated += SetUpResourceCounters;
         UIPanelUnitsControl.OnHarvest += UpdateResourceCounters;
-        UIPanelUnitsControl.OnHarvest += UpdateTurnCounter;
+        UIPanelUnitsControl.OnNewTurn += UpdateTurnCounter;
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public class UIPanelGameplay : UIPanel
     {
         MapDisplay.OnMapGenerated -= SetUpResourceCounters;
         UIPanelUnitsControl.OnHarvest -= UpdateResourceCounters;
-        UIPanelUnitsControl.OnHarvest += UpdateTurnCounter;
+        UIPanelUnitsControl.OnNewTurn -= UpdateTurnCounter;
     }
 
     /// <summary>
@@ -143,11 +143,7 @@ public class UIPanelGameplay : UIPanel
     /// <summary>
     /// Updates current turn display.
     /// </summary>
-    private void UpdateTurnCounter()
-    {
-        _turnCount++;
-        _turnDisplay.text = _turnCount.ToString("00");
-    }
+    private void UpdateTurnCounter() => _turnDisplay.text = _turnCount++.ToString("00");
 
     /// <summary>
     /// Instantiates unit in the map. Unit depends on index parameter.

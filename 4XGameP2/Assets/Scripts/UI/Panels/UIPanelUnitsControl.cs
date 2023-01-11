@@ -34,6 +34,11 @@ public class UIPanelUnitsControl : UIPanel
     /// </summary>
     public static event Action OnHarvest;
 
+    /// <summary>
+    /// Event raised when a turn ends.
+    /// </summary>
+    public static event Action OnNewTurn;
+
     // Serialized variables.
     [Header("ANIMATOR")]
     [Tooltip("Animator component of info sub-panel.")]
@@ -278,7 +283,7 @@ public class UIPanelUnitsControl : UIPanel
             m_rCounter.GetComponentInChildren<TMP_Text>().text = p_selectedUnits
                 .SelectMany(u => u.Resources)
                 .Count(u => u.Name == f_resourceName)
-                .ToString();
+                .ToString("00");
         }
     }
 
@@ -392,8 +397,12 @@ public class UIPanelUnitsControl : UIPanel
             // Clears blocked units.
             m_blockedUnits.Clear();
 
-            // Waits for units to move.
-            if (m_movingUnits.Count > 0) yield return m_waitForUnitToMove;
+            // Waits for units to move and ends turn.
+            if (m_movingUnits.Count > 0)
+            {
+                yield return m_waitForUnitToMove;
+                OnNewTurn?.Invoke();
+            }
         }
 
         _isMoving = false;
@@ -416,10 +425,10 @@ public class UIPanelUnitsControl : UIPanel
         GameTile m_targetTile;
 
         // Controls if a resource has been collected.
-        bool m_resourceCollected;
+        bool m_resourceCollected = false;
 
         // Controls duplicate resources when trying to add to the tile.
-        bool m_dupResource;
+        bool m_dupResource = false;
 
         // For each selected unit.
         foreach (Unit f_unit in _selectedUnits)
@@ -429,10 +438,6 @@ public class UIPanelUnitsControl : UIPanel
 
             // Gets the unit's tile.
             m_targetTile = _ongoingData.MapCells[f_unit.MapPosition].Tile;
-
-            // +++ DEBUG +++ //
-            foreach (Resource f_tileResource in m_targetTile.Resources)
-                Debug.Log("BEFORE - " + f_tileResource.Name);
 
             // Iterates resource names this unit can collect.
             for (int i = 0; i < f_unit.ResourceNamesToCollect.Count; i++)
@@ -504,14 +509,13 @@ public class UIPanelUnitsControl : UIPanel
 
             // Updates map cell's sprites.
             _ongoingData.MapCells[f_unit.MapPosition].UpdateResourceSprites();
-
-            // +++ DEBUG +++ //
-            foreach (Resource f_tileResource in m_targetTile.Resources)
-                Debug.Log("AFTER - " + f_tileResource.Name);
         }
 
         // Raises event that harvest action has been completed.
-        OnHarvest?.Invoke();
+        if (m_resourceCollected) OnHarvest?.Invoke();
+
+        // Raises event that turn has ended.
+        OnNewTurn?.Invoke();
 
         // Updates data in this panel.
         DisplayUnitsData(_selectedUnits);
