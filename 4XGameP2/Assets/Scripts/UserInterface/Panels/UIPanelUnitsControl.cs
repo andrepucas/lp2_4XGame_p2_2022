@@ -148,6 +148,8 @@ public class UIPanelUnitsControl : UIPanel
         _isSelectingMove = false;
         _isMoving = false;
 
+        UpdateButtons();
+
         // Activate closing trigger of sub-panel animator.
         _subPanelAnim.SetBool("visible", false);
 
@@ -309,8 +311,11 @@ public class UIPanelUnitsControl : UIPanel
     /// <returns>True if a unit is on a tile with resources it can collect.</returns>
     private bool SelectedUnitsCanHarvest()
     {
+        // Ignores method if there aren't any selected units.
+        if (_selectedUnits == null) return true;
+
         GameTile m_targetTile;
-        
+
         // Iterates every selected unit.
         foreach (Unit f_unit in _selectedUnits)
         {
