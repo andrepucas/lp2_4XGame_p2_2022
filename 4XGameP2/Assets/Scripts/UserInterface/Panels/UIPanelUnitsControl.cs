@@ -148,6 +148,7 @@ public class UIPanelUnitsControl : UIPanel
         _isSelectingMove = false;
         _isMoving = false;
 
+        // Updates buttons.
         UpdateButtons();
 
         // Activate closing trigger of sub-panel animator.
