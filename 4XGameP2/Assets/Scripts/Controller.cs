@@ -56,7 +56,7 @@ public class Controller : MonoBehaviour
         _userInterface.Initialize();
         _mapDisplay.Initialize();
 
-        // Clear all warnings.
+        // Clears all warnings.
         _warnings.ClearAll();
     }
 
@@ -275,6 +275,7 @@ public class Controller : MonoBehaviour
             // Backs out from inspector state.
             if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))
             {
+                // Sets game state to Gameplay.
                 ChangeGameState(GameStates.GAMEPLAY);
             }
         }
@@ -315,10 +316,10 @@ public class Controller : MonoBehaviour
     /// <param name="p_isValid">True is map's data is valid.</param>
     private void HandleLoadedDataStatus(bool p_isValid)
     {
-        // If it's valid, generate map.
+        // If it's valid, generates map.
         if (p_isValid) ChangeGameState(GameStates.LOAD_MAP);
 
-        // If not, display warning.
+        // If not, displays warning.
         else _warnings.DisplayInvalidFilesWarning();
     }
 
@@ -343,11 +344,15 @@ public class Controller : MonoBehaviour
     /// <param name="p_moveSelecting">Unit target is being selected.</param>
     private void SetCursorImage(bool p_moveSelecting = false)
     {
+        // Updates the is move selecting variable.
         _isMoveSelecting = p_moveSelecting;
 
+        // If it's selecting the move destination.
         if (_isMoveSelecting) 
+            // Sets the cursor to the movement selector cursor.
             Cursor.SetCursor(_movementCursorImg, Vector2.one*3, CursorMode.Auto);
 
+        // Otherwise, sets it to the normal cursor.
         else Cursor.SetCursor(_defaultCursorImg, Vector2.one*3, CursorMode.Auto);
     }
 }

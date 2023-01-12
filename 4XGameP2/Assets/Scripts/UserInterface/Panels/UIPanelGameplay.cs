@@ -71,6 +71,7 @@ public class UIPanelGameplay : UIPanel
     /// </summary>
     public void SetupPanel()
     {
+        // Closes the panel.
         ClosePanel();
 
         // Resets turns.

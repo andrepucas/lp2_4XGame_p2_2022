@@ -64,7 +64,7 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// <summary>
     /// Self implemented property that stores the unit's icon sprite.
     /// </summary>
-    /// <value></value>
+    /// <value>Unit's icon sprite.</value>
     public Sprite Icon { get; private set; }
 
     /// <summary>
@@ -99,16 +99,16 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     // Stores this unit's movement behaviour.
     private IUnitMoveBehaviour _moveBehaviour;
 
-    // Private list of Resources.
+    // List of Resources.
     private List<Resource> _resourceList;
 
-    // Private Vector2 that handles the rectTransform's size modifications.
+    // Vector2 that handles the rectTransform's size modifications.
     private Vector2 _rectSize;
 
-    // Private float value that holds the ratio size of this unit.
+    // Float value that holds the ratio size of this unit.
     private float _displaySizeRatio;
 
-    // Private float value that holds cell to cell movement duration of this unit.
+    // Float value that holds cell to cell movement duration of this unit.
     private float _moveTime;
 
     // Control variable so that unit can't be selected.
@@ -140,6 +140,7 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// <param name="p_unitData">Data relative to this unit.</param>
     /// <param name="p_mapPos">Relative position (map).</param>
     /// <param name="p_sizeRatio">Ratio size of this unit at all times.</param>
+    /// <param name="p_moveTime">Time that each unit takes to move between cells.</param>
     public void Initialize(PresetUnitsData p_unitData, Vector2 p_mapPos,
         float p_sizeRatio, float p_moveTime)
     {
@@ -208,10 +209,16 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// <returns>Null.</returns>
     private IEnumerator HarvestingAnimation()
     {
+        // Sets is busy variable to true.
         _isBusy = true;
 
+        // Sets elapsed time to 0.
         float m_elapsedTime = 0;
+
+        // Sets ring rotation speed to 0.
         float m_originalSpeed = _ringRotation.speed;
+
+        // Sets the original color.
         Color m_originalColor = _frontImg.color;
 
         // Speeds up selection ring and changes unit's color.
@@ -234,8 +241,13 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
             yield return null;
         }
 
+        // Updates the ring rotation speed.
         _ringRotation.speed = m_originalSpeed;
+
+        // Updates the image color.
         _frontImg.color = m_originalColor;
+
+        // Sets is busy variable to false.
         _isBusy = false;
     }
 
@@ -268,18 +280,21 @@ public class Unit : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler,
     /// <returns>Null.</returns>
     private IEnumerator MovingTo(Vector3 p_worldPos)
     {
+        // Sets elapsed time to 0.
         float m_elapsedTime = 0;
+
+        // Stores starting position.
         Vector3 m_startPos = transform.position;
 
+        // While current position is different from the target's world position.
         while (transform.position != p_worldPos)
         {
+            // Lerps from start position to target position.
             transform.position = Vector3.Lerp(m_startPos, p_worldPos, (m_elapsedTime/_moveTime));
 
             m_elapsedTime += Time.unscaledDeltaTime;
             yield return null;
         }
-
-        transform.position = p_worldPos;
     }
 
     /// <summary>

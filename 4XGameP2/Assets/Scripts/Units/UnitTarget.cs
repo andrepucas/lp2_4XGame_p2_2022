@@ -65,7 +65,7 @@ public class UnitTarget : MonoBehaviour
     }
 
     /// <summary>
-    /// Destroy this game object when a unit reached it (Units stop moving).
+    /// Destroys this game object when a unit reached it (Units stop moving).
     /// </summary>
     /// <param name="p_moving">Units moving status.</param>
     private void FadeOutWhenReached(bool p_moving)
@@ -79,6 +79,7 @@ public class UnitTarget : MonoBehaviour
     /// <returns>Null.</returns>
     private IEnumerator FadingOut()
     {
+        // Sets elapsed time to 0.
         float m_elapsedTime = 0;
 
         // While the canvas isn't fully hidden.
@@ -93,6 +94,7 @@ public class UnitTarget : MonoBehaviour
             yield return null;
         }
 
+        // Destroys game object.
         Destroy(gameObject);
     }
 }

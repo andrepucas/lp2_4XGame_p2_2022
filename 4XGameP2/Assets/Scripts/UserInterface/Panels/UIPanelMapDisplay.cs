@@ -10,6 +10,7 @@ public class UIPanelMapDisplay : UIPanel
     /// </summary>
     public void SetupPanel()
     {
+        // Closes panel.
         ClosePanel();
 
         // Destroy any existing map cells.

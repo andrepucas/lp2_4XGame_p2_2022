@@ -10,6 +10,7 @@ public class UIPanelUnitsDisplay : UIPanel
     /// </summary>
     public void SetupPanel()
     {
+        // Closes panel.
         ClosePanel();
 
         // Destroy any existing units.

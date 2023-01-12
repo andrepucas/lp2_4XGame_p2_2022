@@ -37,6 +37,9 @@ public class UnitSelection : MonoBehaviour
     // Vector2 used for temporary, every frame, calculations.
     private Vector2 _auxV2;
 
+    /// <summary>
+    /// Unity method, on enable, subscribes to events.
+    /// </summary>
     private void OnEnable()
     {
         UIPanelGameplay.OnUnitAdded += (p_unit) => { _unitsInGame.Add(p_unit); };
@@ -46,6 +49,9 @@ public class UnitSelection : MonoBehaviour
         Unit.OnClick += ClickSelect;
     }
 
+    /// <summary>
+    /// Unity method, on disable, unsubscribes to events.
+    /// </summary>
     private void OnDisable()
     {
         UIPanelGameplay.OnUnitAdded -= (p_unit) => { };
@@ -90,8 +96,8 @@ public class UnitSelection : MonoBehaviour
         _height = Input.mousePosition.y - _startMousePos.y;
 
         // Sets selection box's anchored position (centered).
-        _auxV2.x = _width/2;
-        _auxV2.y = _height/2;
+        _auxV2.x = _width / 2;
+        _auxV2.y = _height / 2;
         _selectionBox.anchoredPosition = _startMousePos + _auxV2;
 
         // Sets selection box's size delta.
@@ -106,7 +112,7 @@ public class UnitSelection : MonoBehaviour
         for (int i = 0; i < _unitsInGame.Count; i++)
         {
             // If this units is within the selection box's bounds.
-            if (UnitIsInSelectionBox(_unitsInGame[i].transform.position, 
+            if (UnitIsInSelectionBox(_unitsInGame[i].transform.position,
                 _unitsInGame[i].SelectableRadius, _bounds))
             {
                 // If it's not already hovered, hover it.
@@ -131,7 +137,7 @@ public class UnitSelection : MonoBehaviour
     /// <param name="p_centerPos">Center position of the unit.</param>
     /// <param name="p_radius">Radius value of the unit.</param>
     /// <param name="p_bounds">Selection box bounds.</param>
-    /// <returns></returns>
+    /// <returns>True, if there are units inside the selection box.</returns>
     private bool UnitIsInSelectionBox(Vector3 p_centerPos, float p_radius, Bounds p_bounds)
     {
         // Saves center and edge positions.
@@ -163,11 +169,12 @@ public class UnitSelection : MonoBehaviour
     /// </summary>
     public void EndSelectionBox()
     {
+        // Sets the size of the selection box to 0 and disables the game object.
         _selectionBox.sizeDelta = Vector2.zero;
         _selectionBox.gameObject.SetActive(false);
 
         // Selects hovered units.
-        foreach(Unit f_unit in _unitsHovered)
+        foreach (Unit f_unit in _unitsHovered)
             Select(f_unit);
 
         // Clears hovered units list.
@@ -182,22 +189,23 @@ public class UnitSelection : MonoBehaviour
     /// <param name="p_unit">Clicked unit.</param>
     private void ClickSelect(Unit p_unit)
     {
+        // Disables hovering over the unit.
         StopHover(p_unit);
 
         // If left control or right control are also pressed.
         if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
         {
-            // If this unit isn't yet selected, select it.
+            // If this unit isn't yet selected, selects it.
             if (!_unitsSelected.Contains(p_unit)) Select(p_unit);
 
-            // If it is, deselect it.
+            // If it is, deselects it.
             else Deselect(p_unit);
         }
 
         // If neither control keys are being held.
         else
         {
-            // Only select this unit, deselect all others.
+            // Only select this unit, deselects all others.
             DeselectAll();
             Select(p_unit);
         }
@@ -214,7 +222,7 @@ public class UnitSelection : MonoBehaviour
     }
 
     /// <summary>
-    /// Adds to hover list and manually hovers unit.
+    /// Removes from hover list and manually stops hovering unit.
     /// </summary>
     /// <param name="p_unit">Unit.</param>
     private void StopHover(Unit p_unit)
@@ -271,7 +279,7 @@ public class UnitSelection : MonoBehaviour
     /// <param name="p_unitsToRemove">Units to remove.</param>
     private void RemoveUnits(ICollection<Unit> p_unitsToRemove)
     {
-        foreach(Unit f_unit in p_unitsToRemove)
+        foreach (Unit f_unit in p_unitsToRemove)
         {
             _unitsInGame.Remove(f_unit);
             _unitsHovered.Remove(f_unit);

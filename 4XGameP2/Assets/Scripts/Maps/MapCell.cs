@@ -39,11 +39,11 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// <summary>
     /// Self implemented property that holds the Game Tile it represents.
     /// </summary>
-    /// <value></value>
+    /// <value>Game tile that the cell represents.</value>
     public GameTile Tile { get; private set; }
 
     /// <summary>
-    /// Public self implemented property that stores the cell's relative map position.
+    /// Self implemented property that stores the cell's relative map position.
     /// </summary>
     /// <value>Relative map position. Ex: (0, 1).</value>
     public Vector2 MapPosition { get; private set; }
@@ -51,10 +51,10 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     // List containing actively displayed resource sprites.
     private List<Sprite> _activeRSpritesList;
 
-    // Private pointer control variables.
+    // Pointer control variables.
     private Vector3 _mouseDownPos, _mouseClickDelta;
 
-    // Private control for units selecting a destination cell and moving.
+    // Control for units selecting a destination cell and moving.
     private bool _moveSelecting, _moving;
 
     /// <summary>
@@ -103,16 +103,18 @@ public class MapCell : MonoBehaviour, IPointerDownHandler, IPointerClickHandler,
     /// </summary>
     public void UpdateResourceSprites()
     {
+
+        // Holds image component of a resource.
         Image m_resourceImage;
 
-        // Destroy any resource images that might be instantiated.
+        // Destroys any resource images that might be instantiated.
         foreach (Transform resourceImage in _resourceImgFolder)
             Destroy(resourceImage.gameObject);
 
         // Clears list of active displayed resources.
         _activeRSpritesList.Clear();
 
-        // Iterate tile resources.
+        // Iterates tile resources.
         for (int i = 0; i < Tile.Resources.Count; i++)
         {
             // Instantiates image for this resource and saves its image component.

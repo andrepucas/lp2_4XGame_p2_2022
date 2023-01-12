@@ -92,7 +92,7 @@ public class MapFileGeneratorWidget : MonoBehaviour
         // Raises event that a new map has been generated, with its name.
         OnNewMapFile?.Invoke(_name);
 
-        // De-select anything that might be selected.
+        // De-selects anything that might be selected.
         EventSystem.current.SetSelectedGameObject(null);
     }
 }

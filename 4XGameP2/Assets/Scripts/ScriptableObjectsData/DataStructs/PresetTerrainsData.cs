@@ -25,7 +25,4 @@ public struct PresetTerrainsData
     public IReadOnlyList<Sprite> Sprites => _sprites;
     public int Coin => _coin;
     public int Food => _food;
-
-    // Return name in lowercase and without spaces.
-    // https://stackoverflow.com/questions/6219454/efficient-way-to-remove-all-whitespace-from-string/30732794#30732794
 }

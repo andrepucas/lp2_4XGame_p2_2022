@@ -53,7 +53,7 @@ public class MapFileWidget : MonoBehaviour
     /// Self-implemented property with a private set which holds the data of 
     /// the map this widget represents.
     /// </summary>
-    /// <value></value>
+    /// <value>Data of the map this widget represents.</value>
     public MapData MapData { get; private set; }
 
     // Color block to temporarily hold and switch button colors.
@@ -107,7 +107,7 @@ public class MapFileWidget : MonoBehaviour
         // If the name input field is active.
         if (_nameInput.interactable)
         {
-            // Set local button colors as the selected color.
+            // Sets local button colors as the selected color.
             _buttonColors.normalColor = SELECTED_COLOR;
             _buttonColors.pressedColor = SELECTED_COLOR;
             _buttonColors.selectedColor = SELECTED_COLOR;
@@ -116,13 +116,13 @@ public class MapFileWidget : MonoBehaviour
         // If its disabled.
         else 
         {
-            // Set local button colors as the normal color.
+            // Sets local button colors as the normal color.
             _buttonColors.normalColor = NORMAL_COLOR;
             _buttonColors.pressedColor = NORMAL_COLOR;
             _buttonColors.selectedColor = NORMAL_COLOR;
         }
 
-        // Update the button colors.
+        // Updates the button colors.
         _editNameButton.colors = _buttonColors;
     }
 
@@ -200,7 +200,7 @@ public class MapFileWidget : MonoBehaviour
         // Raises event that this widget as been deleted.
         OnDeleted?.Invoke();
 
-        // Destroy this game object after 0.1s.
+        // Destroys this game object after 0.1s.
         Destroy(this.gameObject, .1f);
     }
 

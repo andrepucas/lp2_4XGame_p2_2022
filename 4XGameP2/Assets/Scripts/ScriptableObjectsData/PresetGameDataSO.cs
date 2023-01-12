@@ -77,7 +77,6 @@ public class PresetGameDataSO : ScriptableObject
         }
     }
 
-
     /// <summary>
     /// Readonly property that returns the default sprite of a given resource name.
     /// </summary>

@@ -8,16 +8,6 @@ using TMPro;
 /// </summary>
 public class UIPanelInspector : UIPanel
 {
-    /// <summary>
-    /// Constant string value for the opening animator trigger.
-    /// </summary>
-    private const string OPEN_TRIGGER = "Open";
-
-    /// <summary>
-    /// Constant string value for the closing animator trigger.
-    /// </summary>
-    private const string CLOSE_TRIGGER = "Close";
-
     // Serialized variables.
     [Header("ANIMATOR")]
     [Tooltip("Animator component of info sub-panel.")]
@@ -38,7 +28,7 @@ public class UIPanelInspector : UIPanel
     [SerializeField] private TMP_Text _tileResourcesCountTxt;
     [Tooltip("Prefab of resource inspect data.")]
     [SerializeField] private GameObject _rInspectPrefab;
-    [Tooltip("Toggeable empty space.")]
+    [Tooltip("Toggleable empty space.")]
     [SerializeField] private GameObject _emptySpace;
     [Header("COIN")]
     [Tooltip("Text component of tile base coin.")]
@@ -51,6 +41,7 @@ public class UIPanelInspector : UIPanel
     [Tooltip("Text component of tile total food.")]
     [SerializeField] private TMP_Text _tileTotalFoodTxt;
 
+    // Stores the visual components regarding resources.  
     private List<GameObject> _displayedRData;
 
     /// <summary>
@@ -91,7 +82,7 @@ public class UIPanelInspector : UIPanel
     /// <param name="p_transitionTime">Hiding time (s).</param>
     public void ClosePanel(float p_transitionTime = 0)
     {
-        // Activate closing trigger of sub-panel animator.
+        // Activates closing trigger of sub-panel animator.
         _subPanelAnim.SetBool("visible", false);
 
         // Hides the panel.
@@ -100,14 +91,15 @@ public class UIPanelInspector : UIPanel
         // Disables empty grid space.
         _emptySpace.SetActive(false);
 
-        // Destroy all resource data that might be instantiated.
+        // Destroys all resource data that might be instantiated.
         foreach (GameObject resourceData in _displayedRData)
             Destroy(resourceData);
 
-        // Destroy all resource images that might be instantiated.
+        // Destroys all resource images that might be instantiated.
         foreach (Transform resourceImage in _resourceImagesFolder)
             Destroy(resourceImage.gameObject);
 
+        // Clears resources visual components in inspector.
         _displayedRData.Clear();
     }
 
@@ -115,7 +107,6 @@ public class UIPanelInspector : UIPanel
     /// Updates displayed data based on the game tile cell clicked.
     /// </summary>
     /// <param name="p_tile">Game tile clicked.</param>
-    /// <param name="p_baseSprite">Tile's terrain sprite.</param>
     /// <param name="p_resourceSprites">Tile's resources sprites.</param>
     private void DisplayData(GameTile p_tile, 
         List<Sprite> p_resourceSprites)
@@ -130,7 +121,7 @@ public class UIPanelInspector : UIPanel
         _tileBaseCoinTxt.text = p_tile.BaseCoin.ToString();
         _tileBaseFoodTxt.text = p_tile.BaseFood.ToString();
 
-        // Display total coin and food values of the tile.
+        // Displays total coin and food values of the tile.
         _tileTotalCoinTxt.text = p_tile.Coin.ToString();
         _tileTotalFoodTxt.text = p_tile.Food.ToString();
 
@@ -141,8 +132,13 @@ public class UIPanelInspector : UIPanel
         // If there are resources.
         if (p_tile.Resources.Count > 0)
         {
+            // Stores the current resource's game object.
             GameObject m_resourceDataObj;
+
+            // Stores text components of data object.
             TMP_Text[] m_textData;
+
+            // Stores the current resource.
             Resource m_resource;
             
             // Enables empty grid space.
@@ -155,7 +151,7 @@ public class UIPanelInspector : UIPanel
                 m_resourceDataObj = Instantiate(_rInspectPrefab, _dataFolder);
                 _displayedRData.Add(m_resourceDataObj);
 
-                // Update sprite to match the resource's default sprite.
+                // Updates sprite to match the resource's default sprite.
                 m_resourceDataObj.GetComponentInChildren<Image>().sprite = 
                     p_tile.Resources[i].DefaultSprite;
 

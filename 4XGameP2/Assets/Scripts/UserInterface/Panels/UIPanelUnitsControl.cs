@@ -118,7 +118,10 @@ public class UIPanelUnitsControl : UIPanel
     /// </summary>
     public void SetupPanel()
     {
+        // Sets the color of the move buttons.
         _colorBlock = _moveButton.colors;
+
+        // Closes the panel.
         ClosePanel();
     }
 
@@ -164,7 +167,7 @@ public class UIPanelUnitsControl : UIPanel
         foreach (Transform unitIcon in _unitIconsFolder)
             Destroy(unitIcon.gameObject);
 
-        // Destroy all resource counts that might be instantiated.
+        // Destroys all resource counts that might be instantiated.
         foreach (Transform resourceCount in _resourceCountFolder)
             Destroy(resourceCount.gameObject);
     }
@@ -173,14 +176,16 @@ public class UIPanelUnitsControl : UIPanel
     /// Displays data based on the units selected. 
     /// Reveals & Hides panel if no units are selected.
     /// </summary>
-    /// <param name="_selectedUnits"></param>
+    /// <param name="p_selectedUnits">Units selected by the user.</param>
     private void DisplayUnitsData(ICollection<Unit> p_selectedUnits)
     {
+        // Stores the selected units in a list.
         _selectedUnits = new List<Unit>(p_selectedUnits);
 
+        // Instantiates a hash set that stores the names of the possible resources.
         HashSet<string> m_possibleResources = new HashSet<string>();
 
-        // Destroy left-over instantiated prefabs.
+        // Destroys left-over instantiated prefabs.
         DestroyPrefabs();
 
         // Toggles buttons and resets display of move button.
@@ -189,6 +194,8 @@ public class UIPanelUnitsControl : UIPanel
         // If there's only one unit selected.
         if (p_selectedUnits.Count == 1)
         {
+            // Changes the panels text to display a singular unit sample text,
+            //plus its name.
             _unitTypeOrCountTxt.text = p_selectedUnits.First().Name.ToUpper();
             _unitOrUnitsSelectedTxt.text = "UNIT SELECTED";
         }
@@ -196,20 +203,22 @@ public class UIPanelUnitsControl : UIPanel
         // If there's more than one unit selected.
         else
         {
+            // Changes the panels text to display multiple units sample text,
+            // plus their count.
             _unitTypeOrCountTxt.text = p_selectedUnits.Count.ToString();
             _unitOrUnitsSelectedTxt.text = "UNITS SELECTED";
         }
 
-        // Control variable
+        // Index control variable.
         int m_iconsIndex = 0;
 
         // If there are more icons to display than there is space.
         if (p_selectedUnits.Count > _iconsDisplayedLimit)
         {
+            // Updates index to not display excess icons.
             m_iconsIndex = p_selectedUnits.Count - _iconsDisplayedLimit + 1;
 
-            // Instantiates a counter in the first slot, which represents how 
-            // many icons are hidden.
+            // Instantiates a counter, representing how many icons are hidden.
             Instantiate(_unitOverflowCount, _unitIconsFolder)
                 .GetComponent<TMP_Text>().text = $"+{m_iconsIndex}";
         }
@@ -236,7 +245,7 @@ public class UIPanelUnitsControl : UIPanel
             }
         }
 
-        // Variable that current counter.
+        // Stores current resource counter.
         GameObject m_rCounter;
 
         // Goes through each possible resource name.
@@ -332,6 +341,7 @@ public class UIPanelUnitsControl : UIPanel
     /// </remarks>
     public void OnMoveButton()
     {
+        // Toggles selecting destination control variable and raises event.
         _isSelectingMove = !_isSelectingMove;
         OnMoveSelect?.Invoke(_isSelectingMove);
 
@@ -365,19 +375,22 @@ public class UIPanelUnitsControl : UIPanel
     /// <returns>Time in seconds a unit takes to move.</returns>
     private IEnumerator MovingUnitsTo(MapCell p_targetCell)
     {
+        // Stores moving and blocked units in hash sets.
         ISet<Unit> m_movingUnits = new HashSet<Unit>(_selectedUnits);
         ISet<Unit> m_blockedUnits = new HashSet<Unit>();
 
+        // Waits for some seconds.
         YieldInstruction m_waitForUnitsToMove = 
             new WaitForSeconds(_gameData.UnitMoveTime * 1.25f);
 
-        // Toggle move button.
+        // Toggles move button.
         OnMoveButton();
 
+        // Sets is moving variable to true and raises event.
         _isMoving = true;
         OnMoving?.Invoke(_isMoving);
 
-        // Update buttons with moving info.
+        // Updates buttons with moving info.
         UpdateButtons();
 
         // Calculates destination target prompt spawn position.
@@ -391,7 +404,10 @@ public class UIPanelUnitsControl : UIPanel
         // Initializes target.
         m_target.Initialize(_gameData.UnitDisplaySize);
 
+        // Holds coordinates for the next move.
         Vector2 m_nextMove;
+
+        // Holds the world space for the next move. 
         Vector3 m_worldPosMove;
 
         // While there are moving units.
@@ -443,9 +459,11 @@ public class UIPanelUnitsControl : UIPanel
             }
         }
 
+        // Sets is moving variable to false and raises event.
         _isMoving = false;
         OnMoving?.Invoke(_isMoving);
 
+        // Removes the outline of the map cell and updates the buttons.
         p_targetCell.OnPointerExit(null);
         UpdateButtons();
     }

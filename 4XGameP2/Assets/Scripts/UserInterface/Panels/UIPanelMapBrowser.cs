@@ -90,7 +90,7 @@ public class UIPanelMapBrowser : UIPanel
     /// Hides panel.
     /// </summary>
     /// <param name="p_transitionTime">Hiding time (s).</param>
-    public void ClosePanel(float p_transitionTime = 0) => 
+    public void ClosePanel(float p_transitionTime = 0) =>
         base.Close(p_transitionTime);
 
     /// <summary>
@@ -110,7 +110,7 @@ public class UIPanelMapBrowser : UIPanel
         // Clears widgets list and invalid files message.
         _widgetsList.Clear();
 
-        // Clear hidden files warning.
+        // Clears hidden files warning.
         _warnings.ClearHiddenFilesWarning();
 
         // If map files exist.
@@ -123,15 +123,15 @@ public class UIPanelMapBrowser : UIPanel
                 // and should not be displayed.
                 if (f_map.YRows == 0)
                 {
-                    // Display hidden files warning.
+                    // Displays hidden files warning.
                     _warnings.DisplayHiddenFilesWarning();
 
-                    // Ignore this map.
+                    // Ignores this map.
                     continue;
                 }
-                
+
                 // Instantiates a new map file widget.
-                m_fileWidget = Instantiate(_mapFileWidget, Vector3.zero, 
+                m_fileWidget = Instantiate(_mapFileWidget, Vector3.zero,
                     Quaternion.identity, _widgetsFolder).GetComponent<MapFileWidget>();
 
                 // Initializes it and adds to list.
@@ -139,6 +139,7 @@ public class UIPanelMapBrowser : UIPanel
                 _widgetsList.Add(m_fileWidget);
             }
 
+            // If there are more than 0 widgets.
             if (_widgetsList.Count != 0)
             {
                 // Pre select widget based on the widget name parameter.
@@ -146,6 +147,7 @@ public class UIPanelMapBrowser : UIPanel
                 else PreSelectWidget(p_newWidgetName);
             }
 
+            // Informs that there are no valid files.
             else Debug.Log("No valid map files.");
         }
 
@@ -153,7 +155,7 @@ public class UIPanelMapBrowser : UIPanel
         else Debug.Log("No map files.");
 
         // Instantiates map file generator widget at the end.
-        Instantiate(_mapFileGeneratorWidget, Vector3.zero, 
+        Instantiate(_mapFileGeneratorWidget, Vector3.zero,
             Quaternion.identity).transform.SetParent(_widgetsFolder, false);
 
         // Updates refreshed time.
@@ -173,7 +175,7 @@ public class UIPanelMapBrowser : UIPanel
         if (_lastWidgetSelected != null)
         {
             // Iterates the instantiated widgets list.
-            foreach(MapFileWidget f_widget in _widgetsList)
+            foreach (MapFileWidget f_widget in _widgetsList)
             {
                 // If the widget is found.
                 if (f_widget.Equals(_lastWidgetSelected))
@@ -190,13 +192,13 @@ public class UIPanelMapBrowser : UIPanel
     }
 
     /// <summary>
-    /// Selects a widget based on it's name (widget just created by the user).
+    /// Selects a widget based on its name (widget just created by the user).
     /// </summary>
     /// <param name="p_newWidgetName">Name of the widget.</param>
     private void PreSelectWidget(string p_newWidgetName)
     {
         // Iterates the instantiated widgets list.
-        foreach(MapFileWidget f_widget in _widgetsList)
+        foreach (MapFileWidget f_widget in _widgetsList)
         {
             // IIf the widget's name is found.
             if (f_widget.MapData.Name == p_newWidgetName)
@@ -209,13 +211,13 @@ public class UIPanelMapBrowser : UIPanel
     }
 
     /// <summary>
-    /// Display the current time as HH:MM:SS, in the refreshed time text.
+    /// Displays the current time as HH:MM:SS, in the refreshed time text.
     /// </summary>
     private void DisplayCurrentTime()
     {
-        _refreshTimeText.text = ("Last updated at " + 
-            System.DateTime.Now.Hour.ToString("D2") + ":" + 
-            System.DateTime.Now.Minute.ToString("D2") + ":" + 
+        _refreshTimeText.text = ("Last updated at " +
+            System.DateTime.Now.Hour.ToString("D2") + ":" +
+            System.DateTime.Now.Minute.ToString("D2") + ":" +
             System.DateTime.Now.Second.ToString("D2"));
     }
 
@@ -226,7 +228,7 @@ public class UIPanelMapBrowser : UIPanel
     private void UpdateLastSelected(MapFileWidget p_selectedWidget)
     {
         // If another widget is already selected, de-select it.
-        if (_lastWidgetSelected != null && _lastWidgetSelected != p_selectedWidget) 
+        if (_lastWidgetSelected != null && _lastWidgetSelected != p_selectedWidget)
             _lastWidgetSelected.DeSelect();
 
         // Updates the variable.
@@ -268,7 +270,7 @@ public class UIPanelMapBrowser : UIPanel
         // Instantiates the map widgets.
         InstantiateMapFileWidgets();
 
-        // De-select button.
+        // De-selects button.
         EventSystem.current.SetSelectedGameObject(null);
     }
 
@@ -280,9 +282,10 @@ public class UIPanelMapBrowser : UIPanel
     /// </remarks>
     public void OnLoadButton()
     {
+        // Raises OnLoad event.
         OnLoad?.Invoke(_lastWidgetSelected.MapData);
 
-        // De-select button.
+        // De-selects button.
         EventSystem.current.SetSelectedGameObject(null);
     }
 }

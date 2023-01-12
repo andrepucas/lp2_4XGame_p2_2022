@@ -88,7 +88,10 @@ public static class MapFilesBrowser
     public static string GenerateNewMapFile(string p_name, int p_yRows, 
         int p_xCols, PresetGameDataSO p_data)
     {
+        // Holds a reference to the generator.
         Generator m_generator;
+
+        // Holds a reference to the map.
         Map m_map;
 
         // Concatenates file extension to map name.
