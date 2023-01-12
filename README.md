@@ -4,8 +4,8 @@ This **4X Game** phase begins where [Phase 1] ended, a Unity 2021.3 LTS game tha
 allows to generate, manipulate and pick a `.map4x` file from the Desktop to be
 loaded and displayed as an interactive game map.
 
-This repository aims to implement different playable units, that move around and
-harvest the map's resources, in turns.
+This repository implements different playable units, that move around and harvest
+the map's resources, in turns.
 
 [**`• METADATA •`**](#metadata)
 
@@ -21,7 +21,7 @@ harvest the map's resources, in turns.
 |:------------------------------------:|:-----------------------------------------:|
 |                                      |                                           |
 
-> Game created as 1st Project for Programming Languages II, 2022/23.  
+> Game created as final project for Programming Languages II, 2022/23.  
 > Professor: [Nuno Fachada].  
 > [Bachelor in Videogames] at [Lusófona University].
 
