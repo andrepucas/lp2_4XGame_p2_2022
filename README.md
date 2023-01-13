@@ -21,15 +21,16 @@ and all new features.
 The game map is represented by a grid of squared tiles, each visually composed
 by a terrain with zero to six different resource types. All tiles can be
 inspected when clicked, displaying its properties: **Terrain, Resources, Coin**,
-and **Food**. The total number of map resources is displayed on top of the screen
-at all times.
+and **Food**.
+
+The total number of map resources is displayed on top of the screen
+at all times and zooming/panning is also made available, through the typical
+keyboard binds.
 
 **Units** can be placed on the map and ordered to move and interact with it,
-harvesting and generating resources, by turns.
-
-Zooming and panning is also made available, through the typical keyboard binds.
-However, to make it so units are always visible and selectable in bigger maps,
-without the need to zoom in and look for them, these remain a constant size.
+harvesting and generating resources, by turns. To make it so they are always
+visible and more easily selectable, units remain the same size while the map
+zooms in and out.
 
 ### Terrains
 
@@ -48,13 +49,9 @@ each other. On some cases they will vary depending on the terrain they're on.
 A terrain can have up to 6 resources, each having their own **Coin** and **Food**
 values, which stack.
 
-Below are the pre-defined **Coin** and **Food** values for each resource:
-
 ![Water Resources](Images/water_resources_all.png "All 6 resources values")
 
-And here's a practical example of an inspected game tile with 4 resources:
-
-![Inspector](Images/inspector_preview.png "Desert tile with 4 resources")
+Above are the pre-defined **Coin** and **Food** values for each resource.
 
 ### Units
 
@@ -72,17 +69,25 @@ even **generate new ones**. The resources each unit collects and generates can
 be found in the image above.
 
 **Note:** The Miner is the only unit that generates a resource as of now
-(Pollution), which happens whenever it successfully collects Metals.
+(Pollution) whenever it successfully collects Metals.
 
 ---
 
 ## Code Architecture
 
-[UML]
+![UML](Images/uml.png "Classes UML Diagram")
 
-(X sections, managed by Controller who tells User Interface what to display)
+The game is structured around 5 Main Sections, centrally managed by the
+[`Controller`]. Represented as one or more interface panels, visually toggled by
+the [`PanelsUserInterface`], each responsible for handling its respective game
+behaviours independently from each other and delegating responsibilities to
+secondary classes when needed.
 
-[BUTTONS]
+Lastly, and improving from the previous phase, panels now rely on
+[Unity ScriptableObjects], holders of pre-defined and ongoing game information,
+thus allowing data to be shared without creating dependencies.
+
+**Game sections:** [**`• PRE-START •`**](#pre-start) [**`• MAP BROWSER •`**](#map-browser) [**`• MAP DISPLAY •`**](#map-display) [**`• INSPECTOR •`**](#inspector) [**`• UNITS CONTROL •`**](#units-control)
 
 ---
 
@@ -153,6 +158,7 @@ be found in the image above.
 ## References
 
 + [4X Game (Phase 1) - Afonso Lage e André Santos][Phase 1]
++ [ScriptableObjects - Unity Documentation][Unity ScriptableObjects]
 + [Removing whitespace from string - StackOverflow (Jay Byford-Rew)][Whitespace]
 
 ## Metadata
@@ -174,7 +180,11 @@ be found in the image above.
 
 [**`• BACK TO TOP •`**](#4x-game---phase-2)
 
+[`Controller`]:4XGameP2/Assets/Scripts/Controller.cs
+[`PanelsUserInterface`]:4XGameP2/Assets/Scripts/UserInterface/Panels/PanelsUserInterface.cs
+
 [Phase 1]:https://github.com/andrepucas/lp2_4XGame_p1_2022
+[Unity ScriptableObjects]:https://docs.unity3d.com/Manual/class-ScriptableObject.html
 [Von Neumann]:https://en.wikipedia.org/wiki/Von_Neumann_neighborhood
 [Moore]:https://en.wikipedia.org/wiki/Moore_neighborhood
 [Whitespace]:https://stackoverflow.com/questions/6219454/efficient-way-to-remove-all-whitespace-from-string/30732794#30732794
