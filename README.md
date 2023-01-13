@@ -30,7 +30,7 @@ keyboard binds.
 **Units** can be placed on the map and ordered to move and interact with it,
 harvesting and generating resources, by turns. To make it so they are always
 visible and more easily selectable, units remain the same size while the map
-zooms in and out.
+zooms in and out, independently.
 
 ### Terrains
 
@@ -55,10 +55,10 @@ Above are the pre-defined **Coin** and **Food** values for each resource.
 
 ### Units
 
-![Units](Images/units_all.png "Desert tile with 4 resources")
+![Units](Images/units_all.png "The 4 unit types")
 
 There are **4 unit types**, each with a different combination of behaviours. All
-units can move towards a map cell selected by the user, however, not all move the
+units can move towards a map cell selected by the user, however not all move the
 same way. As of now, there are 2 moving behaviours the units can adopt:
 
 + [Von Neumann]: ⇐ ⇑ ⇒ ⇓  
@@ -68,8 +68,8 @@ Furthermore, units can also **harvest resources** from the cell they are on and
 even **generate new ones**. The resources each unit collects and generates can
 be found in the image above.
 
-**Note:** The Miner is the only unit that generates a resource as of now
-(Pollution) whenever it successfully collects Metals.
+The Miner is the only unit that generates a resource as of now (Pollution)
+whenever it successfully collects Metals.
 
 ---
 
@@ -77,45 +77,74 @@ be found in the image above.
 
 ![UML](Images/uml.png "Classes UML Diagram")
 
-The game is structured around 5 Main Sections, centrally managed by the
-[`Controller`]. Represented as one or more interface panels, visually toggled by
-the [`PanelsUserInterface`], each responsible for handling its respective game
-behaviours independently from each other and delegating responsibilities to
-secondary classes when needed.
-
-Lastly, and improving from the previous phase, panels now rely on
-[Unity ScriptableObjects], holders of pre-defined and ongoing game information,
-thus allowing data to be shared without creating dependencies.
-
-**Game sections:** [**`• PRE-START •`**](#pre-start) [**`• MAP BROWSER •`**](#map-browser) [**`• MAP DISPLAY •`**](#map-display) [**`• INSPECTOR •`**](#inspector) [**`• UNITS CONTROL •`**](#units-control)
-
----
-
 ### Controller
 
-(Manages game)
+Centrally manages the game, handling Player Input and [`GameStates`]. It starts
+by setting the `CurrentState` to `Pre Start`, which in turn delegates the
+[`PanelsUserInterface`] to update it's display, sending it the respective
+[`UIStates`]. These represent specific UI cases for each [`GameStates`], managed
+by boolean control variables, thus easing the transition between displayed info.
+
+> The `CurrentState` and boolean control variables are updated
+> following the **Observer Pattern**, through subscribed events, meaning other
+> classes don't need a direct [`Controller`] reference.
 
 ### User Interface
 
-(Talk about panels)
+The game's [`PanelsUserInterface`], which implements the generic [`IUserInterface`]
+(**Interface Segregation Principle**), focuses on enabling and disabling single
+responsibility panels, visually reflecting the current game section, following
+the **Single Responsibility Principle**.
+
+In turn, each panel handles their respective game behaviours and raises events
+when the `CurrentState` needs to be updated. All panels extend an abstract
+[`UIPanel`], which contains the universal opening and closing panel behaviours.
+This follows the **Open/Closed Principle**, due to the ease of creating new
+panels without having to modify the base code.
 
 ### Scriptable Objects
 
-(Store game data.)
+Lastly, and improving from the previous phase, panels now rely on
+[Unity ScriptableObjects] which hold pre-defined and ongoing game information,
+thus allowing data to be shared without creating unneeded dependencies.
+
+On top of that, with pre-defined data such as Terrains, Resources and Units, it's
+now easier to simply compare data when validating/creating maps or units, instead
+of the previously hardcoded string-compare solutions.
+
+![SOs](Images/scriptable_objects.png "Preset Data Scriptable Object")
+
+Now, to add or remove elements to the game, one simply needs to modify the
+ScriptableObjects through the editor, without having to touch any code, which
+adjusts itself and most* of the UI display automatically, complying with the
+**Open/Closed Principle**
+
+> \* In the case of units, new UI add buttons need to be manually added and the
+> global resource counters might need to be pushed forward, so that everything fits
+> on the screen. (editor modification only, no need to change any code).
+
+---
+
+## Game Sections
+
+[**`• PRE-START •`**](#pre-start) [**`• MAP BROWSER •`**](#map-browser) [**`• MAP DISPLAY •`**](#map-display) [**`• INSPECTOR •`**](#inspector) [**`• UNITS CONTROL •`**](#units-control)
 
 ---
 
 ### Pre-start
 
-[Imagem]
+![Pre-Start](Images/pre_start.png "Pre-start screen")
 
-(Same)
+In the [`PreStartPanel`], an event is raised when the input prompt
+"Press any key to start" is revealed. This event is subscribed by the
+[`Controller`], which in turn starts a coroutine that will update the
+`CurrentState` to `MapBrowser` after any key is pressed.
 
 ---
 
 ### Map Browser
 
-[Imagem]
+![Map Browser](Images/map_browser.png "Map browser screen")
 
 (Add file verification system + Warnings)
 
@@ -127,7 +156,7 @@ thus allowing data to be shared without creating dependencies.
 
 ### Map Display
 
-[Imagem]
+![Map Display](Images/map_display.png "Main map display screen")
 
 (No longer using pivot and scale to pan and zoom. Back to using cam)
 
@@ -135,7 +164,7 @@ thus allowing data to be shared without creating dependencies.
 
 ### Inspector
 
-[Imagem]
+![Inspector](Images/inspector.png "Inspector panel")
 
 (Visual improvements + less hardcoded).
 
@@ -143,15 +172,9 @@ thus allowing data to be shared without creating dependencies.
 
 ### Units Control
 
-[Imagem]
+![Units Control](Images/units_control.png "Units Control panel")
 
 (New stuff. Unit spawn + selection, movement and harvesting).
-
----
-
-### UML Diagram
-
-[Imagem] (Fix last one w feedback + new things. Mby move up?)
 
 ---
 
@@ -180,8 +203,13 @@ thus allowing data to be shared without creating dependencies.
 
 [**`• BACK TO TOP •`**](#4x-game---phase-2)
 
-[`Controller`]:4XGameP2/Assets/Scripts/Controller.cs
+[`GameStates`]:4XGameP2/Assets/Scripts/Enums/GameStates.cs
 [`PanelsUserInterface`]:4XGameP2/Assets/Scripts/UserInterface/Panels/PanelsUserInterface.cs
+[`UIStates`]:4XGameP2/Assets/Scripts/Enums/UIStates.cs
+[`Controller`]:4XGameP2/Assets/Scripts/Controller.cs
+[`IUserInterface`]:4XGameP2/Assets/Scripts/UserInterface/IUserInterface.cs
+[`UIPanel`]:4XGameP2/Assets/Scripts/UserInterface/Panels/UIPanel.cs
+[`PreStartPanel`]:4XGameP2/Assets/Scripts/UserInterface/Panels/UIPanelPreStart.cs
 
 [Phase 1]:https://github.com/andrepucas/lp2_4XGame_p1_2022
 [Unity ScriptableObjects]:https://docs.unity3d.com/Manual/class-ScriptableObject.html
