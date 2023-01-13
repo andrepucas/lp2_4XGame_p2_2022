@@ -119,9 +119,9 @@ ScriptableObjects through the editor, without having to touch any code, which
 adjusts itself and most* of the UI display automatically, complying with the
 **Open/Closed Principle**
 
-> \* In the case of units, new UI add buttons need to be manually added and the
-> global resource counters might need to be pushed forward, so that everything fits
-> on the screen. (editor modification only, no need to change any code).
+> \* For units, new UI add buttons need to be manually added and the global
+> resource counters might need to be pushed forward, so that everything fits
+> on the screen. (editor modification only, no need to change code).
 
 ---
 
@@ -157,12 +157,12 @@ It starts by using the static [`MapFilesBrowser`] class to create a [`MapData`]
 instance for each file, and return them. A [`MapData`] instance, at this initial
 stage, contains a string array with all the file lines, a name (that matches
 the file, without the extension), and the X and Y map dimensions, which are read
-right away, from the first file line.
+right away.
 
 Improved since the first version, if the maps dimensions can't be converted at
 this stage, even with the new way of reading files (ignoring blank and completely
-commented lines), then the map's dimensions aren't saved at all, triggering an
-invalid map reaction later on.
+commented lines before trying to convert), then the map's dimensions aren't saved
+at all, triggering an invalid map reaction later on.
 
 ```c#
 // If the conversion of both rows and cols value is successful.
@@ -200,7 +200,7 @@ characters for `_` using [Regex], or duplicate names, which is verified by the
 
 ```c#
 private static readonly Regex ILLEGAL_CHARS = new Regex("[#%&{}\\<>*?/$!'\":@+`|= ]");
-(...)
+
 p_fileName = ILLEGAL_CHARS.Replace(p_fileName, "_");
 ```
 
@@ -230,9 +230,9 @@ When the Load Button is pressed, an event is raised containing the selected map
 
 #### Load Map
 
-Before being ready to display, the selected [`MapData`] needs to convert its
-array of lines into a [`GameTile`] list, a class that represents a tile's terrain,
-containing a [`Resource`] list.
+Before being ready to generate and display, the selected [`MapData`] needs to
+convert its array of lines into a collection of [`GameTile`], a class that
+represents a tile's terrain and contains a [`Resource`] collection.
 
 > While in the previous version [`GameTile`] and [`Resource`] were abstract
 > classes with subclasses for each type. We've since then come to the conclusion
@@ -250,7 +250,7 @@ m_commentIndex = m_line.IndexOf("#");
 if (m_commentIndex >= 0) m_line = m_line.Substring(0, m_commentIndex);
 ```
 
-In our last version, this substring's size was not being accounted for, meaning
+In our previous version, this substring's size was not being accounted for, meaning
 that a line that started with a `#` wouldn't be ignored (and neither would empty
 lines). A major bug that has since then been fixed.
 
@@ -266,7 +266,7 @@ if (m_line.Length == 0)
 The line is then split into an array of strings, each representing a keyword.
 The first should always be a Terrain, so it's compared with the Terrain names the
 game has and instantiates a [`GameTile`] accordingly, adding it to this
-[`MapData`]'s [`GameTile`] list. In our previous version, it looked something
+[`MapData`]'s [`GameTile`] collection. In our previous version, it looked something
 this:
 
 ```c#
@@ -278,27 +278,36 @@ case "desert":
 
 A terrible solution that didn't respect the **Open/Closed Principle**, making it
 necessary to change the code every time we wanted to update the game elements.
-
 With ScriptableObjects, it now iterates every possible predefined game terrain
-and looks for a raw name match - the name in lower case and no white spaces, the
-most performant way we found of doing it was by [Jay Byford-Rew][Whitespace]:
+and looks for a raw name match (the name in lower case and no white spaces):
 
 ```c#
-public string RawName => string.Join("", _name.Split(default(string[]), 
-    System.StringSplitOptions.RemoveEmptyEntries)).ToLower();
-```
+// Iterates collection of all valid game terrains.
+for (int t = 0; t < p_gameData.Terrains.Count; t++)
+{
+    // If the first word matches a valid terrain name.
+    if (m_lineStrings[0] == p_gameData.Terrains[t].RawName)
+    {
+        // Adds new game tile (initialized with preset data) to the collection.
+        break;
+    }
 
-If the name is found, it then gets all relevant info from the scriptable object
-and instantiates our game tile.
+    // Increments control number of terrains checked.
+    m_checkCount++;
+}
+
+// If the terrain wasn't found, increments lines to ignore.
+if (m_checkCount == p_gameData.Terrains.Count)
+    _linesToIgnore++;
+```
 
 If there are any other words in the string array, each represents a [`Resource`]
 to add to the [`GameTile`] we just instantiated. Again, each keyword is compared
-with all possible Resource names in the game, now in the data ScriptableObject,
-and added accordingly. In this version, if the supposed resource's name doesn't
-match any of the possible resources, a control variable saves that not all
-resources were added.
+with all possible Resource names in the game and added accordingly.
 
-After iterating all the file data, the map's validity is checked once again:
+In this version, if the supposed resource's name doesn't match any of the possible
+resources, a control variable saves that not all resources were added and after
+all lines are read, the map's validity is verified one last time:
 
 ```c#
 // If the map's dimensions don't match the number of game tiles saved
@@ -306,7 +315,7 @@ After iterating all the file data, the map's validity is checked once again:
 if ((XCols * YRows) != GameTiles.Count || _failedResource)
     OnValidLoadedData?.Invoke(false);
 
-// Otherwise, this map is valid to be load.
+// Otherwise, this map is valid to load.
 else OnValidLoadedData?.Invoke(true);
 ```
 
@@ -346,7 +355,6 @@ generated.
 + [4X Game (Phase 1) - Afonso Lage e André Santos][Phase 1]
 + [ScriptableObjects - Unity Documentation][Unity ScriptableObjects]
 + [4X Map Generator - Nuno Fachada][Generator]
-+ [Removing whitespace from string - StackOverflow (Jay Byford-Rew)][Whitespace]
 
 ## Metadata
 
@@ -390,7 +398,6 @@ generated.
 [Von Neumann]:https://en.wikipedia.org/wiki/Von_Neumann_neighborhood
 [Moore]:https://en.wikipedia.org/wiki/Moore_neighborhood
 [Generator]:https://github.com/VideojogosLusofona/lp2_2022_p1/tree/main/Generator
-[Whitespace]:https://stackoverflow.com/questions/6219454/efficient-way-to-remove-all-whitespace-from-string/30732794#30732794
 [Afonso Lage (a21901381)]:https://github.com/AfonsoLage-boop
 [André Santos (a21901767)]:https://github.com/andrepucas
 [Nuno Fachada]:https://github.com/nunofachada
