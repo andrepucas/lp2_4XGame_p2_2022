@@ -73,7 +73,10 @@ as of now (Pollution) whenever it successfully collects Metals.
 
 ## Code Architecture
 
-![UML](Images/uml.png "Classes UML Diagram")
+![UML](Images/uml.png "UML Classes Diagram")
+
+**UML Disclaimer:** Class dependency relations are being omitted to promote
+simplicity, causing some secondary classes to not be displayed.
 
 ### Controller
 
