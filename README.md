@@ -549,7 +549,7 @@ if the user presses the right mouse button.
 If a cell is selected, an animated target is instantiated at that position and
 the units start moving towards it, one cell at a time, incrementing one turn
 every move. As was mentioned earlier, units have 2 different move types: Von
-Neumann and Moore, and will stop moving if they come across any obstacle, like,
+Neumann and Moore, and will stop moving if they come across any obstacle like
 other units in their way.
 
 ![UnitMovement](Images/unit_movement.gif "Moving units")
@@ -607,7 +607,7 @@ public IUnitMoveBehaviour MoveBehaviour => _moveBehaviour.GetComponent<IUnitMove
 The harvest button is only toggled on when the at least one of the selected units
 is standing on a cell with resources it can collect. Collectable resources for
 each cell are pre-set as name strings, which are compared with the names
-of the resources in the cell they're on, every time the buttons are updated.
+of the resources of the cell they're on, every time the buttons are updated.
 
 ```c#
 // Enables harvest button if not moving and there are resources to harvest.
@@ -618,8 +618,8 @@ When the button is pressed, all selected units attempt to harvest, comparing its
 strings of collectable resources with the tile's. If the resource is found, it's
 removed from the tile and added to the unit's collection, to be displayed in the
 panel. Furthermore, if the unit successfully harvests a resource, it will play
-a feedback animation and, if it can produce any resource that doesn't already
-exist in the cell, it will simply add it to the cell.
+a feedback animation and, if it can generate any resource that doesn't already
+exist in the cell, it will simply add it.
 
 ![UnitHarvest](Images/unit_harvest.gif "Unit harvesting")
 
