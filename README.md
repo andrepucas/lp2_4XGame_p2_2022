@@ -58,7 +58,7 @@ Above are the pre-defined **Coin** and **Food** values for each resource.
 ![Units](Images/units_all.png "The 4 unit types")
 
 There are **4 unit types**, each with a different combination of behaviours. All
-units can move towards a map cell selected by the user, however not all move the
+can move towards a map cell selected by the user, however not all move the
 same way. As of now, there are 2 moving behaviours the units can adopt:
 
 + [Von Neumann]: ⇐ ⇑ ⇒ ⇓  
@@ -66,10 +66,8 @@ same way. As of now, there are 2 moving behaviours the units can adopt:
 
 Furthermore, units can also **harvest resources** from the cell they are on and
 even **generate new ones**. The resources each unit collects and generates can
-be found in the image above.
-
-The Miner is the only unit that generates a resource as of now (Pollution)
-whenever it successfully collects Metals.
+be found in the image above. The Miner is the only unit that generates a resource
+as of now (Pollution) whenever it successfully collects Metals.
 
 ---
 
@@ -115,11 +113,10 @@ of the previously hardcoded string-compare solutions.
 ![SOs](Images/scriptable_objects.png "Preset Data Scriptable Object")
 
 Now, to add or remove elements to the game, one simply needs to modify the
-ScriptableObjects through the editor, without having to touch any code, which
-adjusts itself and most* of the UI display automatically, complying with the
-**Open/Closed Principle**
+ScriptableObjects through the editor, without having to touch any code,
+complying with the **Open/Closed Principle**.
 
-> \* For units, new UI add buttons need to be manually added and the global
+> For units, new UI add buttons need to be manually added and the global
 > resource counters might need to be pushed forward, so that everything fits
 > on the screen. (editor modification only, no need to change code).
 
@@ -335,7 +332,7 @@ the [`Controller`] sends it to [`MapDisplay`], responsible for generating the ma
 
 The map is generated using the Unity's [Grid Layout Group] and [Content Size Fitter]
 components. The only adjustments needed are setting the Grid Layout's cell size
-and the column count constraint, both calculated with the map dimensions.
+and the column count constraint, both calculated with the map's size.
 
 ```c#
 m_newCellSize.y = MAX_Y_SIZE / p_map.Dimensions_Y;
@@ -442,10 +439,10 @@ two events when clicked. One triggers the [`Controller`] to display the
 
 The [`InspectorPanel`] is responsible for displaying the clicked [`MapCell`]'s
 properties. It does so by syncing its name, coin and food values, plus the
-terrain and resources sprites with the clicked cell. Furthermore, it enables
-text components accordingly to the shown resources, to add extra written info.
+terrain and resources sprites with the clicked cell. It also displays
+text components accordingly to the shown resources, to add extra visual info.
 This written info is equal for every tile, since the Coin and Food values of
-resources and terrains are constant. The only values that vary are the
+resources and terrains don't change. The only values that vary are the
 [`GameTile`]'s totals.
 
 Merely a "show" type of panel, when the user presses `escape` or clicks away,
@@ -457,9 +454,9 @@ the [`Controller`] updates its `CurrentState` to `Gameplay` and closes this pane
 
 ![Units Control](Images/units_control.png "Units Control panel")
 
-Units are the new shiny thing we've got to show for this phase. A [`Unit`] itself
-is a mix between a [`GameTile`] and a [`MapCell`], in the sense that it contains
-data like its type and resources but can also be interacted with through
+Units are the main thing we've got to show for this phase. A [`Unit`] itself
+is a mix between a [`GameTile`] and a [`MapCell`], since it contains
+data, like its type and resources but can also be interacted with through
 [IPointerHandlers].
 
 #### Spawn
@@ -539,14 +536,14 @@ many are hidden.
 
 At the bottom of the panel there are 3 action buttons that allow the user to
 control the selected units. With the exception of the Remove action, which simply
-removes the selected units from the map, each unit action advances 1 game turn.
+removes them from the map, each unit action advances 1 game turn.
 
 #### Movement
 
 Once the movement button is pressed, the game changes it's cursor and enters a
 selection mode, toggling off all other buttons and disabling normal inspection
 and selection input, allowing only for the user to click on a map cell to choose
-as the units destination. This mode is cancelled whenever a cell is selected or
+as the units target. This mode is toggled off if a cell is selected or
 if the user presses the right mouse button.
 
 If a cell is selected, an animated target is instantiated at that position and
