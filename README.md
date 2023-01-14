@@ -330,7 +330,109 @@ generated.
 
 ![Map Display](Images/map_display.png "Main map display screen")
 
-(No longer using pivot and scale to pan and zoom. Back to using cam)
+Once [`MapData`] has a valid [`GameTile`] collection and is successfully loaded,
+the [`Controller`] sends it to [`MapDisplay`], responsible for generating the map.
+
+The map is generated using the Unity's [Grid Layout Group] and [Content Size Fitter]
+components. The only adjustments needed are setting the Grid Layout's cell size
+and the column count constraint, both calculated with the map dimensions.
+
+```c#
+m_newCellSize.y = MAX_Y_SIZE / p_map.Dimensions_Y;
+m_newCellSize.x = MAX_X_SIZE / p_map.Dimensions_X;
+
+// Sets both the X and Y to the lowest value out of the 2, making a square.
+if (m_newCellSize.y < m_newCellSize.x) m_newCellSize.x = m_newCellSize.y;
+else m_newCellSize.y = m_newCellSize.x;
+
+_cellSize = m_newCellSize.x;
+
+// Updates the grid layout group.
+_gridLayout.constraintCount = p_map.Dimensions_X;
+_gridLayout.cellSize = m_newCellSize;
+```
+
+With the grid prepared, [`MapDisplay`] then iterates every [`GameTile`] in the
+[`MapData`]'s list and instantiates a [`MapCell`] prefab for each, as a child of
+the grid object. A [`MapCell`] represents an interactable game tile, holding its
+terrain and resources sprites.
+
+Once all are instantiated, [`MapDisplay`] then raises an event that makes the
+[`Controller`] tell the [`PanelsUserInterface`] that it can now enable the
+[`MapDisplayPanel`], rendering the map visible, and disabling the Grid Layout
+and Content Size Fitter components, boosting performance by reducing automatic
+component calls.
+
+New in this phase, its now displayed the total number of map resources at the top
+of the screen. Each of these counters is instantiated when the map is generated,
+one for each possible preset resource. This means that even if resources are
+added or removed from the game, the counters above will adjust themselves
+automatically.
+
+```c#
+// IN SETUP METHOD
+
+// Iterates all possible resources' preset values.
+foreach (PresetResourcesData f_rData in _presetData.Resources)
+{
+    // Instantiates a visual resource count object and updates its sprite..
+    Instantiate(_mapResourceCount, _resourceCountFolder).
+        GetComponentInChildren<Image>().sprite = f_rData.DefaultResourceSprite;
+}
+
+// IN RESOURCE COUNTERS UPDATE METHOD
+
+// Variable that dictates which name to access.
+int m_nameIndex = 0;
+
+// Goes through each counter.
+foreach (Transform f_counter in _resourceCountFolder)
+{
+    // Stores the TMP component.
+    TMP_Text f_textComponent = f_counter.GetComponentInChildren<TMP_Text>();
+
+    // Updates text to display number of said resources on the map.
+    f_textComponent.text = _mapData.GameTiles
+    .SelectMany(t => t.Resources)
+    .Where(r => (r.Name.ToLower().Replace(" ", ""))
+    .Equals(_presetData.ResourceNames.ToList()[m_nameIndex]))
+    .Count().ToString();
+
+    // Increases the variable so the next name is accessed.
+    m_nameIndex++;
+}
+```
+
+In this state, the map can be moved and zoomed in/out, using the key binds shown
+on the bottom of the screen. The player's input is handled by the [`Controller`],
+who then passes the directional info to the [`MapDisplay`] that tries to pan and
+zoom using the camera's transform and orthographic size.
+
+> In our previous version, we used the map's Rect Transform pivot to move and its
+> scale to zoom. We thought this would be a good way to keep the zoom centered,
+> while allowing for the map's edges to be masked. However, we were aware of how
+> performant heavy this was, so for this phase we've decided to optimize it.
+
+To successfully mask the map's edges with this camera approach however, we had
+to:
+
++ Attach the background image to the Camera, so it would always follow it.
+  + On a Screen Space Canvas, so that zooming in and out didn't affect the
+background.
+  + In a layer order lower than everything else, so it's always rendered first.
++ Attach a foreground image to the camera - the background, but with a hole in
+the center.
+  + In a layer order higher than the map, so it overlays it, but not higher
+than corner UI elements such as buttons.
+  + With empty raycast target game objects covering the edges, so that it also
+masked mouse clicks.
+
+![background and Foreground](Images/bg_fg.png "Background and Foreground side by side")
+
+All [`MapCell`]s are hoverable and clickable by the mouse through Unity's
+[IPointerHandlers], updating its base sprite to look hovered and raising
+two events when clicked. One triggers the [`Controller`] to display the
+[`InspectorPanel`], while the other sends out the data needed to inspect.
 
 ---
 
@@ -338,7 +440,16 @@ generated.
 
 ![Inspector](Images/inspector.png "Inspector panel")
 
-(Visual improvements + less hardcoded).
+The [`InspectorPanel`] is responsible for displaying the clicked [`MapCell`]'s
+properties. It does so by syncing its name, coin and food values, plus the
+terrain and resources sprites with the clicked cell. Furthermore, it enables
+text components accordingly to the shown resources, to add extra written info.
+This written info is equal for every tile, since the Coin and Food values of
+resources and terrains are constant. The only values that vary are the
+[`GameTile`]'s totals.
+
+Merely a "show" type of panel, when the user presses `escape` or clicks away,
+the [`Controller`] updates its `CurrentState` to `Gameplay` and closes this panel.
 
 ---
 
@@ -346,15 +457,182 @@ generated.
 
 ![Units Control](Images/units_control.png "Units Control panel")
 
-(New stuff. Unit spawn + selection, movement and harvesting).
+Units are the new shiny thing we've got to show for this phase. A [`Unit`] itself
+is a mix between a [`GameTile`] and a [`MapCell`], in the sense that it contains
+data like its type and resources but can also be interacted with through
+[IPointerHandlers].
+
+#### Spawn
+
+Added to the map through the 4 small button at the top of the screen,
+in the [`GameplayPanel`]. Units are placed in a separate Canvas, overlaying the
+map, on top of a map cell. However, units and map cells have no dependencies
+between each other. A unit doesn't have a reference to the cell it's standing on
+and a cell doesn't have a reference to the unit that is standing on it. Instead,
+all of this info is stored in the [`OngoingGameData`] ScriptableObject, which
+contains two dictionaries relative to the map cells and units and methods that
+allow to manipulate them.
+
+```c#
+// Readonly dictionary that stores all cells and respective map positions.
+public IReadOnlyDictionary<Vector2, MapCell> MapCells => _mapCells;
+
+// Readonly dictionary that stores all units and respective map positions.
+public IReadOnlyDictionary<Vector2, Unit> MapUnits => _mapUnits;
+```
+
+This way, when a unit is being spawned in on a random map position, for example,
+it can access the MapUnits dictionary to checks if that position is free.
+
+```c#
+// Finds a random map position that doesn't have a unit in it.
+do
+{   m_randomMapPos = new Vector2(
+        UnityEngine.Random.Range(0, _mapData.XCols),
+        UnityEngine.Random.Range(0, _mapData.YRows));
+}
+while (_ongoingData.MapUnits[m_randomMapPos] != null);
+```
+
+If the position is free, the unit is instantiated the same way terrains and
+resources were, through the preset game data, and is added to the MapUnits
+dictionary.
+
+#### Selection
+
+A single unit can be selected by clicking it or multiple units can be selected at
+once by either using `CTRL` + Click to select more or by holding down the mouse
+and drag box selecting. Right clicking deselects all units. The input for this is
+managed by the [`Controller`], naturally, however the behaviours for each input
+are managed by the [`UnitSelection`] class. Responsible for drawing the selection
+box and managing which units are selected or not.
+
+It does so by updating the size of the box, checking for units within its
+bounds and managing 3 collections:
+
+```c#
+// Private collection containing all spawned units.
+private IList<Unit> _unitsInGame;
+
+// Private collection containing all hovered units.
+private ISet<Unit> _unitsHovered;
+
+// Private collection containing all selected units.
+private ISet<Unit> _unitsSelected;
+```
+
+When the mouse is released, hovered units become selected and an event is raised
+containing the collection of selected units. If there are any, the [`Controller`]
+reveals this [`UnitsControlPanel`], which displays all relevant information
+about the selected units and contains action buttons.
+
+The displayed information includes the type or number of selected units, it's
+icons and collected resources. The display itself is flexible with the attention
+to the number of selected units:
+
++ 1 unit is selected: Displays type + singular unit selected expression.
++ 2+ units selected: Displays count + plural units selected expression.
++ 15+ units selected: Adjusts icons display to hide the oldest ones, showing how
+many are hidden.
+
+![UnitSelection](Images/unit_selection.gif "Selecting units")
+
+At the bottom of the panel there are 3 action buttons that allow the user to
+control the selected units. With the exception of the Remove action, which simply
+removes the selected units from the map, each unit action advances 1 game turn.
+
+#### Movement
+
+Once the movement button is pressed, the game changes it's cursor and enters a
+selection mode, toggling off all other buttons and disabling normal inspection
+and selection input, allowing only for the user to click on a map cell to choose
+as the units destination. This mode is cancelled whenever a cell is selected or
+if the user presses the right mouse button.
+
+If a cell is selected, an animated target is instantiated at that position and
+the units start moving towards it, one cell at a time, incrementing one turn
+every move. As was mentioned earlier, units have 2 different move types: Von
+Neumann and Moore, and will stop moving if they come across any obstacle, like,
+other units in their way.
+
+![UnitMovement](Images/unit_movement.gif "Moving units")
+
+```c#
+// While there are moving units.
+while (m_movingUnits.Count > 0)
+{
+    // Iterates every moving unit.
+    foreach (Unit f_unit in m_movingUnits)
+    {
+        // Saves unit's next move towards destination.
+        m_nextMove = f_unit.GetNextMoveTowards(p_targetCell.MapPosition);
+
+        // If move is valid, move units.
+
+        // If the unit didn't move, add it to blocked units collection.
+        m_blockedUnits.Add(f_unit);
+    }
+
+    // Removes blocked units from moving units collection.
+    m_movingUnits.ExceptWith(m_blockedUnits);
+
+    // Clears blocked units.
+    m_blockedUnits.Clear();
+
+    // Waits for units to move and ends turn.
+    if (m_movingUnits.Count > 0)
+    {
+        yield return m_waitForUnitsToMove;
+        OnNewTurn?.Invoke();
+    }
+}
+```
+
+This works because each unit has a movement behaviour that implements
+[`IUnitMoveBehaviour`], an interface with one method signature, that each
+specific movement type then executes as they see fit (**Strategy Pattern**).
+Movement behaviours are attributed to each unit type directly in the
+[`PresetGameData`] ScriptableObject, using empty prefabs and then getting the
+attached script reference, like so:
+
+```c#
+// PRESET UNITS DATA STRUCT
+
+// Serialized movement type prefab with script.
+[SerializeField] private GameObject _moveBehaviour;
+
+// Move Behaviour property.
+public IUnitMoveBehaviour MoveBehaviour => _moveBehaviour.GetComponent<IUnitMoveBehaviour>();
+```
+
+#### Harvesting
+
+The harvest button is only toggled on when the at least one of the selected units
+is standing on a cell with resources it can collect. Collectable resources for
+each cell are pre-set as name strings, which are compared with the names
+of the resources in the cell they're on, every time the buttons are updated.
+
+```c#
+// Enables harvest button if not moving and there are resources to harvest.
+_harvestButton.interactable = !(_isSelectingMove || _isMoving) && SelectedUnitsCanHarvest();
+```
+
+When the button is pressed, all selected units attempt to harvest, comparing its
+strings of collectable resources with the tile's. If the resource is found, it's
+removed from the tile and added to the unit's collection, to be displayed in the
+panel. Furthermore, if the unit successfully harvests a resource, it will play
+a feedback animation and, if it can produce any resource that doesn't already
+exist in the cell, it will simply add it to the cell.
+
+![UnitHarvest](Images/unit_harvest.gif "Unit harvesting")
 
 ---
 
 ## References
 
 + [4X Game (Phase 1) - Afonso Lage e André Santos][Phase 1]
-+ [ScriptableObjects - Unity Documentation][Unity ScriptableObjects]
 + [4X Map Generator - Nuno Fachada][Generator]
++ [ScriptableObjects - Unity Documentation][Unity ScriptableObjects]
 
 ## Metadata
 
@@ -392,12 +670,26 @@ generated.
 [`UpgradedScrollRect`]:4XGameP2/Assets/Scripts/Imported/UpgradedScrollRect.cs
 [`GameTile`]:4XGameP2/Assets/Scripts/Maps/GameTile.cs
 [`Resource`]:4XGameP2/Assets/Scripts/Maps/Resource.cs
+[`MapDisplay`]:4XGameP2/Assets/Scripts/Maps/MapDisplay.cs
+[`MapDisplayPanel`]:4XGameP2/Assets/Scripts/UserInterface/Panels/UIPanelMapDisplay.cs
+[`MapCell`]:4XGameP2/Assets/Scripts/Maps/MapCell.cs
+[`InspectorPanel`]:4XGameP2/Assets/Scripts/UserInterface/Panels/UIPanelInspector.cs
+[`Unit`]:4XGameP2/Assets/Scripts/Units/Unit.cs
+[`GameplayPanel`]:4XGameP2/Assets/Scripts/UserInterface/Panels/UIPanelGameplay.cs
+[`OngoingGameData`]:4XGameP2/Assets/Scripts/ScriptableObjectsData/OngoingGameDataSO.cs
+[`UnitSelection`]:4XGameP2/Assets/Scripts/Units/UnitSelection.cs
+[`UnitsControlPanel`]:4XGameP2/Assets/Scripts/UserInterface/Panels/UIPanelUnitsControl.cs
+[`IUnitMoveBehaviour`]:4XGameP2/Assets/Scripts/Units/MoveBehaviors/IUnitMoveBehaviour.cs
+[`PresetGameData`]:4XGameP2/Assets/Scripts/ScriptableObjectsData/PresetGameDataSO.cs
 
 [Phase 1]:https://github.com/andrepucas/lp2_4XGame_p1_2022
 [Unity ScriptableObjects]:https://docs.unity3d.com/Manual/class-ScriptableObject.html
 [Von Neumann]:https://en.wikipedia.org/wiki/Von_Neumann_neighborhood
 [Moore]:https://en.wikipedia.org/wiki/Moore_neighborhood
 [Generator]:https://github.com/VideojogosLusofona/lp2_2022_p1/tree/main/Generator
+[Grid Layout Group]:https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/script-GridLayoutGroup.html
+[Content Size Fitter]:https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/script-ContentSizeFitter.html
+[IPointerHandlers]:https://docs.unity3d.com/2018.2/Documentation/ScriptReference/EventSystems.IPointerClickHandler.html
 [Afonso Lage (a21901381)]:https://github.com/AfonsoLage-boop
 [André Santos (a21901767)]:https://github.com/andrepucas
 [Nuno Fachada]:https://github.com/nunofachada
