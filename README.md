@@ -7,7 +7,7 @@ loaded and displayed as an interactive game map.
 This repository implements different playable units that move around the map and
 can harvest its resources, in turns.
 
-Below, we'll revisits the main concepts from Phase 1, highlighting improvements
+Below, we'll revisit the main concepts from Phase 1, highlighting improvements
 and all new features.
 
 [**`• CODE ARCHITECTURE •`**](#code-architecture) [**`• METADATA •`**](#metadata)
@@ -79,7 +79,7 @@ as of now (Pollution) whenever it successfully collects Metals.
 
 Manages the game, handling Player Input and [`GameStates`]. It starts
 by setting the `CurrentState` to `Pre Start`, which in turn delegates the
-[`PanelsUserInterface`] to update it's display, sending it the respective
+[`PanelsUserInterface`] to update its display, sending it the respective
 [`UIStates`]. These represent specific UI cases for each [`GameStates`], managed
 by boolean control variables, thus easing the transition between displayed info.
 
@@ -181,7 +181,7 @@ if (m_firstLine.Length == 2 && Int32.TryParse(m_firstLine[0], out _rows)
 
 For each [`MapData`] returned, **if it has dimensions**, a [`MapFileWidget`]
 is instantiated, serving as its visual representation and displaying the map's
-name and dimensions, while referencing it. However, if it's dimensions are null,
+name and dimensions, while referencing it. However, if its dimensions are null,
 the widget isn't created and a warning (as can be seen in the image above) is
 revealed. Warnings are toggled by the static [`UIWarnings`] class, that
 simply enables and disables the warning objects.
@@ -239,7 +239,7 @@ represents a tile's terrain and contains a [`Resource`] collection.
 The conversion is done by iterating all lines, starting at the line following up
 the dimensions, which have already been handled, when [`MapData`] was instantiated.
 In each line, it starts by looking for a `#`, by trying to get its index.
-If its greater than 0, then that line has a comment that needs to be ignored,
+If it's greater than 0, then that line has a comment that needs to be ignored,
 using a substring.
 
 ```c#
@@ -360,7 +360,7 @@ Once all are instantiated, [`MapDisplay`] then raises an event that makes the
 and Content Size Fitter components, boosting performance by reducing automatic
 component calls.
 
-New in this phase, its now displayed the total number of map resources at the top
+New in this phase, it's now displayed the total number of map resources at the top
 of the screen. Each of these counters is instantiated when the map is generated,
 one for each possible preset resource. This means that even if resources are
 added or removed from the game, the counters above will adjust themselves
@@ -523,7 +523,7 @@ containing the collection of selected units. If there are any, the [`Controller`
 reveals this [`UnitsControlPanel`], which displays all relevant information
 about the selected units and contains action buttons.
 
-The displayed information includes the type or number of selected units, it's
+The displayed information includes the type or number of selected units, its
 icons and collected resources. The display itself is flexible with the attention
 to the number of selected units:
 
@@ -540,7 +540,7 @@ removes them from the map, each unit action advances 1 game turn.
 
 #### Movement
 
-Once the movement button is pressed, the game changes it's cursor and enters a
+Once the movement button is pressed, the game changes its cursor and enters a
 selection mode, toggling off all other buttons and disabling normal inspection
 and selection input, allowing only for the user to click on a map cell to choose
 as the units target. This mode is toggled off if a cell is selected or
@@ -630,6 +630,7 @@ exist in the cell, it will simply add it to the cell.
 + [4X Game (Phase 1) - Afonso Lage e André Santos][Phase 1]
 + [4X Map Generator - Nuno Fachada][Generator]
 + [ScriptableObjects - Unity Documentation][Unity ScriptableObjects]
++ [Regex Class - Microsoft Docs][Regex]
 
 ## Metadata
 
@@ -680,6 +681,7 @@ exist in the cell, it will simply add it to the cell.
 [`PresetGameData`]:4XGameP2/Assets/Scripts/ScriptableObjectsData/PresetGameDataSO.cs
 
 [Phase 1]:https://github.com/andrepucas/lp2_4XGame_p1_2022
+[Regex]:https://learn.microsoft.com/en-us/dotnet/api/system.text.regularexpressions.regex?view=net-7.0
 [Unity ScriptableObjects]:https://docs.unity3d.com/Manual/class-ScriptableObject.html
 [Von Neumann]:https://en.wikipedia.org/wiki/Von_Neumann_neighborhood
 [Moore]:https://en.wikipedia.org/wiki/Moore_neighborhood
