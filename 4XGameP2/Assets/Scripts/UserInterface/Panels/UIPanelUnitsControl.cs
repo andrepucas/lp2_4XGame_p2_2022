@@ -101,7 +101,7 @@ public class UIPanelUnitsControl : UIPanel
     private void OnEnable()
     {
         UnitSelection.OnUnitsSelected += DisplayUnitsData;
-        MapCell.OnTargeted += (p_targetCell) => StartCoroutine(MovingUnitsTo(p_targetCell));
+        MapCell.OnTargeted += MoveTo;
     }
 
     /// <summary>
@@ -110,7 +110,7 @@ public class UIPanelUnitsControl : UIPanel
     private void OnDisable()
     {
         UnitSelection.OnUnitsSelected -= DisplayUnitsData;
-        MapCell.OnTargeted -= (p_targetCell) => { };
+        MapCell.OnTargeted -= MoveTo;
     }
 
     /// <summary>
@@ -371,6 +371,16 @@ public class UIPanelUnitsControl : UIPanel
 
         // Calls move button again, to negate variables.
         OnMoveButton();
+    }
+
+    /// <summary>
+    /// Stops selection mode coroutine and starts moving units coroutine.
+    /// </summary>
+    /// <param name="p_targetCell">Target cell to move to.</param>
+    private void MoveTo(MapCell p_targetCell)
+    {
+        StopAllCoroutines();
+        StartCoroutine(MovingUnitsTo(p_targetCell));
     }
 
     /// <summary>
